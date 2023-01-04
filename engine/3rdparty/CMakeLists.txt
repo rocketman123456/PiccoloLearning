@@ -31,6 +31,7 @@ endif()
 
 if(NOT TARGET eigen)
     option(BUILD_TESTING "" OFF)
+    option(EIGEN_TEST_CXX11 "" ON)
     option(EIGEN_SPLIT_LARGE_TESTS "" OFF)
     add_subdirectory(eigen)
     set_target_properties(eigen PROPERTIES FOLDER ${third_party_folder}/eigen)
