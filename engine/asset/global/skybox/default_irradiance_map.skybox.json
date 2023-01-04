@@ -1,0 +1,8 @@
+{
+  "negative_x_map": "asset/texture/sky/default/skybox_irradiance_X-.hdr",
+  "positive_x_map": "asset/texture/sky/default/skybox_irradiance_X+.hdr",
+  "negative_y_map": "asset/texture/sky/default/skybox_irradiance_Y-.hdr",
+  "positive_y_map": "asset/texture/sky/default/skybox_irradiance_Y+.hdr",
+  "negative_z_map": "asset/texture/sky/default/skybox_irradiance_Z-.hdr",
+  "positive_z_map": "asset/texture/sky/default/skybox_irradiance_Z+.hdr"
+}

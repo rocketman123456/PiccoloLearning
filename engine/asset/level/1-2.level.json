@@ -1,0 +1,895 @@
+{
+  "character_name": "Player",
+  "gravity": {
+    "x": 0,
+    "y": 0,
+    "z": -9.8000001907348633
+  },
+  "objects": [
+    {
+      "definition": "asset/objects/character/player/player.object.json",
+      "instanced_components": [
+        {
+          "$context": {
+            "transform": {
+              "position": {
+                "x": 3,
+                "y": 3,
+                "z": 0
+              },
+              "rotation": {
+                "w": 0.70710676908493042,
+                "x": 0,
+                "y": 0,
+                "z": 0.70710676908493042
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            }
+          },
+          "$typeName": "TransformComponent"
+        },
+        {
+          "$context": {
+            "animation_res": {
+              "clips": [
+                {
+                  "$context": {
+                    "blend_anim_skel_map_path": [
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_map.json"
+                    ],
+                    "blend_clip_file_length": [
+                      3.3666698932647705,
+                      1.2666699886322021,
+                      0.76666998863220215
+                    ],
+                    "blend_clip_file_path": [
+                      "asset/objects/character/player/components/animation/data/idle.animation_clip.json",
+                      "asset/objects/character/player/components/animation/data/walk.animation_clip.json",
+                      "asset/objects/character/player/components/animation/data/run.animation_clip.json"
+                    ],
+                    "blend_mask_file_path": [
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_mask.json",
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_mask.json",
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_mask.json"
+                    ],
+                    "blend_ratio": [
+                      0.65239936113357544,
+                      0.65239936113357544,
+                      0.65239936113357544
+                    ],
+                    "blend_weight": [
+                      1,
+                      0,
+                      0
+                    ],
+                    "clip_count": 3,
+                    "key": "speed",
+                    "name": "idle_walk_run",
+                    "values": [
+                      0,
+                      2,
+                      4
+                    ]
+                  },
+                  "$typeName": "BlendSpace1D"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 1.466670036315918,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/walk_forward_start.animation_clip.json",
+                    "name": "walk_start"
+                  },
+                  "$typeName": "BasicClip"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 1.2999999523162842,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/walk_forward_end.animation_clip.json",
+                    "name": "walk_stop"
+                  },
+                  "$typeName": "BasicClip"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 0.60000002384185791,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/jump_start.animation_clip.json",
+                    "name": "jump_start"
+                  },
+                  "$typeName": "BasicClip"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 1.8666700124740601,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/jump_loop.animation_clip.json",
+                    "name": "jump_loop"
+                  },
+                  "$typeName": "BasicClip"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 0.80000001192092896,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/jump_end.animation_clip.json",
+                    "name": "jump_stop"
+                  },
+                  "$typeName": "BasicClip"
+                }
+              ],
+              "skeleton_file_path": "asset/objects/character/player/components/animation/data/skeleton_data_root.skeleton.json"
+            }
+          },
+          "$typeName": "AnimationComponent"
+        },
+        {
+          "$context": {
+            "mesh_res": {
+              "sub_meshes": [
+                {
+                  "material": "asset/objects/character/player/components/mesh/robot.material.json",
+                  "obj_file_ref": "asset/objects/character/player/components/animation/data/robot.mesh_bind.json",
+                  "transform": {
+                    "position": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "rotation": {
+                      "w": 1,
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "$typeName": "MeshComponent"
+        },
+        {
+          "$context": {
+            "is_moving": false,
+            "motor_res": {
+              "controller_config": {
+                "$context": {
+                  "capsule_shape": {
+                    "half_height": 0.69999998807907104,
+                    "radius": 0.30000001192092896
+                  }
+                },
+                "$typeName": "PhysicsControllerConfig"
+              },
+              "jump_height": 4,
+              "max_move_speed_ratio": 1,
+              "max_sprint_speed_ratio": 2,
+              "move_acceleration": 2,
+              "move_speed": 2,
+              "sprint_acceleration": 2
+            }
+          },
+          "$typeName": "MotorComponent"
+        },
+        {
+          "$context": {
+            "camera_res": {
+              "parameter": {
+                "$context": {
+                  "fov": 70,
+                  "horizontal_offset": 3,
+                  "vertical_offset": 1.5
+                },
+                "$typeName": "ThirdPersonCameraParameter"
+              }
+            }
+          },
+          "$typeName": "CameraComponent"
+        },
+        {
+          "$context": {
+            "lua_script_res": {
+              "script_url": "scripts/player/set_jump_height.lua"
+            }
+          },
+          "$typeName": "LuaComponent"
+        }
+      ],
+      "name": "Player"
+    },
+    {
+      "definition": "asset/objects/character/player/player.object.json",
+      "instanced_components": [
+        {
+          "$context": {
+            "transform": {
+              "position": {
+                "x": 3,
+                "y": 1.3944735527038574,
+                "z": 0
+              },
+              "rotation": {
+                "w": 0.70710676908493042,
+                "x": 0,
+                "y": 0,
+                "z": 0.70710676908493042
+              },
+              "scale": {
+                "x": 0.99999690055847168,
+                "y": 0.99999690055847168,
+                "z": 1
+              }
+            }
+          },
+          "$typeName": "TransformComponent"
+        },
+        {
+          "$context": {
+            "animation_res": {
+              "clips": [
+                {
+                  "$context": {
+                    "blend_anim_skel_map_path": [
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_map.json"
+                    ],
+                    "blend_clip_file_length": [
+                      3.3666698932647705,
+                      1.2666699886322021,
+                      0.76666998863220215
+                    ],
+                    "blend_clip_file_path": [
+                      "asset/objects/character/player/components/animation/data/idle.animation_clip.json",
+                      "asset/objects/character/player/components/animation/data/walk.animation_clip.json",
+                      "asset/objects/character/player/components/animation/data/run.animation_clip.json"
+                    ],
+                    "blend_mask_file_path": [
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_mask.json",
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_mask.json",
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_mask.json"
+                    ],
+                    "blend_ratio": [
+                      0.65239936113357544,
+                      0.65239936113357544,
+                      0.65239936113357544
+                    ],
+                    "blend_weight": [
+                      1,
+                      0,
+                      0
+                    ],
+                    "clip_count": 3,
+                    "key": "speed",
+                    "name": "idle_walk_run",
+                    "values": [
+                      0,
+                      2,
+                      4
+                    ]
+                  },
+                  "$typeName": "BlendSpace1D"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 1.466670036315918,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/walk_forward_start.animation_clip.json",
+                    "name": "walk_start"
+                  },
+                  "$typeName": "BasicClip"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 1.2999999523162842,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/walk_forward_end.animation_clip.json",
+                    "name": "walk_stop"
+                  },
+                  "$typeName": "BasicClip"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 0.60000002384185791,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/jump_start.animation_clip.json",
+                    "name": "jump_start"
+                  },
+                  "$typeName": "BasicClip"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 1.8666700124740601,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/jump_loop.animation_clip.json",
+                    "name": "jump_loop"
+                  },
+                  "$typeName": "BasicClip"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 0.80000001192092896,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/jump_end.animation_clip.json",
+                    "name": "jump_stop"
+                  },
+                  "$typeName": "BasicClip"
+                }
+              ],
+              "skeleton_file_path": "asset/objects/character/player/components/animation/data/skeleton_data_root.skeleton.json"
+            }
+          },
+          "$typeName": "AnimationComponent"
+        },
+        {
+          "$context": {
+            "mesh_res": {
+              "sub_meshes": [
+                {
+                  "material": "asset/objects/character/player/components/mesh/robot.material.json",
+                  "obj_file_ref": "asset/objects/character/player/components/animation/data/robot.mesh_bind.json",
+                  "transform": {
+                    "position": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "rotation": {
+                      "w": 1,
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "$typeName": "MeshComponent"
+        },
+        {
+          "$context": {
+            "is_moving": false,
+            "motor_res": {
+              "controller_config": {
+                "$context": {
+                  "capsule_shape": {
+                    "half_height": 0.69999998807907104,
+                    "radius": 0.30000001192092896
+                  }
+                },
+                "$typeName": "PhysicsControllerConfig"
+              },
+              "jump_height": 4,
+              "max_move_speed_ratio": 1,
+              "max_sprint_speed_ratio": 2,
+              "move_acceleration": 2,
+              "move_speed": 2,
+              "sprint_acceleration": 2
+            }
+          },
+          "$typeName": "MotorComponent"
+        },
+        {
+          "$context": {
+            "lua_script_res": {
+              "script_url": "scripts/player/set_jump_height.lua"
+            }
+          },
+          "$typeName": "LuaComponent"
+        }
+      ],
+      "name": "NPC1"
+    },
+    {
+      "definition": "asset/objects/character/player/player.object.json",
+      "instanced_components": [
+        {
+          "$context": {
+            "transform": {
+              "position": {
+                "x": 3,
+                "y": 4.7412047386169434,
+                "z": 0
+              },
+              "rotation": {
+                "w": 0.70710676908493042,
+                "x": 0,
+                "y": 0,
+                "z": 0.70710676908493042
+              },
+              "scale": {
+                "x": 0.99999725818634033,
+                "y": 0.99999725818634033,
+                "z": 1
+              }
+            }
+          },
+          "$typeName": "TransformComponent"
+        },
+        {
+          "$context": {
+            "animation_res": {
+              "clips": [
+                {
+                  "$context": {
+                    "blend_anim_skel_map_path": [
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_map.json"
+                    ],
+                    "blend_clip_file_length": [
+                      3.3666698932647705,
+                      1.2666699886322021,
+                      0.76666998863220215
+                    ],
+                    "blend_clip_file_path": [
+                      "asset/objects/character/player/components/animation/data/idle.animation_clip.json",
+                      "asset/objects/character/player/components/animation/data/walk.animation_clip.json",
+                      "asset/objects/character/player/components/animation/data/run.animation_clip.json"
+                    ],
+                    "blend_mask_file_path": [
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_mask.json",
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_mask.json",
+                      "asset/objects/character/player/components/animation/data/anim.skeleton_mask.json"
+                    ],
+                    "blend_ratio": [
+                      0.65239936113357544,
+                      0.65239936113357544,
+                      0.65239936113357544
+                    ],
+                    "blend_weight": [
+                      1,
+                      0,
+                      0
+                    ],
+                    "clip_count": 3,
+                    "key": "speed",
+                    "name": "idle_walk_run",
+                    "values": [
+                      0,
+                      2,
+                      4
+                    ]
+                  },
+                  "$typeName": "BlendSpace1D"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 1.466670036315918,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/walk_forward_start.animation_clip.json",
+                    "name": "walk_start"
+                  },
+                  "$typeName": "BasicClip"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 1.2999999523162842,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/walk_forward_end.animation_clip.json",
+                    "name": "walk_stop"
+                  },
+                  "$typeName": "BasicClip"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 0.60000002384185791,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/jump_start.animation_clip.json",
+                    "name": "jump_start"
+                  },
+                  "$typeName": "BasicClip"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 1.8666700124740601,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/jump_loop.animation_clip.json",
+                    "name": "jump_loop"
+                  },
+                  "$typeName": "BasicClip"
+                },
+                {
+                  "$context": {
+                    "anim_skel_map_path": "asset/objects/character/player/components/animation/data/anim.skeleton_map.json",
+                    "clip_file_length": 0.80000001192092896,
+                    "clip_file_path": "asset/objects/character/player/components/animation/data/jump_end.animation_clip.json",
+                    "name": "jump_stop"
+                  },
+                  "$typeName": "BasicClip"
+                }
+              ],
+              "skeleton_file_path": "asset/objects/character/player/components/animation/data/skeleton_data_root.skeleton.json"
+            }
+          },
+          "$typeName": "AnimationComponent"
+        },
+        {
+          "$context": {
+            "mesh_res": {
+              "sub_meshes": [
+                {
+                  "material": "asset/objects/character/player/components/mesh/robot.material.json",
+                  "obj_file_ref": "asset/objects/character/player/components/animation/data/robot.mesh_bind.json",
+                  "transform": {
+                    "position": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "rotation": {
+                      "w": 1,
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "$typeName": "MeshComponent"
+        },
+        {
+          "$context": {
+            "is_moving": false,
+            "motor_res": {
+              "controller_config": {
+                "$context": {
+                  "capsule_shape": {
+                    "half_height": 0.69999998807907104,
+                    "radius": 0.30000001192092896
+                  }
+                },
+                "$typeName": "PhysicsControllerConfig"
+              },
+              "jump_height": 4,
+              "max_move_speed_ratio": 1,
+              "max_sprint_speed_ratio": 2,
+              "move_acceleration": 2,
+              "move_speed": 2,
+              "sprint_acceleration": 2
+            }
+          },
+          "$typeName": "MotorComponent"
+        },
+        {
+          "$context": {
+            "lua_script_res": {
+              "script_url": "scripts/player/set_jump_height.lua"
+            }
+          },
+          "$typeName": "LuaComponent"
+        }
+      ],
+      "name": "NPC2"
+    },
+    {
+      "definition": "asset/objects/environment/basic/convexmesh.object.json",
+      "instanced_components": [
+        {
+          "$context": {
+            "transform": {
+              "position": {
+                "x": 6.3296298980712891,
+                "y": -2.353508472442627,
+                "z": 2.0479049682617188
+              },
+              "rotation": {
+                "w": 0.70653003454208374,
+                "x": 0,
+                "y": 0,
+                "z": -0.7076830267906189
+              },
+              "scale": {
+                "x": 0.99999994039535522,
+                "y": 0.99999994039535522,
+                "z": 1
+              }
+            }
+          },
+          "$typeName": "TransformComponent"
+        },
+        {
+          "$context": {
+            "mesh_res": {
+              "sub_meshes": [
+                {
+                  "material": "asset/objects/environment/_material/white.material.json",
+                  "obj_file_ref": "asset/objects/basic/convexmesh.obj",
+                  "transform": {
+                    "position": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "rotation": {
+                      "w": 1,
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "$typeName": "MeshComponent"
+        },
+        {
+          "$context": {
+            "rigidbody_res": {
+              "actor_type": 1,
+              "inverse_mass": 0,
+              "shapes": [
+                {
+                  "geometry": {
+                    "$context": {
+                      "half_extents": {
+                        "x": 0.5,
+                        "y": 0.5,
+                        "z": 0.5
+                      }
+                    },
+                    "$typeName": "Box"
+                  },
+                  "local_transform": {
+                    "position": {
+                      "x": 0,
+                      "y": 0,
+                      "z": -0.5
+                    },
+                    "rotation": {
+                      "w": 1,
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "$typeName": "RigidBodyComponent"
+        }
+      ],
+      "name": "Bunny_1"
+    },
+    {
+      "definition": "asset/objects/environment/teapot/teapot.object.json",
+      "instanced_components": [
+        {
+          "$context": {
+            "transform": {
+              "position": {
+                "x": 6.3296298980712891,
+                "y": 0.53137320280075073,
+                "z": 0.93546348810195923
+              },
+              "rotation": {
+                "w": 0.70653003454208374,
+                "x": 0,
+                "y": 0,
+                "z": -0.7076830267906189
+              },
+              "scale": {
+                "x": 0.010000001639127731,
+                "y": 0.010000001639127731,
+                "z": 0.0099999997764825821
+              }
+            }
+          },
+          "$typeName": "TransformComponent"
+        },
+        {
+          "$context": {
+            "mesh_res": {
+              "sub_meshes": [
+                {
+                  "material": "asset/objects/environment/teapot/components/material/teapot.material.json",
+                  "obj_file_ref": "asset/objects/environment/teapot/components/mesh/teapot.obj",
+                  "transform": {
+                    "position": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "rotation": {
+                      "w": 1,
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "$typeName": "MeshComponent"
+        },
+        {
+          "$context": {
+            "rigidbody_res": {
+              "actor_type": 1,
+              "inverse_mass": 0,
+              "shapes": [
+                {
+                  "geometry": {
+                    "$context": {
+                      "half_extents": {
+                        "x": 0.5,
+                        "y": 0.5,
+                        "z": 0.5
+                      }
+                    },
+                    "$typeName": "Box"
+                  },
+                  "local_transform": {
+                    "position": {
+                      "x": 0,
+                      "y": 0,
+                      "z": -0.5
+                    },
+                    "rotation": {
+                      "w": 1,
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "$typeName": "RigidBodyComponent"
+        }
+      ],
+      "name": "Teapot_1"
+    },
+    {
+      "definition": "asset/objects/environment/floor/floor.object.json",
+      "instanced_components": [
+        {
+          "$context": {
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            }
+          },
+          "$typeName": "TransformComponent"
+        },
+        {
+          "$context": {
+            "mesh_res": {
+              "sub_meshes": [
+                {
+                  "material": "asset/objects/environment/_material/white.material.json",
+                  "obj_file_ref": "asset/objects/environment/floor/components/mesh/floor.obj",
+                  "transform": {
+                    "position": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "rotation": {
+                      "w": 1,
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "$typeName": "MeshComponent"
+        },
+        {
+          "$context": {
+            "rigidbody_res": {
+              "actor_type": 1,
+              "inverse_mass": 0,
+              "shapes": [
+                {
+                  "geometry": {
+                    "$context": {
+                      "half_extents": {
+                        "x": 43,
+                        "y": 24,
+                        "z": 0.5
+                      }
+                    },
+                    "$typeName": "Box"
+                  },
+                  "local_transform": {
+                    "position": {
+                      "x": 0,
+                      "y": 0,
+                      "z": -0.5
+                    },
+                    "rotation": {
+                      "w": 1,
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "scale": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "$typeName": "RigidBodyComponent"
+        }
+      ],
+      "name": "Ground"
+    }
+  ]
+}

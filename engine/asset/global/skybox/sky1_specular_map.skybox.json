@@ -1,0 +1,8 @@
+{
+  "negative_x_map": "asset/texture/sky/sky1/cube-mapping-skybox_back_X-.hdr",
+  "positive_x_map": "asset/texture/sky/sky1/cube-mapping-skybox_front_X+.hdr",
+  "negative_y_map": "asset/texture/sky/sky1/cube-mapping-skybox_right_Y-.hdr",
+  "positive_y_map": "asset/texture/sky/sky1/cube-mapping-skybox_left_Y+.hdr",
+  "negative_z_map": "asset/texture/sky/sky1/cube-mapping-skybox_bottom_Z-.hdr",
+  "positive_z_map": "asset/texture/sky/sky1/cube-mapping-skybox_top_Z+.hdr"
+}

@@ -1,0 +1,8 @@
+{
+  "negative_x_map": "asset/texture/sky/default/skybox_specular_X-.hdr",
+  "positive_x_map": "asset/texture/sky/default/skybox_specular_X+.hdr",
+  "negative_y_map": "asset/texture/sky/default/skybox_specular_Y-.hdr",
+  "positive_y_map": "asset/texture/sky/default/skybox_specular_Y+.hdr",
+  "negative_z_map": "asset/texture/sky/default/skybox_specular_Z-.hdr",
+  "positive_z_map": "asset/texture/sky/default/skybox_specular_Z+.hdr"
+}

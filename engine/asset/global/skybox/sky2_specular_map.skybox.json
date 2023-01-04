@@ -1,0 +1,8 @@
+{
+  "negative_x_map": "asset/texture/sky/sky2/landscape-watercolor-sky_back_X-.hdr",
+  "positive_x_map": "asset/texture/sky/sky2/landscape-watercolor-sky_front_X+.hdr",
+  "negative_y_map": "asset/texture/sky/sky2/landscape-watercolor-sky_right_Y-.hdr",
+  "positive_y_map": "asset/texture/sky/sky2/landscape-watercolor-sky_left_Y+.hdr",
+  "negative_z_map": "asset/texture/sky/sky2/landscape-watercolor-sky_bottom_Z-.hdr",
+  "positive_z_map": "asset/texture/sky/sky2/landscape-watercolor-sky_top_Z+.hdr"
+}
