@@ -1,4 +1,3 @@
-
 set(ENGINE_ROOT_DIR "${PICCOLO_ROOT_DIR}/engine")
 set(THIRD_PARTY_DIR "${ENGINE_ROOT_DIR}/3rdparty")
 set(ENGINE_ASSET_DIR "/asset")
@@ -22,14 +21,11 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_compile_options("/MP")
-    # add_compile_options("/FS")
     set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT PiccoloEditor)
 endif()
 
 set(glslang_include ${THIRD_PARTY_DIR}/glslang-sdk)
-
 set(eigen_include ${THIRD_PARTY_DIR}/eigen)
-
 set(vulkan_include ${THIRD_PARTY_DIR}/VulkanSDK/include)
 
 if(WIN32)
@@ -57,16 +53,15 @@ add_subdirectory(shader)
 
 add_subdirectory(3rdparty)
 
-add_subdirectory(source/runtime)
-add_subdirectory(source/editor)
 add_subdirectory(source/meta_parser)
-#add_subdirectory(source/test)
-
-add_subdirectory(source/playground)
+# add_subdirectory(source/runtime)
+add_subdirectory(source/editor)
+# add_subdirectory(source/playground)
+# add_subdirectory(source/test)
 
 set(CODEGEN_TARGET "PiccoloPreCompile")
 include(source/precompile/precompile.cmake)
 set_target_properties("${CODEGEN_TARGET}" PROPERTIES FOLDER "Engine" )
 
-add_dependencies(PiccoloRuntime "${CODEGEN_TARGET}")
+# add_dependencies(PiccoloRuntime "${CODEGEN_TARGET}")
 add_dependencies("${CODEGEN_TARGET}" "PiccoloParser")
