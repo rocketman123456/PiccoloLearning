@@ -16,13 +16,22 @@ namespace Piccolo
     void AssetManager::readTextFile(const std::filesystem::path& file_path, std::string& content)
     {
         std::ifstream fin(file_path, std::ios::in);
+        if(!fin)
+        {
+            LOG_ERROR("open file: {} failed!", file_path.generic_string());
+            return;
+        }
         content = {std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()};
     }
 
     void AssetManager::readBinaryFile(const std::filesystem::path& file_path, std::vector<unsigned char>& content)
     {
-        std::ifstream fin;
-        fin.open(file_path, std::ios::in | std::ios::binary);
+        std::ifstream fin(file_path, std::ios::in | std::ios::binary);
+        if(!fin)
+        {
+            LOG_ERROR("open file: {} failed!", file_path.generic_string());
+            return;
+        }
 
         size_t begin = fin.tellg();
         size_t end   = begin;
