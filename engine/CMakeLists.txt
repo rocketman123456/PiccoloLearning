@@ -47,6 +47,13 @@ else()
   message(FATAL_ERROR "Unknown Platform")
 endif()
 
+# if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/template/)
+# file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/template/" DESTINATION "${CMAKE_BINARY_DIR}/template")
+# endif()
+
+# if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/asset/)
+# file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/asset/" DESTINATION "${CMAKE_BINARY_DIR}/asset")
+# endif()
 
 set(SHADER_COMPILE_TARGET PiccoloShaderCompile)
 add_subdirectory(shader)

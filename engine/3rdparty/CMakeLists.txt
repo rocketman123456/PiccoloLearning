@@ -103,3 +103,13 @@ endif()
 if(NOT TARGET lua)
     include(lua.cmake)
 endif()
+
+if(NOT TARGET json11)
+    set(JSON_INCLUDE ${THIRD_PARTY_DIR}/json11)
+    add_library(json11 ${JSON_INCLUDE}/json11.cpp)
+    set_target_properties(json11 PROPERTIES FOLDER ${THIRD_PARTY_DIR}/json11)
+endif()
+
+if(NOT TARGET soloud)
+    include(soloud.cmake)
+endif()

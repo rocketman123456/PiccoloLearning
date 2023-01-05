@@ -6,6 +6,8 @@ CPM_*.cmake
 *.code-workspace
 *.patch
 !engine/3rdparty/JoltPhysics/Build
+!engine/3rdparty/miniaudio/examples/build
+!engine/3rdparty/soloud/build
 !engine/3rdparty/eigen
 
 # Visual Studio
