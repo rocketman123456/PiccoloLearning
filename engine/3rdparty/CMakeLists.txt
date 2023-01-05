@@ -31,15 +31,25 @@ endif()
 
 if(NOT TARGET eigen)
     option(BUILD_TESTING "" OFF)
+    option(EIGEN_TEST_CXX11 "" OFF)
     option(EIGEN_SPLIT_LARGE_TESTS "" OFF)
     add_subdirectory(eigen)
     set_target_properties(eigen PROPERTIES FOLDER ${third_party_folder}/eigen)
+    set_target_properties(uninstall PROPERTIES FOLDER ${third_party_folder}/eigen)
 endif()
 
 if(NOT TARGET tinyobjloader)
     add_subdirectory(tinyobjloader)
     set_target_properties(tinyobjloader PROPERTIES FOLDER ${third_party_folder}/tinyobjloader)
     set_target_properties(uninstall PROPERTIES FOLDER ${third_party_folder}/tinyobjloader)
+endif()
+
+if(NOT TARGET tinygltf)
+    option(TINYGLTF_BUILD_LOADER_EXAMPLE "" OFF)
+    option(TINYGLTF_INSTALL "" OFF)
+    add_subdirectory(tinygltf)
+    set_target_properties(tinygltf PROPERTIES FOLDER ${third_party_folder}/tinygltf)
+    set_target_properties(uninstall PROPERTIES FOLDER ${third_party_folder}/tinygltf)
 endif()
 
 if(NOT TARGET Jolt)
@@ -76,6 +86,10 @@ endif()
 
 if(NOT TARGET sol2)
     add_subdirectory(sol2-3.3.0)
+endif()
+
+if(NOT TARGET volk)
+    add_subdirectory(volk)
 endif()
 
 if(NOT TARGET glslang)
