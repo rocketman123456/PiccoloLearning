@@ -41,9 +41,7 @@ set_target_properties("${TARGET_NAME}" PROPERTIES FOLDER "Engine" )
 add_custom_target(COPY_SHADERS ALL  
   VERBATIM
   # COMMAND_EXPAND_LISTS
-  COMMAND ${CMAKE_COMMAND} -E make_directory "${BINARY_ROOT_DIR}/shader"
-  COMMAND ${CMAKE_COMMAND} -E make_directory "${BINARY_ROOT_DIR}/shader/include"
-  COMMAND ${CMAKE_COMMAND} -E make_directory "${BINARY_ROOT_DIR}/shader/glsl"
+  COMMAND ${CMAKE_COMMAND} -E remove_directory "${BINARY_ROOT_DIR}/shader"
   COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/include" "${BINARY_ROOT_DIR}/shader/include"
   COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/glsl" "${BINARY_ROOT_DIR}/shader/glsl"
 )

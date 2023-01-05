@@ -15,21 +15,21 @@ processed = False
 
 def processImage(path, name):
 	img = Image.open(os.path.join(path, name))
-	size = img.size[0] / 3 # splits the width of the image by 3, expecting the 3x2 layout blender produces.
-	# TODO : use correct split
-	splitAndSave(img, 0, 0, size, addToFilename(name, "_Y-"))
-	splitAndSave(img, size, 0, size, addToFilename(name, "_X-"))
-	splitAndSave(img, size * 2, 0, size, addToFilename(name, "_Y+"))
-	splitAndSave(img, 0, size, size, addToFilename(name, "_Z-"))
-	splitAndSave(img, size, size, size, addToFilename(name, "_Z+"))
-	splitAndSave(img, size * 2, size, size, addToFilename(name, "_X+"))
+	size_x = img.size[0] / 4 # splits the width of the image by 3, expecting the 3x2 layout blender produces.
+	size_y = img.size[1] / 3
+	splitAndSave(img, size_x, 		size_y, 	size_x, size_y, addToFilename(name, "_front_X+"))
+	splitAndSave(img, size_x * 3, 	size_y, 	size_x, size_y, addToFilename(name, "_back_X-"))
+	splitAndSave(img, size_x * 2, 	size_y, 	size_x, size_y, addToFilename(name, "_right_Y-"))
+	splitAndSave(img, 0, 			size_y, 	size_x, size_y, addToFilename(name, "_left_Y+"))
+	splitAndSave(img, size_x, 		size_y * 2,	size_x, size_y, addToFilename(name, "_bottom_Z-"))
+	splitAndSave(img, size_x, 		0, 			size_x, size_y, addToFilename(name, "_top_Z+"))
 
 def addToFilename(name, add):
 	name = name.split('.')
-	return name[0] + add + "." + name[1]
+	return name[0] + add + "." + "hdr" #name[1]
 
-def splitAndSave(img, startX, startY, size, name):
-	area = (startX, startY, startX + size, startY + size)
+def splitAndSave(img, startX, startY, size_x, size_y, name):
+	area = (startX, startY, startX + size_x, startY + size_y)
 	saveImage(img.crop(area), path, name)
 
 def saveImage(img, path, name):
