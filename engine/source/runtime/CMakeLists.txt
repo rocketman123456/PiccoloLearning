@@ -43,7 +43,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(${TARGET_NAME} PUBLIC json11)
 target_link_libraries(${TARGET_NAME} PUBLIC Jolt)
 target_link_libraries(${TARGET_NAME} PUBLIC glfw)
-target_link_libraries(${TARGET_NAME} PUBLIC volk::volk volk::volk_headers)
+target_link_libraries(${TARGET_NAME} PUBLIC volk::volk_headers) # volk::volk
 target_link_libraries(${TARGET_NAME} PUBLIC unofficial::vulkan-memory-allocator::vulkan-memory-allocator)
 target_link_libraries(${TARGET_NAME} PUBLIC 
   glslang::OSDependent 
@@ -67,16 +67,6 @@ target_include_directories(${TARGET_NAME} PUBLIC ${TINYGLTF_INCLUDE_DIRS})
 target_include_directories(${TARGET_NAME} PUBLIC ${LUA_INCLUDE_DIR})
 target_include_directories(${TARGET_NAME} PUBLIC ${JSON11_INCLUDE_DIRS})
 target_include_directories(${TARGET_NAME} PUBLIC ${JOLTPHYSICS_INCLUDE_DIRS})
-
-target_include_directories(
-  ${TARGET_NAME}
-  PUBLIC $<BUILD_INTERFACE:${json_include}>
-)
-
-target_include_directories(
-  ${TARGET_NAME}
-  PUBLIC $<BUILD_INTERFACE:${glslang_include}>
-)
 
 add_dependencies(${TARGET_NAME} ${SHADER_COMPILE_TARGET})
 target_include_directories(
@@ -105,8 +95,7 @@ target_include_directories(
 # ---- Create an installable target ----
 # this allows users to install and find the library via `find_package()`.
 
-# the location where the project's version header will be placed should match the project's regular
-# header paths
+# the location where the project's version header will be placed should match the project's regular header paths
 string(TOLOWER ${TARGET_NAME}/version.h VERSION_HEADER_LOCATION)
 
 # ## precompile

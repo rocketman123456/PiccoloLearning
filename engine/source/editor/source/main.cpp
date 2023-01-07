@@ -4,25 +4,28 @@
 
 #include "runtime/platform/file_system/vfs.h"
 
-#include <iostream>
-#include <string>
-#include <filesystem>
+#include "editor/include/vk_app.h"
 
 using namespace Piccolo;
 using namespace std;
 
-// https://gcc.gnu.org/onlinedocs/cpp/Stringizing.html
-#define PICCOLO_XSTR(s) PICCOLO_STR(s)
-#define PICCOLO_STR(s) #s
-
 int main(int argc, char** argv)
 {
-    std::filesystem::path executable_path(argv[0]);
-    std::filesystem::path config_file_path = executable_path.parent_path() / "PiccoloEditor.ini";
+    auto result = volkInitialize();
+    if(result != VK_SUCCESS)
+    {
+        printf("failed to load volk\n");
+        return -1;
+    }
 
-    g_runtime_global_context.startSystems(config_file_path);
+    HelloTriangleApplication app;
 
-    FSPtr fs = std::make_shared<FileSystem>(executable_path.parent_path(), "");
+    try {
+        app.run();
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

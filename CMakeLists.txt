@@ -14,6 +14,7 @@ set(BUILD_SHARED_LIBS OFF)
 
 include(CMakeDependentOption)
 
+find_package(LLVM CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)

@@ -59,5 +59,11 @@ add_custom_target(${PRECOMPILE_TARGET} ALL
 
   # ## BUILDING ====================================================================================
   COMMAND
-  ${CMAKE_COMMAND} -E echo "+++ Precompile finished +++"
+  ${CMAKE_COMMAND} -E echo "************************************************************* "
+  COMMAND
+  ${CMAKE_COMMAND} -E echo "**** [Precompile] Finish "
+  COMMAND
+  ${CMAKE_COMMAND} -E echo "************************************************************* "
+  COMMAND
+  ${CMAKE_COMMAND} -E echo ""
 )
