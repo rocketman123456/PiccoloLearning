@@ -1,5 +1,4 @@
 #pragma once
-
 #include "runtime/core/log/log_system.h"
 #include "runtime/function/global/global_context.h"
 
@@ -21,10 +20,6 @@
 #define PiccoloSleep(_ms) std::this_thread::sleep_for(std::chrono::milliseconds(_ms));
 
 #define PiccoloNameOf(name) #name
-
-#define _Interface_ class
-#define _implements_ public
-#define _inherits_ public
 
 #ifdef NDEBUG
 #define ASSERT(statement)

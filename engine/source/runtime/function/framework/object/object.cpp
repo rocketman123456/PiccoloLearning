@@ -1,13 +1,12 @@
 #include "runtime/function/framework/object/object.h"
 
-#include "runtime/engine.h"
+// #include "runtime/engine.h"
 
 #include "runtime/core/meta/reflection/reflection.h"
 
 #include "runtime/resource/asset_manager/asset_manager.h"
 
 #include "runtime/function/framework/component/component.h"
-#include "runtime/function/framework/component/transform/transform_component.h"
 #include "runtime/function/global/global_context.h"
 
 #include <cassert>
@@ -19,14 +18,7 @@ namespace Piccolo
 {
     bool shouldComponentTick(std::string component_type_name)
     {
-        if (g_is_editor_mode)
-        {
-            return g_editor_tick_component_types.find(component_type_name) != g_editor_tick_component_types.end();
-        }
-        else
-        {
-            return true;
-        }
+        return true;
     }
 
     GObject::~GObject()
@@ -105,7 +97,6 @@ namespace Piccolo
     {
         out_object_instance_res.m_name       = m_name;
         out_object_instance_res.m_definition = m_definition_url;
-
         out_object_instance_res.m_instanced_components = m_components;
     }
 

@@ -13,7 +13,7 @@ namespace Piccolo
         return std::filesystem::absolute(g_runtime_global_context.m_config_manager->getRootFolder() / relative_path);
     }
 
-    void AssetManager::readTextFile(const std::filesystem::path& file_path, std::string& content)
+    void AssetManager::readTextFile(const std::filesystem::path& file_path, std::string& content) const
     {
         std::ifstream fin(file_path, std::ios::in);
         if(!fin)
@@ -24,7 +24,7 @@ namespace Piccolo
         content = {std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()};
     }
 
-    void AssetManager::readBinaryFile(const std::filesystem::path& file_path, std::vector<unsigned char>& content)
+    void AssetManager::readBinaryFile(const std::filesystem::path& file_path, std::vector<unsigned char>& content) const
     {
         std::ifstream fin(file_path, std::ios::in | std::ios::binary);
         if(!fin)
@@ -33,17 +33,10 @@ namespace Piccolo
             return;
         }
 
-        size_t begin = fin.tellg();
-        size_t end   = begin;
-
-        fin.seekg(0, std::ios_base::end);
-        end = fin.tellg();
-        fin.seekg(0, std::ios_base::beg);
-
-        size_t file_size = 0;
-        file_size        = end - begin;
-
+        size_t file_size = fin.tellg();
         content.resize(file_size);
+
+        fin.seekg(0);
         fin.read(reinterpret_cast<char*>(content.data()), sizeof(file_size));
         fin.close();
     }

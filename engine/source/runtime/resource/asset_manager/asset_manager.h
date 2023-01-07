@@ -59,8 +59,8 @@ namespace Piccolo
             return true;
         }
 
-        void readTextFile(const std::filesystem::path& file_path, std::string& content);
-        void readBinaryFile(const std::filesystem::path& file_path, std::vector<unsigned char>& content);
+        void readTextFile(const std::filesystem::path& file_path, std::string& content) const;
+        void readBinaryFile(const std::filesystem::path& file_path, std::vector<unsigned char>& content) const;
 
         std::filesystem::path getFullPath(const std::string& relative_path) const;
     };
