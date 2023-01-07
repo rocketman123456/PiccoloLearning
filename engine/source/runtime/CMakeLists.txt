@@ -28,20 +28,8 @@ target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:
 target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX->")
 
 # Link dependencies
-target_link_libraries(${TARGET_NAME} PUBLIC spdlog::spdlog)
-# target_link_libraries(${TARGET_NAME} PRIVATE tinyobjloader tinygltf stb)
-# target_link_libraries(${TARGET_NAME} PUBLIC glfw)
 target_link_libraries(${TARGET_NAME} PUBLIC imgui)
-# target_link_libraries(${TARGET_NAME} PUBLIC Jolt)
-# target_link_libraries(${TARGET_NAME} PUBLIC lua_static sol2)
-# target_link_libraries(${TARGET_NAME} PUBLIC ${vulkan_lib})
-# target_link_libraries(${TARGET_NAME} PUBLIC volk)
-# target_link_libraries(${TARGET_NAME} PUBLIC zip lz4_static)
-# target_link_libraries(${TARGET_NAME} PUBLIC glslang SPIRV glslang-default-resource-limits)
-# target_link_libraries(${TARGET_NAME} PRIVATE $<BUILD_INTERFACE:json11>)
-# target_link_libraries(${TARGET_NAME} PUBLIC eigen)
 target_link_libraries(${TARGET_NAME} PUBLIC soloud)
-# target_link_libraries(${TARGET_NAME} PUBLIC json11)
 
 target_link_libraries(${TARGET_NAME} PUBLIC Eigen3::Eigen)
 target_link_libraries(${TARGET_NAME} PUBLIC fmt::fmt)
@@ -56,7 +44,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC json11)
 target_link_libraries(${TARGET_NAME} PUBLIC Jolt)
 target_link_libraries(${TARGET_NAME} PUBLIC glfw)
 target_link_libraries(${TARGET_NAME} PUBLIC volk::volk volk::volk_headers)
-target_link_libraries(${TARGET_NAME} PRIVATE unofficial::vulkan-memory-allocator::vulkan-memory-allocator)
+target_link_libraries(${TARGET_NAME} PUBLIC unofficial::vulkan-memory-allocator::vulkan-memory-allocator)
 target_link_libraries(${TARGET_NAME} PUBLIC 
   glslang::OSDependent 
   glslang::glslang 
@@ -80,20 +68,6 @@ target_include_directories(${TARGET_NAME} PUBLIC ${LUA_INCLUDE_DIR})
 target_include_directories(${TARGET_NAME} PUBLIC ${JSON11_INCLUDE_DIRS})
 target_include_directories(${TARGET_NAME} PUBLIC ${JOLTPHYSICS_INCLUDE_DIRS})
 
-# target_include_directories(
-#   ${TARGET_NAME}
-#   PUBLIC $<BUILD_INTERFACE:${vulkan_include}>)
-
-# target_include_directories(
-#   ${TARGET_NAME}
-#   PUBLIC $<BUILD_INTERFACE:${volk_include}>
-# )
-
-# target_include_directories(
-#   ${TARGET_NAME}
-#   PUBLIC $<BUILD_INTERFACE:${eigen_include}>
-# )
-
 target_include_directories(
   ${TARGET_NAME}
   PUBLIC $<BUILD_INTERFACE:${json_include}>
@@ -115,11 +89,6 @@ target_include_directories(
   PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/source>
   $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
 )
-
-# target_include_directories(
-#   ${TARGET_NAME}
-#   PUBLIC $<BUILD_INTERFACE:${THIRD_PARTY_DIR}/vulkanmemoryallocator/include>
-# )
 
 target_include_directories(
   ${TARGET_NAME}
