@@ -23,7 +23,7 @@ namespace Piccolo
 
         m_root->path        = m_virtual_path;
         m_root->rpath       = m_real_path;
-        m_root->file_system = FileSystem::shared_from_this();
+        m_root->file_system = shared_from_this();
         m_root->crc         = g_crc32.calculate(m_root->path.c_str());
 
         LOG_DEBUG("FS Root Block Path: {}", m_root->path.string());

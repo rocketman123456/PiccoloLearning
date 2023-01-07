@@ -20,8 +20,6 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${SOURCE_F
 # target: add_library(${TARGET_NAME} INTERFACE)
 add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 
-# target_compile_options(${TARGET_NAME} PRIVATE "-O2")
-
 set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 17)
 set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "Engine")
 
@@ -31,38 +29,70 @@ target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:
 
 # Link dependencies
 target_link_libraries(${TARGET_NAME} PUBLIC spdlog::spdlog)
-target_link_libraries(${TARGET_NAME} PRIVATE tinyobjloader tinygltf stb)
-target_link_libraries(${TARGET_NAME} PUBLIC glfw)
+# target_link_libraries(${TARGET_NAME} PRIVATE tinyobjloader tinygltf stb)
+# target_link_libraries(${TARGET_NAME} PUBLIC glfw)
 target_link_libraries(${TARGET_NAME} PUBLIC imgui)
-target_link_libraries(${TARGET_NAME} PUBLIC Jolt)
-target_link_libraries(${TARGET_NAME} PUBLIC lua_static sol2)
+# target_link_libraries(${TARGET_NAME} PUBLIC Jolt)
+# target_link_libraries(${TARGET_NAME} PUBLIC lua_static sol2)
 # target_link_libraries(${TARGET_NAME} PUBLIC ${vulkan_lib})
-target_link_libraries(${TARGET_NAME} PUBLIC volk)
+# target_link_libraries(${TARGET_NAME} PUBLIC volk)
+# target_link_libraries(${TARGET_NAME} PUBLIC zip lz4_static)
+# target_link_libraries(${TARGET_NAME} PUBLIC glslang SPIRV glslang-default-resource-limits)
+# target_link_libraries(${TARGET_NAME} PRIVATE $<BUILD_INTERFACE:json11>)
+# target_link_libraries(${TARGET_NAME} PUBLIC eigen)
 target_link_libraries(${TARGET_NAME} PUBLIC soloud)
-target_link_libraries(${TARGET_NAME} PUBLIC zip lz4_static)
-target_link_libraries(${TARGET_NAME} PUBLIC glslang SPIRV glslang-default-resource-limits)
-target_link_libraries(${TARGET_NAME} PRIVATE $<BUILD_INTERFACE:json11>)
-target_link_libraries(${TARGET_NAME} PUBLIC eigen)
-target_link_libraries(${TARGET_NAME} PUBLIC soloud)
+# target_link_libraries(${TARGET_NAME} PUBLIC json11)
 
-if(ENABLE_PHYSICS_DEBUG_RENDERER)
-  add_compile_definitions(ENABLE_PHYSICS_DEBUG_RENDERER)
-  target_link_libraries(${TARGET_NAME} PUBLIC TestFramework d3d12.lib shcore.lib)
-endif()
+target_link_libraries(${TARGET_NAME} PUBLIC Eigen3::Eigen)
+target_link_libraries(${TARGET_NAME} PUBLIC fmt::fmt)
+target_link_libraries(${TARGET_NAME} PUBLIC spdlog::spdlog spdlog::spdlog_header_only)
+target_link_libraries(${TARGET_NAME} PUBLIC tinyobjloader::tinyobjloader)
+target_link_libraries(${TARGET_NAME} PUBLIC sol2)
+target_link_libraries(${TARGET_NAME} PUBLIC ${LUA_LIBRARIES})
+target_link_libraries(${TARGET_NAME} PUBLIC libzip::zip)
+target_link_libraries(${TARGET_NAME} PUBLIC lz4::lz4)
+target_link_libraries(${TARGET_NAME} PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(${TARGET_NAME} PUBLIC json11)
+target_link_libraries(${TARGET_NAME} PUBLIC Jolt)
+target_link_libraries(${TARGET_NAME} PUBLIC glfw)
+target_link_libraries(${TARGET_NAME} PUBLIC volk::volk volk::volk_headers)
+target_link_libraries(${TARGET_NAME} PRIVATE unofficial::vulkan-memory-allocator::vulkan-memory-allocator)
+target_link_libraries(${TARGET_NAME} PUBLIC 
+  glslang::OSDependent 
+  glslang::glslang 
+  glslang::MachineIndependent 
+  glslang::GenericCodeGen 
+  glslang::OGLCompiler 
+  # glslang::glslangValidator 
+  # glslang::spirv-remap 
+  glslang::glslang-default-resource-limits 
+  glslang::SPVRemapper 
+  glslang::SPIRV 
+  glslang::HLSL
+)
+
+target_link_directories(${TARGET_NAME} PUBLIC "$<IF:$<CONFIG:Debug>,${JSON11_LIB_DEBUG_DIRS},${JSON11_LIB_DIRS}>")
+target_link_directories(${TARGET_NAME} PUBLIC "$<IF:$<CONFIG:Debug>,${JOLTPHYSICS_LIB_DEBUG_DIRS},${JOLTPHYSICS_LIB_DIRS}>")
+
+target_include_directories(${TARGET_NAME} PUBLIC ${STB_INCLUDE_DIRS})
+target_include_directories(${TARGET_NAME} PUBLIC ${TINYGLTF_INCLUDE_DIRS})
+target_include_directories(${TARGET_NAME} PUBLIC ${LUA_INCLUDE_DIR})
+target_include_directories(${TARGET_NAME} PUBLIC ${JSON11_INCLUDE_DIRS})
+target_include_directories(${TARGET_NAME} PUBLIC ${JOLTPHYSICS_INCLUDE_DIRS})
 
 # target_include_directories(
 #   ${TARGET_NAME}
 #   PUBLIC $<BUILD_INTERFACE:${vulkan_include}>)
 
-target_include_directories(
-  ${TARGET_NAME}
-  PUBLIC $<BUILD_INTERFACE:${volk_include}>
-)
+# target_include_directories(
+#   ${TARGET_NAME}
+#   PUBLIC $<BUILD_INTERFACE:${volk_include}>
+# )
 
-target_include_directories(
-  ${TARGET_NAME}
-  PUBLIC $<BUILD_INTERFACE:${eigen_include}>
-)
+# target_include_directories(
+#   ${TARGET_NAME}
+#   PUBLIC $<BUILD_INTERFACE:${eigen_include}>
+# )
 
 target_include_directories(
   ${TARGET_NAME}
@@ -86,10 +116,10 @@ target_include_directories(
   $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
 )
 
-target_include_directories(
-  ${TARGET_NAME}
-  PUBLIC $<BUILD_INTERFACE:${THIRD_PARTY_DIR}/vulkanmemoryallocator/include>
-)
+# target_include_directories(
+#   ${TARGET_NAME}
+#   PUBLIC $<BUILD_INTERFACE:${THIRD_PARTY_DIR}/vulkanmemoryallocator/include>
+# )
 
 target_include_directories(
   ${TARGET_NAME}

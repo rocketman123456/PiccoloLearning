@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/bin/PiccoloEditor.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/bin/",
+            "cwd": "${workspaceFolder}/bin",
             "environment": [],
             "console": "integratedTerminal"
         },
@@ -21,7 +21,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/bin/PiccoloEditor",
             "args": [],
-            "cwd": "${workspaceFolder}/bin"
+            "cwd": "${workspaceFolder}/bin",
+            "terminal": "integrated"
         }
     ]
 }

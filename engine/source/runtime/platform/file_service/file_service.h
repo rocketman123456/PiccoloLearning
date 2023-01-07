@@ -5,7 +5,7 @@
 
 namespace Piccolo
 {
-    class FileSystem
+    class FileService
     {
     public:
         std::vector<std::filesystem::path> getFiles(const std::filesystem::path& directory);

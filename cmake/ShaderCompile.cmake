@@ -5,9 +5,9 @@ function(compile_shader SHADERS TARGET_NAME SHADER_INCLUDE_FOLDER GENERATED_DIR 
     set(ALL_GENERATED_SPV_FILES "")
     set(ALL_GENERATED_CPP_FILES "")
 
-    if(UNIX)
-        execute_process(COMMAND chmod a+x ${GLSLANG_BIN})
-    endif()
+    # if(UNIX)
+    #     execute_process(COMMAND chmod a+x ${GLSLANG_BIN})
+    # endif()
 
     foreach(SHADER ${SHADERS})
     # Prepare a header name and a global variable for this shader

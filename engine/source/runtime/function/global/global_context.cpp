@@ -26,7 +26,7 @@ namespace Piccolo
         m_config_manager = std::make_shared<ConfigManager>();
         m_config_manager->initialize(config_file_path);
 
-        m_file_system = std::make_shared<FileSystem>();
+        m_file_service = std::make_shared<FileService>();
 
         m_logger_system = std::make_shared<LogSystem>();
 
@@ -85,7 +85,7 @@ namespace Piccolo
 
         m_logger_system.reset();
 
-        m_file_system.reset();
+        m_file_service.reset();
 
         m_config_manager.reset();
     }

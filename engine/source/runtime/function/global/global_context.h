@@ -8,7 +8,7 @@ namespace Piccolo
     class LogSystem;
     // class PhysicsManager;
     // class InputSystem;
-    class FileSystem;
+    class FileService;
     class AssetManager;
     class ConfigManager;
     // class WorldManager;
@@ -31,7 +31,7 @@ namespace Piccolo
 
     public:
         std::shared_ptr<LogSystem>         m_logger_system;
-        std::shared_ptr<FileSystem>        m_file_system;
+        std::shared_ptr<FileService>       m_file_service;
         std::shared_ptr<AssetManager>      m_asset_manager;
         std::shared_ptr<ConfigManager>     m_config_manager;
         // std::shared_ptr<WorldManager>      m_world_manager;

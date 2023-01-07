@@ -2,8 +2,7 @@
 
 #include "runtime/core/base/string_utils.h"
 
-#include "runtime/platform/file_system/basic/file_system.h"
-#include "runtime/platform/file_system/basic/fs_utils.h"
+#include "runtime/platform/file_system/vfs.h"
 
 #include <iostream>
 #include <string>
@@ -23,7 +22,7 @@ int main(int argc, char** argv)
 
     g_runtime_global_context.startSystems(config_file_path);
 
-    FSPtr fs = std::make_shared<FileSystem>("", executable_path.parent_path());
+    FSPtr fs = std::make_shared<FileSystem>(executable_path.parent_path(), "");
 
     return 0;
 }
