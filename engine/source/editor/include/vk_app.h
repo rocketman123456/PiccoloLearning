@@ -71,9 +71,20 @@ private:
         const char** glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-        createInfo.enabledExtensionCount = glfwExtensionCount;
-        createInfo.ppEnabledExtensionNames = glfwExtensions;
+        std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
+#if defined(__MACH__)
+        // https://www.appsloveworld.com/cplus/100/939/why-does-vkcreateinstance-return-vk-error-incompatible-driver-on-macos-despite
+        extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+        extensions.push_back("VK_KHR_portability_enumeration");
+#endif
+
+        createInfo.enabledExtensionCount = extensions.size();
+        createInfo.ppEnabledExtensionNames = extensions.data();
+
+#if defined(__MACH__)
+        createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#endif
         createInfo.enabledLayerCount = 0;
 
         auto result = vkCreateInstance(&createInfo, nullptr, &instance);

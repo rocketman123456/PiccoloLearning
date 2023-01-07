@@ -53,6 +53,10 @@ endif()
 
 target_link_libraries(${TARGET_NAME} ${LLVM_clang_lib})
 
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "$<TARGET_FILE_DIR:${TARGET_NAME}>/" "${ENGINE_ROOT_DIR}/bin"
+)
+
 # copy resources on post build
 add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     # mustache templates directory
