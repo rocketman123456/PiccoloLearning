@@ -21,6 +21,7 @@ namespace Piccolo
 
     private:
         static VBlockPtr createVirtualBlock(VBlockPtr& parent, const std::vector<std::string>& dirs, int32_t level);
+        static VBlockPtr findVirtualBlock(const VBlockPtr& root, const std::vector<std::string>& dirs, int32_t level);
         static VBlockPtr findDeepestExistVirtualBlock(const VBlockPtr& root, const std::vector<std::string>& dirs, int32_t level);
         static VNodePtr  findVirtualNode(const VBlockPtr& root, const std::vector<std::string>& dirs, const std::string& name);
     };

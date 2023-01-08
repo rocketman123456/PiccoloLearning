@@ -4,31 +4,25 @@
 
 #include "runtime/platform/file_system/vfs.h"
 
-#include "editor/include/vk_app.h"
+#include "runtime/engine.h"
 
 using namespace Piccolo;
 using namespace std;
 
 int main(int argc, char** argv)
 {
-    auto result = volkInitialize();
-    if (result != VK_SUCCESS)
-    {
-        printf("failed to load volk\n");
-        return -1;
-    }
+    std::filesystem::path executable_path(argv[0]);
+    std::filesystem::path config_file_path = executable_path.parent_path() / "PiccoloEditor.ini";
 
-    HelloTriangleApplication app;
+    Piccolo::PiccoloEngine* engine = new Piccolo::PiccoloEngine();
 
-    try
-    {
-        app.run();
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << e.what() << std::endl;
-        return EXIT_FAILURE;
-    }
+    engine->startEngine(config_file_path.generic_string());
+    engine->initialize();
 
-    return EXIT_SUCCESS;
+    engine->run();
+
+    engine->clear();
+    engine->shutdownEngine();
+
+    return 0;
 }

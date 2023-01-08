@@ -6,14 +6,14 @@
 namespace Piccolo
 {
     class LogSystem;
-    // class PhysicsManager;
-    // class InputSystem;
     class FileService;
     class AssetManager;
     class ConfigManager;
+    // class PhysicsManager;
+    // class InputSystem;
     // class WorldManager;
     // class RenderSystem;
-    // class WindowSystem;
+    class WindowSystem;
     // class ParticleManager;
     // class DebugDrawManager;
     // class RenderDebugConfig;
@@ -37,7 +37,7 @@ namespace Piccolo
         // std::shared_ptr<WorldManager>      m_world_manager;
         // std::shared_ptr<PhysicsManager>    m_physics_manager;
         // std::shared_ptr<InputSystem>       m_input_system;
-        // std::shared_ptr<WindowSystem>      m_window_system;
+        std::shared_ptr<WindowSystem>      m_window_system;
         // std::shared_ptr<RenderSystem>      m_render_system;
         // std::shared_ptr<ParticleManager>   m_particle_manager;
         // std::shared_ptr<DebugDrawManager>  m_debugdraw_manager;

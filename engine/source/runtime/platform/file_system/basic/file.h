@@ -47,11 +47,11 @@ namespace Piccolo
 
         virtual std::shared_ptr<VNode> vnode() const = 0;
 
-        virtual std::filesystem::path virtualPath() const = 0;
-        virtual std::filesystem::path realPath() const    = 0;
+        virtual std::filesystem::path vpath() const = 0;
+        virtual std::filesystem::path rpath() const = 0;
 
-        virtual void Open(Mode mode) = 0;
-        virtual void Close()         = 0;
+        virtual void open(Mode mode) = 0;
+        virtual void close()         = 0;
 
         virtual bool isOpened() const   = 0;
         virtual bool isReadOnly() const = 0;

@@ -9,6 +9,8 @@
 
 namespace Piccolo
 {
+    std::string preprocessFilePath(const std::string& path) { return ""; }
+
     VBlockPtr FSUtils::createVirtualBlock(VBlockPtr& parent, const std::vector<std::string>& dirs, int32_t level)
     {
         if (parent == nullptr)
@@ -114,15 +116,95 @@ namespace Piccolo
         }
     }
 
-    VBlockPtr FSUtils::findVirtualBlock(FSPtr root, const std::filesystem::path& path) { return nullptr; }
+    VBlockPtr FSUtils::findVirtualBlock(const VBlockPtr& root, const std::vector<std::string>& dirs, int32_t level)
+    {
+        // check invalid status
+        if (dirs.size() == 0)
+            return root;
+        if (root == nullptr)
+            return nullptr;
+        if (level == dirs.size())
+            return root;
+        // find if dir exist
+        auto found = root->sub_blocks.find(dirs[level]);
+        // if not exist, return null
+        if (found == root->sub_blocks.end())
+        {
+            return nullptr;
+        }
+        // check return or go deeper
+        VBlockPtr sub_block = found->second;
+        return findVirtualBlock(sub_block, dirs, level + 1);
+    }
 
-    VBlockPtr FSUtils::findDeepestExistVirtualBlock(const VBlockPtr& root, const std::vector<std::string>& dirs, int32_t level) { return nullptr; }
+    VBlockPtr FSUtils::findVirtualBlock(FSPtr root, const std::filesystem::path& path)
+    {
+        if (root == nullptr)
+            return nullptr;
+        auto                     dir = replace_all(path.string(), "\\", "/");
+        std::vector<std::string> dir_stack;
+        split_single_char(dir, '/', dir_stack);
+        auto block = findVirtualBlock(root->getRoot(), dir_stack, 0);
+        return block;
+    }
 
-    VBlockPtr FSUtils::findDeepestExistVirtualBlock(FSPtr root, const std::filesystem::path& path) { return nullptr; }
+    VBlockPtr FSUtils::findDeepestExistVirtualBlock(const VBlockPtr& root, const std::vector<std::string>& dirs, int32_t level)
+    {
+        // check invalid status
+        if (dirs.size() == 0)
+            return root;
+        if (root == nullptr)
+            return nullptr;
+        if (level == dirs.size())
+            return root;
+        // find if dir exist
+        auto found = root->sub_blocks.find(dirs[level]);
+        // we reach deepest dir
+        if (found == root->sub_blocks.end())
+        {
+            return root;
+        }
+        // check return or go deeper
+        VBlockPtr sub_block = found->second;
+        return findDeepestExistVirtualBlock(sub_block, dirs, level + 1);
+    }
 
-    VNodePtr FSUtils::findVirtualNode(const VBlockPtr& root, const std::vector<std::string>& dirs, const std::string& name) { return nullptr; }
+    VBlockPtr FSUtils::findDeepestExistVirtualBlock(FSPtr root, const std::filesystem::path& path)
+    {
+        auto                     dir = replace_all(path.string(), "\\", "/");
+        std::vector<std::string> dir_stack;
+        split_single_char(dir, '/', dir_stack);
+        auto block = findDeepestExistVirtualBlock(root->getRoot(), dir_stack, 0);
+        return block;
+    }
 
-    VNodePtr FSUtils::findVirtualNode(FSPtr root, const std::filesystem::path& path, const std::string& name) { return nullptr; }
+    VNodePtr FSUtils::findVirtualNode(const VBlockPtr& root, const std::vector<std::string>& dirs, const std::string& name)
+    {
+        auto block = findVirtualBlock(root, dirs, 0);
+        if (block == nullptr)
+            return nullptr;
+        // find target file
+        auto found = block->sub_nodes.find(name);
+        if (found == block->sub_nodes.end())
+            return nullptr;
+        else
+            return found->second;
+    }
 
-    VNodePtr FSUtils::findVirtualNode(FSPtr root, const std::filesystem::path& file_path) { return nullptr; }
+    VNodePtr FSUtils::findVirtualNode(FSPtr root, const std::filesystem::path& path, const std::string& name)
+    {
+        auto                     dir = replace_all(path.string(), "\\", "/");
+        std::vector<std::string> dir_stack;
+        split_single_char(dir, '/', dir_stack);
+        return findVirtualNode(root->getRoot(), dir_stack, name);
+    }
+
+    VNodePtr FSUtils::findVirtualNode(FSPtr root, const std::filesystem::path& file_path)
+    {
+        auto        dir = replace_all(file_path.string(), "\\", "/");
+        std::string dir;
+        std::string file_name;
+        split_last_single_char(dir, '/', dir, file_name);
+        return findVirtualNode(root, dir, file_name);
+    }
 } // namespace Piccolo

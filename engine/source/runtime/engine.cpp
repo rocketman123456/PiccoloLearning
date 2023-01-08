@@ -10,7 +10,7 @@
 // #include "runtime/function/physics/physics_manager.h"
 // #include "runtime/function/render/debugdraw/debug_draw_manager.h"
 // #include "runtime/function/render/render_system.h"
-// #include "runtime/function/render/window_system.h"
+#include "runtime/function/render/window_system.h"
 
 #include "runtime/function/framework/ecs/coordinator.h"
 
@@ -42,14 +42,14 @@ namespace Piccolo
 
     void PiccoloEngine::run()
     {
-        // std::shared_ptr<WindowSystem> window_system = g_runtime_global_context.m_window_system;
-        // ASSERT(window_system);
+        std::shared_ptr<WindowSystem> window_system = g_runtime_global_context.m_window_system;
+        ASSERT(window_system);
 
-        // while (!window_system->shouldClose())
-        // {
-        //     const float delta_time = calculateDeltaTime();
-        //     tickOneFrame(delta_time);
-        // }
+        while (!window_system->shouldClose())
+        {
+            const float delta_time = calculateDeltaTime();
+            tickOneFrame(delta_time);
+        }
     }
 
     float PiccoloEngine::calculateDeltaTime()
@@ -82,10 +82,10 @@ namespace Piccolo
 
         rendererTick(delta_time);
 
-        // g_runtime_global_context.m_window_system->pollEvents();
-        // g_runtime_global_context.m_window_system->setTitle(std::string("Piccolo - " + std::to_string(getFPS()) + " FPS").c_str());
+        g_runtime_global_context.m_window_system->pollEvents();
+        g_runtime_global_context.m_window_system->setTitle(std::string("Piccolo - " + std::to_string(getFPS()) + " FPS").c_str());
 
-        const bool should_window_close = true; //g_runtime_global_context.m_window_system->shouldClose();
+        const bool should_window_close = g_runtime_global_context.m_window_system->shouldClose();
         return !should_window_close;
     }
 
@@ -102,7 +102,8 @@ namespace Piccolo
     }
 
     const float PiccoloEngine::s_fps_alpha = 1.f / 100;
-    void        PiccoloEngine::calculateFPS(float delta_time)
+
+    void PiccoloEngine::calculateFPS(float delta_time)
     {
         m_frame_count++;
 

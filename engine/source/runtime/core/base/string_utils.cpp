@@ -64,6 +64,21 @@ namespace Piccolo
         }
     }
 
+    void split_last_single_char(const std::string& name, const char token, std::string& first, std::string& second)
+    {
+        std::size_t found = name.rfind(token);
+        if (found != std::string::npos)
+        {
+            first  = name.substr(0, found);
+            second = name.substr(found + 1, name.length() - found - 1);
+        }
+        else
+        {
+            first  = "";
+            second = name;
+        }
+    }
+
     std::string replace_all(const std::string& target, const std::string& from, const std::string& to)
     {
         std::string copy = target;
