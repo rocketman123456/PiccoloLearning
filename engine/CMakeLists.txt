@@ -5,20 +5,6 @@ set(ENGINE_ASSET_DIR "/asset")
 set(DEPLOY_CONFIG_DIR "configs/deployment")
 set(DEVELOP_CONFIG_DIR "configs/development")
 
-option(ENABLE_PHYSICS_DEBUG_RENDERER "Enable Physics Debug Renderer" OFF)
-
-# only support physics debug render at windows platform
-if(NOT WIN32)
-  if(ENABLE_PHYSICS_DEBUG_RENDERER)
-    message(WARNING "Disable Physics Debug Renderer")
-    set(ENABLE_PHYSICS_DEBUG_RENDERER OFF CACHE BOOL "" FORCE)
-  endif()
-endif()
-
-if(ENABLE_PHYSICS_DEBUG_RENDERER)
-  set(JOLT_ASSET_DIR "/jolt-asset")
-endif()
-
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_compile_options("/MP")
     set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT PiccoloEditor)
