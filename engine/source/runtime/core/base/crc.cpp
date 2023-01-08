@@ -39,8 +39,6 @@ namespace Piccolo
         return calculate((const uint8_t*)string, length);
     }
 
-    uint8_t CRC8::calculate(const std::vector<uint8_t>& data) { return calculate(data.data(), data.size()); }
-
     uint8_t CRC8::calculate(const uint8_t* data, const int length)
     {
         uint8_t crc  = this->init_value;
@@ -136,8 +134,6 @@ namespace Piccolo
         return calculate((const uint8_t*)string, length);
     }
 
-    uint16_t CRC16::calculate(const std::vector<uint8_t>& data) { return calculate(data.data(), data.size()); }
-
     uint16_t CRC16::calculate(const uint8_t* data, const int length)
     {
         uint16_t crc  = this->init_value;
@@ -231,8 +227,6 @@ namespace Piccolo
         auto length = strlen(string);
         return calculate((const uint8_t*)string, length);
     }
-
-    uint32_t CRC32::calculate(const std::vector<uint8_t>& data) { return calculate(data.data(), data.size()); }
 
     uint32_t CRC32::calculate(const uint8_t* data, const int length)
     {

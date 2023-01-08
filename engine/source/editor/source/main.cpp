@@ -12,7 +12,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
     auto result = volkInitialize();
-    if(result != VK_SUCCESS)
+    if (result != VK_SUCCESS)
     {
         printf("failed to load volk\n");
         return -1;
@@ -20,9 +20,12 @@ int main(int argc, char** argv)
 
     HelloTriangleApplication app;
 
-    try {
+    try
+    {
         app.run();
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e)
+    {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }

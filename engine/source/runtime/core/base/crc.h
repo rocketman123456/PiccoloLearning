@@ -19,7 +19,6 @@ namespace Piccolo
     public:
         uint8_t calculate(const char* string);
         uint8_t calculate(const uint8_t* data_in, const int length);
-        uint8_t calculate(const std::vector<uint8_t>& data);
         void    printLookupTable();
 
     private:
@@ -102,7 +101,6 @@ namespace Piccolo
     public:
         uint16_t calculate(const char* string);
         uint16_t calculate(const uint8_t* data_in, const int length);
-        uint16_t calculate(const std::vector<uint8_t>& data);
         void     printLookupTable();
 
     private:
@@ -269,7 +267,6 @@ namespace Piccolo
     public:
         uint32_t calculate(const char* string);
         uint32_t calculate(const uint8_t* data_in, const int length);
-        uint32_t calculate(const std::vector<uint8_t>& data);
         void     printLookupTable();
 
     private:

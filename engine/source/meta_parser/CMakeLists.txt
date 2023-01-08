@@ -39,7 +39,7 @@ target_include_directories(${TARGET_NAME} PRIVATE ${LLVM_INCLUDE_DIRS})
 # link_directories(${LLVM_LIBRARY_DIR})
 if(CMAKE_HOST_WIN32)
     set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} /O2 /Ob2")
-    set(LLVM_clang_lib ${LLVM_LIBRARY_DIRS}/libclang.dll)
+    set(LLVM_clang_lib ${LLVM_LIBRARY_DIRS}/libclang.lib)
 elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Linux")
     set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O3")
     set(LLVM_clang_lib ${LLVM_LIBRARY_DIRS}/libclang.so)
@@ -52,6 +52,8 @@ else()
 endif()
 
 target_link_libraries(${TARGET_NAME} ${LLVM_clang_lib})
+# link_libraries(${LLVM_LIBRARY_DIRS})
+# target_link_libraries(${TARGET_NAME} clang)
 
 add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory "$<TARGET_FILE_DIR:${TARGET_NAME}>/" "${ENGINE_ROOT_DIR}/bin"

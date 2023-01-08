@@ -26,7 +26,7 @@ namespace Piccolo
             block->path        = parent->path.string() + "/" + block->name;
             block->rpath       = parent->rpath.string() + "/" + block->name;
             block->file_system = parent->file_system;
-            block->crc         = g_crc32.calculate(block->path.c_str());
+            block->crc         = g_crc32.calculate((const char*)block->path.c_str());
 
             block->file_system->m_changed   = true;
             parent->sub_blocks[block->name] = block;
@@ -99,7 +99,7 @@ namespace Piccolo
                 node->path  = block->path.string() + "/" + file_name;
                 node->rpath = block->rpath.string() + "/" + file_name;
                 node->block = block;
-                node->crc   = g_crc32.calculate(node->path.c_str());
+                node->crc   = g_crc32.calculate((const char*)node->path.c_str());
 
                 block->file_system->m_changed = true;
                 block->sub_nodes[file_name]   = node;
@@ -114,15 +114,15 @@ namespace Piccolo
         }
     }
 
-    VBlockPtr FSUtils::findVirtualBlock(FSPtr root, const std::filesystem::path& path) {}
+    VBlockPtr FSUtils::findVirtualBlock(FSPtr root, const std::filesystem::path& path) { return nullptr; }
 
-    VBlockPtr FSUtils::findDeepestExistVirtualBlock(const VBlockPtr& root, const std::vector<std::string>& dirs, int32_t level) {}
+    VBlockPtr FSUtils::findDeepestExistVirtualBlock(const VBlockPtr& root, const std::vector<std::string>& dirs, int32_t level) { return nullptr; }
 
-    VBlockPtr FSUtils::findDeepestExistVirtualBlock(FSPtr root, const std::filesystem::path& path) {}
+    VBlockPtr FSUtils::findDeepestExistVirtualBlock(FSPtr root, const std::filesystem::path& path) { return nullptr; }
 
-    VNodePtr FSUtils::findVirtualNode(const VBlockPtr& root, const std::vector<std::string>& dirs, const std::string& name) {}
+    VNodePtr FSUtils::findVirtualNode(const VBlockPtr& root, const std::vector<std::string>& dirs, const std::string& name) { return nullptr; }
 
-    VNodePtr FSUtils::findVirtualNode(FSPtr root, const std::filesystem::path& path, const std::string& name) {}
+    VNodePtr FSUtils::findVirtualNode(FSPtr root, const std::filesystem::path& path, const std::string& name) { return nullptr; }
 
-    VNodePtr FSUtils::findVirtualNode(FSPtr root, const std::filesystem::path& file_path) {}
+    VNodePtr FSUtils::findVirtualNode(FSPtr root, const std::filesystem::path& file_path) { return nullptr; }
 } // namespace Piccolo
