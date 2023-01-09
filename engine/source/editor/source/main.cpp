@@ -2,6 +2,11 @@
 
 #include "runtime/core/base/string_utils.h"
 
+#include "runtime/core/memory/simple_allocator.h"
+#include "runtime/core/memory/pool_allocator.h"
+#include "runtime/core/memory/cache_aligned_allocator.h"
+#include "runtime/core/memory/huge_page_allocator.h"
+
 #include "runtime/platform/file_system/vfs.h"
 
 #include "runtime/engine.h"
@@ -16,13 +21,19 @@ int main(int argc, char** argv)
 
     Piccolo::PiccoloEngine* engine = new Piccolo::PiccoloEngine();
 
-    engine->startEngine(config_file_path.generic_string());
-    engine->initialize();
+    // engine->startEngine(config_file_path.generic_string());
+    // engine->initialize();
 
-    engine->run();
+    // engine->run();
 
-    engine->clear();
-    engine->shutdownEngine();
+    // engine->clear();
+    // engine->shutdownEngine();
+
+    std::vector<int, SimpleAllocator<int>> vec;
+    for(int i = 0; i < 100; ++i)
+    {
+        vec.emplace_back(i);
+    }
 
     return 0;
 }

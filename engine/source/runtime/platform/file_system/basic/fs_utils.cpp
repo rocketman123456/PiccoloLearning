@@ -201,10 +201,10 @@ namespace Piccolo
 
     VNodePtr FSUtils::findVirtualNode(FSPtr root, const std::filesystem::path& file_path)
     {
-        auto        dir = replace_all(file_path.string(), "\\", "/");
+        auto        path = replace_all(file_path.string(), "\\", "/");
         std::string dir;
         std::string file_name;
-        split_last_single_char(dir, '/', dir, file_name);
+        split_last_single_char(path, '/', dir, file_name);
         return findVirtualNode(root, dir, file_name);
     }
 } // namespace Piccolo

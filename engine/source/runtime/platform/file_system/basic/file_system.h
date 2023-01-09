@@ -46,7 +46,8 @@ namespace Piccolo
         size_t  writeFile(FilePtr& file, const FileBuffer& data) { return 0; }
 
         // // Virtual Functions --------------------------------------------------------------
-        virtual bool isReadOnly() const { return false; }
+        virtual bool isReadOnly() const { return true; }
+
         // For File System
         virtual bool createFile(const std::filesystem::path& file_path);
         virtual bool deleteFile(const std::filesystem::path& file_path);
