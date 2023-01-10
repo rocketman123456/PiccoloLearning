@@ -4,6 +4,9 @@
 #include <array>
 #include <limits>
 
+#define BLOCK_SIZE (4096)
+#define CACHE_L1_LINE_SIZE (64)
+
 namespace Piccolo
 {
     void buddy_init(void* space, int block_num); // allocate buddy
@@ -24,10 +27,12 @@ namespace Piccolo
         {
             Node* m_Next;
         };
+
         struct alignas(std::max_align_t) Header
         {
             std::size_t m_Size;
         };
+
         static constexpr std::size_t                                               s_Log2Header = Log2(sizeof(Header));
         std::array<Node*, std::numeric_limits<std::size_t>::digits - s_Log2Header> m_Buckets    = {};
 

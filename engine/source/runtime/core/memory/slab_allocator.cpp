@@ -47,12 +47,12 @@ namespace Piccolo
     /*
     ERROR CODES: (error_cod value)
     0 - no error
-    1 - invalid arguments in function kmem_cache_create
+    1 - invalid arguments in function slab_mem_cache_create
     2 - no enough space for allocating new slab
     3 - users don't have access to cache_cache
-    4 - nullpointer argument passed to func kmem_cache_error
-    5 - cache passed by func kmem_cache_destroy does not exists in cache_cache
-    6 - object passed by func kmem_cache_free does not exists in cache_cache
+    4 - nullpointer argument passed to func slab_mem_cache_error
+    5 - cache passed by func slab_mem_cache_destroy does not exists in cache_cache
+    6 - object passed by func slab_mem_cache_free does not exists in cache_cache
     7 - invalid pointer passed for object dealocation
     */
 
@@ -68,13 +68,13 @@ namespace Piccolo
         kmem_cache_t* curr = allCaches;
         while (curr != nullptr)
         {
-            kmem_cache_info(curr);
+            slab_mem_cache_info(curr);
             cout << endl;
             curr = curr->next;
         }
     }
 
-    void kmem_init(void* space, int block_num)
+    void slab_mem_init(void* space, int block_num)
     {
         buddy_init(space, block_num);
 
@@ -139,7 +139,7 @@ namespace Piccolo
         allCaches = &cache_cache;
     }
 
-    kmem_cache_t* kmem_cache_create(const char* name, size_t size, void (*ctor)(void*), void (*dtor)(void*)) // Allocate cache
+    kmem_cache_t* slab_mem_cache_create(const char* name, size_t size, void (*ctor)(void*), void (*dtor)(void*)) // Allocate cache
     {
         if (name == nullptr || *name == '\0' || (long)size <= 0)
         {
@@ -330,7 +330,7 @@ namespace Piccolo
         return ret;
     }
 
-    int kmem_cache_shrink(kmem_cache_t* cachep) // Shrink cache
+    int slab_mem_cache_shrink(kmem_cache_t* cachep) // Shrink cache
     {
         if (cachep == nullptr)
             return 0;
@@ -357,7 +357,7 @@ namespace Piccolo
         return blocksFreed;
     }
 
-    void* kmem_cache_alloc(kmem_cache_t* cachep) // Allocate one object from cache
+    void* slab_mem_cache_alloc(kmem_cache_t* cachep) // Allocate one object from cache
     {
         if (cachep == nullptr || *cachep->name == '\0')
             return nullptr;
@@ -457,7 +457,7 @@ namespace Piccolo
         return retObject;
     }
 
-    void kmem_cache_free(kmem_cache_t* cachep, void* objp) // Deallocate one object from cache
+    void slab_mem_cache_free(kmem_cache_t* cachep, void* objp) // Deallocate one object from cache
     {
         if (cachep == nullptr || *cachep->name == '\0' || objp == nullptr)
             return;
@@ -578,7 +578,7 @@ namespace Piccolo
         }
     }
 
-    void* kmalloc(size_t size) // Alloacate one small memory buffer
+    void* slab_malloc(size_t size) // Alloacate one small memory buffer
     {
         if (size < 32 || size > 131072)
             return nullptr;
@@ -596,9 +596,9 @@ namespace Piccolo
         sprintf_s(num, "%d", j);
         strcat_s(name, num);
 
-        kmem_cache_t* buffCachep = kmem_cache_create(name, j, nullptr, nullptr);
+        kmem_cache_t* buffCachep = slab_mem_cache_create(name, j, nullptr, nullptr);
 
-        buff = kmem_cache_alloc(buffCachep);
+        buff = slab_mem_cache_alloc(buffCachep);
 
         return buff;
     }
@@ -640,7 +640,7 @@ namespace Piccolo
         return nullptr;
     }
 
-    void kfree(const void* objp) // Deallocate one small memory buffer
+    void slab_free(const void* objp) // Deallocate one small memory buffer
     {
         if (objp == nullptr)
             return;
@@ -650,13 +650,13 @@ namespace Piccolo
         if (buffCachep == nullptr)
             return;
 
-        kmem_cache_free(buffCachep, (void*)objp);
+        slab_mem_cache_free(buffCachep, (void*)objp);
 
         if (buffCachep->slabs_free != nullptr) // shrink buffer-s cache (save memory if usage is low)
-            kmem_cache_shrink(buffCachep);
+            slab_mem_cache_shrink(buffCachep);
     }
 
-    void kmem_cache_destroy(kmem_cache_t* cachep) // Deallocate cache
+    void slab_mem_cache_destroy(kmem_cache_t* cachep) // Deallocate cache
     {
         if (cachep == nullptr || *cachep->name == '\0')
             return;
@@ -844,7 +844,7 @@ namespace Piccolo
         }
     }
 
-    void kmem_cache_info(kmem_cache_t* cachep) // Print cache info
+    void slab_mem_cache_info(kmem_cache_t* cachep) // Print cache info
     {
         lock_guard<mutex> guard1(cout_mutex);
 
@@ -894,7 +894,7 @@ namespace Piccolo
              << "Percentage occupancy of cache:\t" << perc << " %" << endl;
     }
 
-    int kmem_cache_error(kmem_cache_t* cachep) // Print error message
+    int slab_mem_cache_error(kmem_cache_t* cachep) // Print error message
     {
         lock_guard<mutex> guard1(cout_mutex);
 
@@ -918,7 +918,7 @@ namespace Piccolo
         switch (error_code)
         {
             case 1:
-                cout << "Invalid arguments passed in function kmem_cache_create" << endl;
+                cout << "Invalid arguments passed in function slab_mem_cache_create" << endl;
                 break;
             case 2:
                 cout << "No enough space for allocating new slab" << endl;
@@ -927,13 +927,13 @@ namespace Piccolo
                 cout << "Access to cache_cache isn't allowed" << endl;
                 break;
             case 4:
-                cout << "NullPointer argument passed to func kmem_cache_error" << endl;
+                cout << "NullPointer argument passed to func slab_mem_cache_error" << endl;
                 break;
             case 5:
-                cout << "Cache passed by func kmem_cache_destroy does not exists in kmem_cache" << endl;
+                cout << "Cache passed by func slab_mem_cache_destroy does not exists in kmem_cache" << endl;
                 break;
             case 6:
-                cout << "Object passed by func kmem_cache_free does not exists in kmem_cache" << endl;
+                cout << "Object passed by func slab_mem_cache_free does not exists in kmem_cache" << endl;
                 break;
             case 7:
                 cout << "Invalid pointer passed for object dealocation" << endl;
@@ -949,12 +949,12 @@ namespace Piccolo
     /*
     ERROR CODES: (error_cod value)
     0 - no error
-    1 - invalid arguments in function kmem_cache_create
+    1 - invalid arguments in function slab_mem_cache_create
     2 - no enough space for allocating new slab
     3 - users don't have access to cache_cache
-    4 - nullpointer argument passed to func kmem_cache_error
-    5 - cache passed by func kmem_cache_destroy does not exists in cache_cache
-    6 - object passed by func kmem_cache_free does not exists in cache_cache
+    4 - nullpointer argument passed to func slab_mem_cache_error
+    5 - cache passed by func slab_mem_cache_destroy does not exists in cache_cache
+    6 - object passed by func slab_mem_cache_free does not exists in cache_cache
     7 - invalid pointer passed for object dealocation
     */
 } // namespace Piccolo
