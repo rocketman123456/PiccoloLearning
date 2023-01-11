@@ -4,7 +4,191 @@
 #include <cstring>
 #include <iostream>
 #include <mutex>
+
 using namespace std;
+
+namespace Piccolo
+{
+    void* buddySpace;
+    int   numOfEntries;
+    int   startingBlockNum;
+
+    void** freeList;
+
+    void buddy_init(void* space, int block_num)
+    {
+        if (space == nullptr || block_num < 2)
+            exit(1); // broj blokova mora biti veci od 1 (1 blok odlazi na buddy)
+
+        startingBlockNum = block_num;
+        buddySpace       = space;
+        space            = ((char*)space + BLOCK_SIZE); // ostatak memorije se koristi za alokaciju
+        block_num--;                                    // prvi blok ide za potrebe buddy alokatora
+
+        int i        = 1;
+        numOfEntries = log2(block_num) + 1;
+
+        freeList = (void**)buddySpace;
+        for (i = 0; i < numOfEntries; i++)
+            freeList[i] = nullptr;
+
+        int maxLength       = numOfEntries - 1;
+        int maxLengthBlocks = 1 << maxLength;
+
+        while (block_num > 0)
+        {
+            void* addr          = (char*)space + (block_num - maxLengthBlocks) * BLOCK_SIZE;
+            freeList[maxLength] = addr;
+            *(void**)addr       = nullptr;
+            block_num -= maxLengthBlocks;
+
+            if (block_num > 0)
+            {
+                i         = 1;
+                maxLength = 0;
+                while (true)
+                {
+                    if (i <= block_num && 2 * i > block_num)
+                        break;
+                    i = i * 2;
+                    maxLength++;
+                }
+                maxLengthBlocks = 1 << maxLength;
+            }
+        }
+    }
+
+    void* buddy_alloc(int n)
+    {
+        if (n < 0 || n >= numOfEntries)
+            return nullptr;
+
+        void* returningSpace = nullptr;
+
+        if (freeList[n] != nullptr)
+        {
+            returningSpace          = freeList[n];
+            freeList[n]             = *(void**)returningSpace;
+            *(void**)returningSpace = nullptr;
+        }
+        else
+        {
+            for (int i = n + 1; i < numOfEntries; i++)
+            {
+                if (freeList[i] != nullptr)
+                {
+                    void* ptr1  = freeList[i];
+                    freeList[i] = *(void**)ptr1;
+                    void* ptr2  = (char*)ptr1 + BLOCK_SIZE * (1 << (i - 1));
+
+                    *(void**)ptr1   = ptr2;
+                    *(void**)ptr2   = freeList[i - 1];
+                    freeList[i - 1] = ptr1;
+
+                    returningSpace = buddy_alloc(n);
+                    break;
+                }
+            }
+        }
+
+        return returningSpace;
+    }
+
+    inline bool isValid(void* space, int n) // check if starting address (space1) is valid for length 2^n
+    {
+        int length = 1 << n;
+        int num    = ((startingBlockNum - 1) % length) + 1;
+        int i      = ((char*)space - (char*)buddySpace) / BLOCK_SIZE; // num of first block
+
+        if (i % length == num % length) // if starting block number is valid for length 2^n then true
+            return true;
+
+        return false;
+    }
+
+    void buddy_free(void* space, int n)
+    {
+        if (n < 0 || n >= numOfEntries)
+            return;
+
+        int bNum = 1 << n;
+
+        if (freeList[n] == nullptr)
+        {
+            freeList[n]    = space;
+            *(void**)space = nullptr;
+        }
+        else
+        {
+            void* prev = nullptr;
+            void* curr = freeList[n];
+            while (curr != nullptr)
+            {
+                if (curr == (void*)((char*)space + BLOCK_SIZE * bNum)) // right buddy potentially found
+                {
+                    if (isValid(space, n + 1)) // right buddy found
+                    {
+                        if (prev == nullptr)
+                        {
+                            freeList[n] = *(void**)freeList[n];
+                        }
+                        else
+                        {
+                            *(void**)prev = *(void**)curr;
+                        }
+
+                        buddy_free(space, n + 1);
+
+                        return;
+                    }
+                }
+                else if (space == (void*)((char*)curr + BLOCK_SIZE * bNum)) // left buddy potentially found
+                {
+                    if (isValid(curr, n + 1)) // left buddy found
+                    {
+                        if (prev == nullptr)
+                        {
+                            freeList[n] = *(void**)freeList[n];
+                        }
+                        else
+                        {
+                            *(void**)prev = *(void**)curr;
+                        }
+
+                        buddy_free(curr, n + 1);
+
+                        return;
+                    }
+                }
+
+                prev = curr;
+                curr = *(void**)curr;
+            }
+
+            *(void**)space = freeList[n];
+            freeList[n]    = space;
+        }
+    }
+
+    void buddy_print()
+    {
+        cout << "Buddy current state (first block,last block):" << endl;
+        for (int i = 0; i < numOfEntries; i++)
+        {
+            int size = 1 << i;
+            cout << "entry[" << i << "] (size " << size << ") -> ";
+            void* curr = freeList[i];
+
+            while (curr != nullptr)
+            {
+                int first = ((char*)curr - (char*)buddySpace) / BLOCK_SIZE;
+                cout << "(" << first << "," << first + size - 1 << ") -> ";
+                curr = *(void**)curr;
+            }
+            cout << "NULL" << endl;
+        }
+    }
+} // namespace Piccolo
 
 namespace Piccolo
 {
@@ -47,12 +231,12 @@ namespace Piccolo
     /*
     ERROR CODES: (error_cod value)
     0 - no error
-    1 - invalid arguments in function slab_mem_cache_create
+    1 - invalid arguments in function slab_cache_create
     2 - no enough space for allocating new slab
     3 - users don't have access to cache_cache
-    4 - nullpointer argument passed to func slab_mem_cache_error
-    5 - cache passed by func slab_mem_cache_destroy does not exists in cache_cache
-    6 - object passed by func slab_mem_cache_free does not exists in cache_cache
+    4 - nullpointer argument passed to func slab_cache_error
+    5 - cache passed by func slab_cache_destroy does not exists in cache_cache
+    6 - object passed by func slab_cache_free does not exists in cache_cache
     7 - invalid pointer passed for object dealocation
     */
 
@@ -68,13 +252,13 @@ namespace Piccolo
         kmem_cache_t* curr = allCaches;
         while (curr != nullptr)
         {
-            slab_mem_cache_info(curr);
+            slab_cache_info(curr);
             cout << endl;
             curr = curr->next;
         }
     }
 
-    void slab_mem_init(void* space, int block_num)
+    void slab_init(void* space, int block_num)
     {
         buddy_init(space, block_num);
 
@@ -139,7 +323,7 @@ namespace Piccolo
         allCaches = &cache_cache;
     }
 
-    kmem_cache_t* slab_mem_cache_create(const char* name, size_t size, void (*ctor)(void*), void (*dtor)(void*)) // Allocate cache
+    kmem_cache_t* slab_cache_create(const char* name, size_t size, void (*ctor)(void*), void (*dtor)(void*)) // Allocate cache
     {
         if (name == nullptr || *name == '\0' || (long)size <= 0)
         {
@@ -330,7 +514,7 @@ namespace Piccolo
         return ret;
     }
 
-    int slab_mem_cache_shrink(kmem_cache_t* cachep) // Shrink cache
+    int slab_cache_shrink(kmem_cache_t* cachep) // Shrink cache
     {
         if (cachep == nullptr)
             return 0;
@@ -357,7 +541,7 @@ namespace Piccolo
         return blocksFreed;
     }
 
-    void* slab_mem_cache_alloc(kmem_cache_t* cachep) // Allocate one object from cache
+    void* slab_cache_alloc(kmem_cache_t* cachep) // Allocate one object from cache
     {
         if (cachep == nullptr || *cachep->name == '\0')
             return nullptr;
@@ -457,7 +641,7 @@ namespace Piccolo
         return retObject;
     }
 
-    void slab_mem_cache_free(kmem_cache_t* cachep, void* objp) // Deallocate one object from cache
+    void slab_cache_free(kmem_cache_t* cachep, void* objp) // Deallocate one object from cache
     {
         if (cachep == nullptr || *cachep->name == '\0' || objp == nullptr)
             return;
@@ -596,9 +780,9 @@ namespace Piccolo
         sprintf_s(num, "%d", j);
         strcat_s(name, num);
 
-        kmem_cache_t* buffCachep = slab_mem_cache_create(name, j, nullptr, nullptr);
+        kmem_cache_t* buffCachep = slab_cache_create(name, j, nullptr, nullptr);
 
-        buff = slab_mem_cache_alloc(buffCachep);
+        buff = slab_cache_alloc(buffCachep);
 
         return buff;
     }
@@ -650,13 +834,13 @@ namespace Piccolo
         if (buffCachep == nullptr)
             return;
 
-        slab_mem_cache_free(buffCachep, (void*)objp);
+        slab_cache_free(buffCachep, (void*)objp);
 
         if (buffCachep->slabs_free != nullptr) // shrink buffer-s cache (save memory if usage is low)
-            slab_mem_cache_shrink(buffCachep);
+            slab_cache_shrink(buffCachep);
     }
 
-    void slab_mem_cache_destroy(kmem_cache_t* cachep) // Deallocate cache
+    void slab_cache_destroy(kmem_cache_t* cachep) // Deallocate cache
     {
         if (cachep == nullptr || *cachep->name == '\0')
             return;
@@ -844,7 +1028,7 @@ namespace Piccolo
         }
     }
 
-    void slab_mem_cache_info(kmem_cache_t* cachep) // Print cache info
+    void slab_cache_info(kmem_cache_t* cachep) // Print cache info
     {
         lock_guard<mutex> guard1(cout_mutex);
 
@@ -894,7 +1078,7 @@ namespace Piccolo
              << "Percentage occupancy of cache:\t" << perc << " %" << endl;
     }
 
-    int slab_mem_cache_error(kmem_cache_t* cachep) // Print error message
+    int slab_cache_error(kmem_cache_t* cachep) // Print error message
     {
         lock_guard<mutex> guard1(cout_mutex);
 
@@ -918,7 +1102,7 @@ namespace Piccolo
         switch (error_code)
         {
             case 1:
-                cout << "Invalid arguments passed in function slab_mem_cache_create" << endl;
+                cout << "Invalid arguments passed in function slab_cache_create" << endl;
                 break;
             case 2:
                 cout << "No enough space for allocating new slab" << endl;
@@ -927,13 +1111,13 @@ namespace Piccolo
                 cout << "Access to cache_cache isn't allowed" << endl;
                 break;
             case 4:
-                cout << "NullPointer argument passed to func slab_mem_cache_error" << endl;
+                cout << "NullPointer argument passed to func slab_cache_error" << endl;
                 break;
             case 5:
-                cout << "Cache passed by func slab_mem_cache_destroy does not exists in kmem_cache" << endl;
+                cout << "Cache passed by func slab_cache_destroy does not exists in kmem_cache" << endl;
                 break;
             case 6:
-                cout << "Object passed by func slab_mem_cache_free does not exists in kmem_cache" << endl;
+                cout << "Object passed by func slab_cache_free does not exists in kmem_cache" << endl;
                 break;
             case 7:
                 cout << "Invalid pointer passed for object dealocation" << endl;
@@ -949,12 +1133,12 @@ namespace Piccolo
     /*
     ERROR CODES: (error_cod value)
     0 - no error
-    1 - invalid arguments in function slab_mem_cache_create
+    1 - invalid arguments in function slab_cache_create
     2 - no enough space for allocating new slab
     3 - users don't have access to cache_cache
-    4 - nullpointer argument passed to func slab_mem_cache_error
-    5 - cache passed by func slab_mem_cache_destroy does not exists in cache_cache
-    6 - object passed by func slab_mem_cache_free does not exists in cache_cache
+    4 - nullpointer argument passed to func slab_cache_error
+    5 - cache passed by func slab_cache_destroy does not exists in cache_cache
+    6 - object passed by func slab_cache_free does not exists in cache_cache
     7 - invalid pointer passed for object dealocation
     */
 } // namespace Piccolo

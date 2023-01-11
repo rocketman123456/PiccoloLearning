@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     // engine->clear();
     // engine->shutdownEngine();
 
-    std::vector<int, SimpleAllocator<int>> vec;
+    std::vector<int, BuddyAllocator<int>> vec;
     for(int i = 0; i < 100; ++i)
     {
         vec.emplace_back(i);
