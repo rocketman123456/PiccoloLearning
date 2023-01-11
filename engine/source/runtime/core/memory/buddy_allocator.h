@@ -27,6 +27,7 @@ namespace Piccolo
 
         static constexpr std::size_t s_log2_header = Log2(sizeof(Header));
 
+    public:
         std::array<Node*, std::numeric_limits<std::size_t>::digits - s_log2_header> m_buckets = {};
 
     public:
@@ -37,7 +38,11 @@ namespace Piccolo
         template<typename U>
         BuddyAllocator(const BuddyAllocator<U>& other) : Allocator<T>(other.m_size)
         {
-            BuddyAllocator(other.m_size);
+            //BuddyAllocator(other.m_size);
+            this->m_start_address = other.m_start_address;
+            this->m_size = other.m_size;
+            init();
+            // std::copy(other.m_buckets.begin(), other.m_buckets.end(), this->m_buckets.begin());
             (void)other;
         }
 
@@ -49,21 +54,21 @@ namespace Piccolo
         void init();
     };
 
-    template<typename T, typename U>
-    bool operator==(const BuddyAllocator<T>& a1, const BuddyAllocator<U>& a2)
-    {
-        (void)a1;
-        (void)a2;
-        return a1 == a2;
-    }
+    // template<typename T, typename U>
+    // bool operator==(const BuddyAllocator<T>& a1, const BuddyAllocator<U>& a2)
+    // {
+    //     (void)a1;
+    //     (void)a2;
+    //     return a1 == a2;
+    // }
 
-    template<typename T, typename U>
-    bool operator!=(const BuddyAllocator<T>& a1, const BuddyAllocator<U>& a2)
-    {
-        (void)a1;
-        (void)a2;
-        return a1 != a2;
-    }
+    // template<typename T, typename U>
+    // bool operator!=(const BuddyAllocator<T>& a1, const BuddyAllocator<U>& a2)
+    // {
+    //     (void)a1;
+    //     (void)a2;
+    //     return a1 != a2;
+    // }
 
     template<typename T>
     BuddyAllocator<T>::BuddyAllocator() : Allocator<T>(128)

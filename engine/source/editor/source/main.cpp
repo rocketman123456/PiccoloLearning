@@ -26,19 +26,13 @@ int main(int argc, char** argv)
 
     Piccolo::PiccoloEngine* engine = new Piccolo::PiccoloEngine();
 
-    // engine->startEngine(config_file_path.generic_string());
-    // engine->initialize();
+    engine->startEngine(config_file_path.generic_string());
+    engine->initialize();
 
-    // engine->run();
+    engine->run();
 
-    // engine->clear();
-    // engine->shutdownEngine();
-
-    std::vector<int, BuddyAllocator<int>> vec;
-    for(int i = 0; i < 100; ++i)
-    {
-        vec.emplace_back(i);
-    }
+    engine->clear();
+    engine->shutdownEngine();
 
     return 0;
 }

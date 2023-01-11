@@ -15,7 +15,8 @@ namespace Piccolo
         Allocator(const std::size_t size) : m_size(size) {}
 
     public:
-        virtual ~Allocator()                                                       = default;
+        virtual ~Allocator() = default;
+
         virtual T*   allocate(const std::size_t size, const std::size_t alignment) = 0;
         virtual void deallocate(T* ptr, std::size_t n)                             = 0;
         virtual void reset()                                                       = 0;
