@@ -6,6 +6,8 @@
 #include <new>
 
 #if defined(_WIN32)
+#pragma message("[notice] huge page allocator is only for unix system")
+
 #include <malloc.h>
 #include <stdio.h>
 //#define posix_memalign(p, a, s) (((*(p)) = _aligned_malloc((s), (a))), *(p) ?0 :errno)
