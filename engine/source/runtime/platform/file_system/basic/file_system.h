@@ -1,85 +1,66 @@
 #pragma once
-#include "runtime/core/meta/reflection/reflection.h"
 #include "runtime/platform/file_system/basic/file.h"
-#include "runtime/platform/file_system/basic/vblock.h"
-#include "runtime/platform/file_system/basic/vnode.h"
 
 #include <algorithm>
-#include <filesystem>
 #include <future>
-#include <string>
-#include <vector>
 
 namespace Piccolo
 {
-    using VNodeList  = std::vector<VNodePtr>;
-    using VBlockList = std::vector<VBlockPtr>;
-    using VNodeMap   = std::unordered_map<std::string, VNodePtr>;
-    using VBlockMap  = std::unordered_map<std::string, VBlockPtr>;
-
-    class FileSystem : public std::enable_shared_from_this<FileSystem>
+    class FileSystem
     {
-        friend class FSUtils;
-
     public:
-        FileSystem(const std::filesystem::path& real_path, const std::filesystem::path& virtual_path);
         virtual ~FileSystem() = default;
 
-        inline bool isChanged() const { return m_changed; }
-        // For File System
-        inline const std::filesystem::path& virtualPath() const { return m_virtual_path; }
-        inline const std::filesystem::path& realPath() const { return m_real_path; }
+        virtual void buildSystemCache();
 
-        inline void insertAdditionalFS(std::shared_ptr<FileSystem> fs) { m_additional.push_back(fs); }
-        inline void removeAdditionalFS(std::shared_ptr<FileSystem> fs) { m_additional.erase(std::find(m_additional.begin(), m_additional.end(), fs)); }
+        virtual std::string vpath() const { return m_vpath; }
+        virtual std::string rpath() const { return m_rpath; }
 
-        // Basic Judgement
-        bool isFileExists(const std::filesystem::path& file_path) const;
-        bool isDirExists(const std::filesystem::path& dir_path) const;
-        bool isFile(const std::filesystem::path& file_path) const;
-        bool isDir(const std::filesystem::path& file_path) const;
+        virtual const std::vector<std::string>& allFiles() const { return m_files; }
+        virtual const std::vector<std::string>& allDirs() const { return m_dirs; }
 
-        // File Operation
-        FilePtr openFile(const std::filesystem::path& file_path, int32_t mode) { return nullptr; }
-        void    closeFile(const FilePtr& file) {}
-        size_t  readFile(const FilePtr& file, FileBuffer& data) { return 0; }
-        size_t  writeFile(FilePtr& file, const FileBuffer& data) { return 0; }
+        virtual bool isFileExist(const std::string& file_name) const
+        {
+            auto iter = std::find_if(m_files.begin(), m_files.end(), [file_name](const std::string& file) { return file_name == file; });
+            return iter != m_files.end();
+        }
 
-        // // Virtual Functions --------------------------------------------------------------
-        virtual bool isReadOnly() const { return true; }
+        virtual bool isDirExist(const std::string& dir_name) const
+        {
+            auto iter = std::find_if(m_dirs.begin(), m_dirs.end(), [dir_name](const std::string& file) { return dir_name == file; });
+            return iter != m_dirs.end();
+        }
 
-        // For File System
-        virtual bool createFile(const std::filesystem::path& file_path);
-        virtual bool deleteFile(const std::filesystem::path& file_path);
-        virtual bool moveFile(const std::filesystem::path& src, const std::filesystem::path& dst);
-        virtual bool copyFile(const std::filesystem::path& src, const std::filesystem::path& dst);
+        // -------------------------------------------------------------------
+        // -------------------------------------------------------------------
+        // -------------------------------------------------------------------
 
-        virtual bool createDir(const std::filesystem::path& dir_path);
-        virtual bool deleteDir(const std::filesystem::path& dir_path);
-        virtual bool moveDir(const std::filesystem::path& src, const std::filesystem::path& dst);
-        virtual bool copyDir(const std::filesystem::path& src, const std::filesystem::path& dst);
+        virtual FilePtr open(const std::string& vpath, uint32_t mode) = 0;
+        virtual void    close(FilePtr file)                           = 0;
 
-    protected:
-        void buildCache();
+        virtual bool readSync(FilePtr file, std::vector<std::byte>& buffer) = 0;;
+        virtual bool writeSync(FilePtr file, const std::vector<std::byte>& buffer) = 0;
 
-        inline VBlockPtr getRoot() const { return m_root; }
-        inline void      setRoot(VBlockPtr root) { m_root = root; }
+        virtual std::future<bool> readAsync(FilePtr file, std::vector<std::byte>& buffer) = 0;
+        virtual std::future<bool> writeAsync(FilePtr file, const std::vector<std::byte>& buffer) = 0;
 
-        const VNodeList&  vnodes(const std::filesystem::path& dir) const;
-        const VBlockList& vblocks(const std::filesystem::path& dir) const;
+        // virtual bool createFile(const std::string& file_path) = 0;
+        // virtual bool deleteFile(const std::string& file_path) = 0;
+        // virtual bool moveFile(const std::string& src, const std::string& dst) = 0;
+        // virtual bool copyFile(const std::string& src, const std::string& dst) = 0;
 
-        const VNodeMap&  vnodeMap() const;
-        const VBlockMap& vblockMap() const;
+        // virtual bool createDir(const std::string& dir_path) = 0;
+        // virtual bool deleteDir(const std::string& dir_path) = 0;
+        // virtual bool moveDir(const std::string& src, const std::string& dst) = 0;
+        // virtual bool copyDir(const std::string& src, const std::string& dst) = 0;
 
     protected:
-        std::filesystem::path m_real_path {};
-        std::filesystem::path m_virtual_path {};
+        std::string m_vpath;
+        std::string m_rpath;
 
-        VBlockPtr m_root {nullptr};
-        bool      m_changed {true};
-
-        std::vector<std::shared_ptr<FileSystem>> m_additional;
+        std::vector<std::string> m_files;
+        std::vector<std::string> m_dirs;
     };
 
-    using FSPtr = std::shared_ptr<FileSystem>;
+    using FileSystemPtr = std::shared_ptr<FileSystem>;
 } // namespace Piccolo

@@ -1,4 +1,4 @@
-#include "runtime/core/base/string_utils.h"
+#include "runtime/core/string/string_utils.h"
 
 namespace Piccolo
 {
