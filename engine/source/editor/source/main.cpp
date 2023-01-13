@@ -1,15 +1,14 @@
 #include "runtime/function/global/global_context.h"
+#include "runtime/resource/config_manager/config_manager.h"
 
-#include "runtime/core/base/string_utils.h"
-
-#include "runtime/core/memory/simple_allocator.h"
-#include "runtime/core/memory/pool_allocator.h"
-#include "runtime/core/memory/cache_aligned_allocator.h"
-#include "runtime/core/memory/huge_page_allocator.h"
 #include "runtime/core/memory/buddy_allocator.h"
+#include "runtime/core/memory/cache_aligned_allocator.h"
 #include "runtime/core/memory/free_list_allocator.h"
 #include "runtime/core/memory/free_tree_allocator.h"
+#include "runtime/core/memory/huge_page_allocator.h"
 #include "runtime/core/memory/linear_allocator.h"
+#include "runtime/core/memory/pool_allocator.h"
+#include "runtime/core/memory/simple_allocator.h"
 #include "runtime/core/memory/stack_allocator.h"
 
 #include "runtime/platform/file_system/vfs.h"
@@ -29,10 +28,15 @@ int main(int argc, char** argv)
     engine->startEngine(config_file_path.generic_string());
     engine->initialize();
 
-    engine->run();
+    auto path = g_runtime_global_context.m_config_manager->getRootFolder();
 
-    engine->clear();
-    engine->shutdownEngine();
+    auto fs = std::make_shared<NativeFileSystem>("", path.string());
+    auto file = fs->open("asset-test/world/test01.world.json", File::read_bin);
+
+    // engine->run();
+
+    // engine->clear();
+    // engine->shutdownEngine();
 
     return 0;
 }

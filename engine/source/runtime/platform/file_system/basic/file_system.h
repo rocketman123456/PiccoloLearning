@@ -1,6 +1,8 @@
 #pragma once
 #include "runtime/platform/file_system/basic/file.h"
 
+#include "runtime/core/thread/thread_pool.h"
+
 #include <algorithm>
 #include <future>
 
@@ -9,40 +11,33 @@ namespace Piccolo
     class FileSystem
     {
     public:
+        FileSystem(const std::string& vpath, const std::string rpath) : m_vpath {vpath}, m_rpath {rpath} {}
         virtual ~FileSystem() = default;
 
-        virtual void buildSystemCache();
-
-        virtual std::string vpath() const { return m_vpath; }
-        virtual std::string rpath() const { return m_rpath; }
-
-        virtual const std::vector<std::string>& allFiles() const { return m_files; }
-        virtual const std::vector<std::string>& allDirs() const { return m_dirs; }
-
-        virtual bool isFileExist(const std::string& file_name) const
+        bool isFileExist(const std::string& file_name) const
         {
             auto iter = std::find_if(m_files.begin(), m_files.end(), [file_name](const std::string& file) { return file_name == file; });
             return iter != m_files.end();
         }
 
-        virtual bool isDirExist(const std::string& dir_name) const
+        bool isDirExist(const std::string& dir_name) const
         {
             auto iter = std::find_if(m_dirs.begin(), m_dirs.end(), [dir_name](const std::string& file) { return dir_name == file; });
             return iter != m_dirs.end();
         }
 
-        // -------------------------------------------------------------------
-        // -------------------------------------------------------------------
-        // -------------------------------------------------------------------
+        size_t read(FilePtr file, std::vector<std::byte>& buffer) { return file->read(buffer); }
+        size_t write(FilePtr file, const std::vector<std::byte>& buffer) { return file->write(buffer); }
 
-        virtual FilePtr open(const std::string& vpath, uint32_t mode) = 0;
-        virtual void    close(FilePtr file)                           = 0;
+        std::future<size_t> readAsync(std::shared_ptr<thread_pool> tp, FilePtr file, std::vector<std::byte>& buffer)
+        {
+            return tp->enqueue_task(&FileSystem::read, this, file, buffer);
+        }
 
-        virtual bool readSync(FilePtr file, std::vector<std::byte>& buffer) = 0;;
-        virtual bool writeSync(FilePtr file, const std::vector<std::byte>& buffer) = 0;
-
-        virtual std::future<bool> readAsync(FilePtr file, std::vector<std::byte>& buffer) = 0;
-        virtual std::future<bool> writeAsync(FilePtr file, const std::vector<std::byte>& buffer) = 0;
+        std::future<size_t> writeAsync(std::shared_ptr<thread_pool> tp, FilePtr file, const std::vector<std::byte>& buffer)
+        {
+            return tp->enqueue_task(&FileSystem::write, this, file, buffer);
+        }
 
         // virtual bool createFile(const std::string& file_path) = 0;
         // virtual bool deleteFile(const std::string& file_path) = 0;
@@ -54,7 +49,20 @@ namespace Piccolo
         // virtual bool moveDir(const std::string& src, const std::string& dst) = 0;
         // virtual bool copyDir(const std::string& src, const std::string& dst) = 0;
 
-    protected:
+        // -------------------------------------------------------------------
+        // -------------------------------------------------------------------
+        // -------------------------------------------------------------------
+
+        virtual void buildFSCache() = 0;
+
+        virtual FilePtr open(const std::string& vpath, uint32_t mode) = 0;
+        virtual bool    close(FilePtr file)                           = 0;
+
+        // -------------------------------------------------------------------
+        // -------------------------------------------------------------------
+        // -------------------------------------------------------------------
+
+    public:
         std::string m_vpath;
         std::string m_rpath;
 

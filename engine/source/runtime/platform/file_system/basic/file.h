@@ -43,8 +43,7 @@ namespace Piccolo
         virtual size_t size() const                       = 0;
         virtual size_t seek(size_t offset, Origin origin) = 0;
         virtual size_t tell()                             = 0;
-        // If Read Text, read will read [size - 1] bytes,
-        // because last will be ['\0'] for string
+        // If Read Text, will read [size - 1] bytes, because last will be ['\0'] for string
         virtual size_t read(std::vector<std::byte>& data)        = 0;
         virtual size_t write(const std::vector<std::byte>& data) = 0;
 

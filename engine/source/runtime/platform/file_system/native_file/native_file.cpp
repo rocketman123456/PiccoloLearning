@@ -91,7 +91,7 @@ namespace Piccolo
         }
         LOG_DEBUG("Native Path: {}, {}", m_vpath, m_rpath);
         m_stream.open(m_rpath, open_mode);
-        return true;
+        return m_stream.is_open();
     }
 
     bool NativeFile::close()
@@ -109,7 +109,10 @@ namespace Piccolo
     size_t NativeFile::seek(size_t offset, Origin origin)
     {
         if (!isOpened())
+        {
+            LOG_WARN("Seek file not opened {}, {}", m_vpath, m_rpath);
             return std::size_t(0);
+        }
 
         std::ios_base::seekdir way;
         if (origin == File::beg)
@@ -151,16 +154,9 @@ namespace Piccolo
 
         std::size_t read_count = 0;
         if (m_stream)
-        {
-            if (m_mode & File::read_text)
-                read_count = buffer.size() - 1;
-            else
-                read_count = buffer.size();
-        }
+            read_count = buffer_size;
         else
-        {
             read_count = static_cast<std::size_t>(m_stream.gcount());
-        }
 
         if (m_mode & File::read_text)
         {

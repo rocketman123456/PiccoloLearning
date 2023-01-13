@@ -1,3 +1,4 @@
+// https://github.com/mvorbrodt/blog/blob/master/src/pool.hpp
 #pragma once
 
 #include "runtime/core/container/queue.h"
@@ -50,7 +51,7 @@ namespace Piccolo
         }
 
         template<typename F, typename... Args>
-        void enqueueWork(F&& f, Args&&... args)
+        void enqueue_work(F&& f, Args&&... args)
         {
             auto work = [p = std::forward<F>(f), t = std::make_tuple(std::forward<Args>(args)...)]() { std::apply(p, t); };
             auto i    = m_index++;
@@ -63,7 +64,7 @@ namespace Piccolo
         }
 
         template<typename F, typename... Args>
-        [[nodiscard]] auto enqueueTask(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, Args...>>
+        [[nodiscard]] auto enqueue_task(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, Args...>>
         {
             using task_return_type = std::invoke_result_t<F, Args...>;
             using task_type        = std::packaged_task<task_return_type()>;

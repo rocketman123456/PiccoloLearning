@@ -12,5 +12,14 @@
 namespace Piccolo
 {
     class VFS
-    {};
+    {
+    public:
+        void mountFS(FileSystemPtr fs);
+        void unmountFS(FileSystemPtr fs);
+
+        void buildVFSCache();
+
+    private:
+        std::vector<FileSystemPtr> m_fs;
+    };
 } // namespace Piccolo
