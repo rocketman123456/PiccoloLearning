@@ -7,6 +7,8 @@
 
 namespace Piccolo
 {
+    using FileBuffer = std::vector<std::byte>;
+
     class FileSystem;
 
     class File

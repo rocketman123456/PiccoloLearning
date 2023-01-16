@@ -1,8 +1,10 @@
 #include "runtime/platform/file_system/native_file/native_file_system.h"
+#include "runtime/platform/file_system/basic/file_utils.h"
 #include "runtime/platform/file_system/native_file/native_file.h"
+#include "runtime/platform/path/path.h"
 
 #include "runtime/core/base/macro.h"
-#include "runtime/core/thread/thread_pool.h"
+#include "runtime/core/string/string_utils.h"
 
 #include <exception>
 #include <filesystem>
@@ -32,23 +34,37 @@ namespace Piccolo
             if (directory_entry.is_regular_file()) // build file cache
             {
                 std::filesystem::path path = directory_entry;
-                m_files.push_back(path.string());
+
+                auto path_str  = path.string();
+                auto vpath_str = Path::getRelativePath(m_rpath, path).string();
+                vpath_str = getNormalizedPath(vpath_str);
+                vpath_str      = m_vpath + "/" + vpath_str;
+                m_rfiles.push_back(path_str);
+                m_vfiles.push_back(vpath_str);
             }
             else if (directory_entry.is_directory()) // build dir cache
             {
                 std::filesystem::path path = directory_entry;
-                m_dirs.push_back(path.string());
+
+                auto path_str  = path.string();
+                auto vpath_str = Path::getRelativePath(m_rpath, path).string();
+                vpath_str = getNormalizedPath(vpath_str);
+                vpath_str      = m_vpath + "/" + vpath_str;
+                m_rdirs.push_back(path_str);
+                m_vdirs.push_back(vpath_str);
             }
         }
     }
 
-    FilePtr NativeFileSystem::open(const std::string& vpath, uint32_t mode)
+    FilePtr NativeFileSystem::open(const std::string& vpath_, uint32_t mode)
     {
         // normalize vpath
+        auto vpath = getNormalizedPath(vpath_);
         // remove native file system vpath prefix
+        std::string temp_vpath = vpath.substr(m_vpath.size(), vpath.size() - m_vpath.size());
         // get real path
-        std::string   rpath = m_rpath + "/" + vpath;
-        NativeFilePtr file = std::make_shared<NativeFile>(vpath, rpath);
+        std::string   rpath = m_rpath + "/" + temp_vpath;
+        NativeFilePtr file  = std::make_shared<NativeFile>(vpath, rpath);
         if (file->open(mode))
             return file;
         else

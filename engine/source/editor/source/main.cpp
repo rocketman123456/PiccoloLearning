@@ -12,8 +12,11 @@
 #include "runtime/core/memory/stack_allocator.h"
 
 #include "runtime/platform/file_system/vfs.h"
+#include "runtime/platform/path/path.h"
 
 #include "runtime/engine.h"
+
+#include <iostream>
 
 using namespace Piccolo;
 using namespace std;
@@ -28,15 +31,30 @@ int main(int argc, char** argv)
     engine->startEngine(config_file_path.generic_string());
     engine->initialize();
 
+    auto relative = Path::getRelativePath("asset-test", "asset-test/world/test01.world.json");
+    std::cout << relative << std::endl;
+
     auto path = g_runtime_global_context.m_config_manager->getRootFolder();
 
-    auto fs = std::make_shared<NativeFileSystem>("", path.string());
-    auto file = fs->open("asset-test/world/test01.world.json", File::read_bin);
+    {
+        auto fs = std::make_shared<NativeFileSystem>("asset", path.string() + "/asset-test");
+        fs->buildFSCache();
+
+        auto file = fs->open("asset/world/test01.world.json", File::read_bin);
+
+        FileBuffer buffer;
+        file->read(buffer);
+        file->close();
+        std::cout << (char*)buffer.data() << std::endl;
+    }
+
+    {
+    }
 
     // engine->run();
 
-    // engine->clear();
-    // engine->shutdownEngine();
+    engine->clear();
+    engine->shutdownEngine();
 
     return 0;
 }

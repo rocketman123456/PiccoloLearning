@@ -9,7 +9,7 @@ namespace Piccolo
     {
     public:
         NativeFile(const std::string& vpath, const std::string& rpath);
-        virtual ~NativeFile();
+        virtual ~NativeFile() = default;
 
         virtual bool open(uint32_t mode) override;
         virtual bool close() override;

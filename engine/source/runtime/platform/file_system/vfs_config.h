@@ -13,6 +13,7 @@ namespace Piccolo
     public:
         std::string m_vpath;
         std::string m_rpath;
+        std::string m_type;
     };
 
 

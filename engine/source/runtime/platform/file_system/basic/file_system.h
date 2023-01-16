@@ -16,14 +16,14 @@ namespace Piccolo
 
         bool isFileExist(const std::string& file_name) const
         {
-            auto iter = std::find_if(m_files.begin(), m_files.end(), [file_name](const std::string& file) { return file_name == file; });
-            return iter != m_files.end();
+            auto iter = std::find_if(m_vfiles.begin(), m_vfiles.end(), [file_name](const std::string& file) { return file_name == file; });
+            return iter != m_vfiles.end();
         }
 
         bool isDirExist(const std::string& dir_name) const
         {
-            auto iter = std::find_if(m_dirs.begin(), m_dirs.end(), [dir_name](const std::string& file) { return dir_name == file; });
-            return iter != m_dirs.end();
+            auto iter = std::find_if(m_vdirs.begin(), m_vdirs.end(), [dir_name](const std::string& file) { return dir_name == file; });
+            return iter != m_vdirs.end();
         }
 
         size_t read(FilePtr file, std::vector<std::byte>& buffer) { return file->read(buffer); }
@@ -39,11 +39,13 @@ namespace Piccolo
             return tp->enqueue_task(&FileSystem::write, this, file, buffer);
         }
 
+        // TODO
         // virtual bool createFile(const std::string& file_path) = 0;
         // virtual bool deleteFile(const std::string& file_path) = 0;
         // virtual bool moveFile(const std::string& src, const std::string& dst) = 0;
         // virtual bool copyFile(const std::string& src, const std::string& dst) = 0;
 
+        // TODO
         // virtual bool createDir(const std::string& dir_path) = 0;
         // virtual bool deleteDir(const std::string& dir_path) = 0;
         // virtual bool moveDir(const std::string& src, const std::string& dst) = 0;
@@ -66,8 +68,11 @@ namespace Piccolo
         std::string m_vpath;
         std::string m_rpath;
 
-        std::vector<std::string> m_files;
-        std::vector<std::string> m_dirs;
+        std::vector<std::string> m_vfiles;
+        std::vector<std::string> m_vdirs;
+
+        std::vector<std::string> m_rfiles;
+        std::vector<std::string> m_rdirs;
     };
 
     using FileSystemPtr = std::shared_ptr<FileSystem>;

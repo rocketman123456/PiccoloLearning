@@ -29,14 +29,6 @@ namespace Piccolo
 
     NativeFile::NativeFile(const std::string& vpath, const std::string& rpath) : File(vpath, rpath) {}
 
-    NativeFile::~NativeFile()
-    {
-        if (isOpened())
-        {
-            close();
-        }
-    }
-
     bool NativeFile::open(uint32_t mode)
     {
         if (isOpened() && (m_mode & mode) != 0)

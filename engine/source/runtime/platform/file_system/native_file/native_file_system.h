@@ -1,8 +1,6 @@
 #pragma once
 #include "runtime/platform/file_system/basic/file_system.h"
 
-#include "runtime/core/thread/thread_pool.h"
-
 namespace Piccolo
 {
     class NativeFileSystem : public FileSystem
