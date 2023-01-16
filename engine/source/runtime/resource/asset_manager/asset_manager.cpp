@@ -24,7 +24,7 @@ namespace Piccolo
         content = {std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()};
     }
 
-    void AssetManager::readBinaryFile(const std::filesystem::path& file_path, std::vector<unsigned char>& content) const
+    void AssetManager::readBinaryFile(const std::filesystem::path& file_path, std::vector<std::byte>& content) const
     {
         std::ifstream fin(file_path, std::ios::in | std::ios::binary);
         if(!fin)

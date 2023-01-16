@@ -66,7 +66,7 @@ namespace Piccolo
             // read json file to string
             auto       file = g_vfs.open(asset_url, File::read_text);
             std::string asset_json_text;
-            file->read(buffer);
+            file->read(asset_json_text);
 
             // parse to json object and read to runtime res object
             std::string error;
@@ -81,7 +81,6 @@ namespace Piccolo
             return true;
         }
 
-        // TODO add saveVFSAsset
         template<typename AssetType>
         bool saveVFSAsset(const AssetType& out_asset, const std::string& asset_url) const
         {
@@ -104,7 +103,7 @@ namespace Piccolo
         }
 
         void readTextFile(const std::filesystem::path& file_path, std::string& content) const;
-        void readBinaryFile(const std::filesystem::path& file_path, std::vector<unsigned char>& content) const;
+        void readBinaryFile(const std::filesystem::path& file_path, std::vector<std::byte>& content) const;
 
         std::filesystem::path getFullPath(const std::string& relative_path) const;
     };
