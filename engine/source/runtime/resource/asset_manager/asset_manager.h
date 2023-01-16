@@ -2,6 +2,7 @@
 
 #include "runtime/core/base/macro.h"
 #include "runtime/core/meta/serializer/serializer.h"
+#include "runtime/platform/file_system/vfs.h"
 
 #include <filesystem>
 #include <fstream>
@@ -55,6 +56,49 @@ namespace Piccolo
             // write to file
             asset_json_file << asset_json_text;
             asset_json_file.flush();
+
+            return true;
+        }
+
+        template<typename AssetType>
+        bool loadVFSAsset(const std::string& asset_url, AssetType& out_asset) const
+        {
+            // read json file to string
+            auto       file = g_vfs.open(asset_url, File::read_text);
+            std::string asset_json_text;
+            file->read(buffer);
+
+            // parse to json object and read to runtime res object
+            std::string error;
+            auto&&      asset_json = Json::parse(asset_json_text, error);
+            if (!error.empty())
+            {
+                LOG_ERROR("parse json file {} failed!", asset_url);
+                return false;
+            }
+
+            Serializer::read(asset_json, out_asset);
+            return true;
+        }
+
+        // TODO add saveVFSAsset
+        template<typename AssetType>
+        bool saveVFSAsset(const AssetType& out_asset, const std::string& asset_url) const
+        {
+            // read json file to string
+            auto file = g_vfs.open(asset_url, File::write_text);
+            if (!file)
+            {
+                LOG_ERROR("open file {} failed!", asset_url);
+                return false;
+            }
+
+            // write to json object and dump to string
+            auto&&        asset_json      = Serializer::write(out_asset);
+            std::string&& asset_json_text = asset_json.dump();
+
+            // write to file
+            file->write(asset_json_text);
 
             return true;
         }

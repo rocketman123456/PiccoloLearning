@@ -103,7 +103,7 @@ namespace Piccolo
         if (!isOpened())
         {
             LOG_WARN("Seek file not opened {}, {}", m_vpath, m_rpath);
-            return std::size_t(0);
+            return size_t(0);
         }
 
         std::ios_base::seekdir way;
@@ -122,9 +122,9 @@ namespace Piccolo
     size_t NativeFile::tell()
     {
         if (!isOpened())
-            return std::size_t(0);
+            return size_t(0);
         else
-            return static_cast<std::size_t>(m_stream.tellg());
+            return static_cast<size_t>(m_stream.tellg());
     }
 
     size_t NativeFile::read(std::vector<std::byte>& buffer)
@@ -132,10 +132,10 @@ namespace Piccolo
         if (!isOpened())
         {
             LOG_WARN("Read file not opened {}, {}", m_vpath, m_rpath);
-            return std::size_t(0);
+            return size_t(0);
         }
 
-        std::size_t buffer_size = size() - tell();
+        size_t buffer_size = size() - tell();
         buffer.clear();
         if (m_mode & File::read_text)
             buffer.resize(buffer_size + 1);
@@ -144,11 +144,11 @@ namespace Piccolo
 
         m_stream.read(reinterpret_cast<char*>(buffer.data()), static_cast<std::streamsize>(buffer_size));
 
-        std::size_t read_count = 0;
+        size_t read_count = 0;
         if (m_stream)
             read_count = buffer_size;
         else
-            read_count = static_cast<std::size_t>(m_stream.gcount());
+            read_count = static_cast<size_t>(m_stream.gcount());
 
         if (m_mode & File::read_text)
         {
@@ -169,6 +169,33 @@ namespace Piccolo
         {
             return data.size();
         }
-        return static_cast<std::size_t>(m_stream.gcount());
+        return static_cast<size_t>(m_stream.gcount());
     }
+
+    size_t NativeFile::read(std::string& data)
+    {
+        if (!isOpened())
+        {
+            LOG_WARN("Read file not opened {}, {}", m_vpath, m_rpath);
+            return size_t(0);
+        }
+        data = {std::istreambuf_iterator<char>(m_stream), std::istreambuf_iterator<char>()};
+        return 0;
+    }
+
+    size_t NativeFile::write(const std::string& data)
+    {
+        if (!isOpened() || isReadOnly())
+        {
+            LOG_WARN("Write to Read Only File {}, {}", m_vpath, m_rpath);
+            return 0;
+        }
+        m_stream.write(reinterpret_cast<const char*>(data.data()), static_cast<std::streamsize>(data.size() + 1));
+        if (m_stream)
+        {
+            return data.size() + 1;
+        }
+        return static_cast<size_t>(m_stream.gcount());
+    }
+
 } // namespace Piccolo

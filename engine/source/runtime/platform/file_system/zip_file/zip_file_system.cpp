@@ -45,7 +45,7 @@ namespace Piccolo
         for (zip_int64_t i = 0; i < num_entries; ++i)
         {
             const char* name = zip_get_name(m_zip, i, 0);
-            LOG_DEBUG("zip: {}", name);
+            // LOG_DEBUG("zip: {}", name);
             if (end_with(name, "/"))
             {
                 std::string temp = name;

@@ -20,6 +20,8 @@ namespace Piccolo
         // If Read Text, will read [size - 1] bytes, because last will be ['\0'] for string
         virtual size_t read(std::vector<std::byte>& data) override;
         virtual size_t write(const std::vector<std::byte>& data) override;
+        virtual size_t read(std::string& data) override;
+        virtual size_t write(const std::string& data) override;
 
     private:
         size_t   m_seek_pos     = 0;

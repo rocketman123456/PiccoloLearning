@@ -108,11 +108,11 @@ namespace Piccolo
         std::size_t read_size = size();
         if (m_mode & File::read_text)
         {
-            data.resize(size() + 1);
+            data.resize(read_size + 1);
         }
         else
         {
-            data.resize(size());
+            data.resize(read_size);
         }
 
         zip_fread(m_zip_file, data.data(), read_size);
@@ -125,6 +125,39 @@ namespace Piccolo
     }
 
     size_t ZipFile::write(const std::vector<std::byte>& data)
+    {
+        LOG_WARN("Unable to Weite in Zip File, {} {}", m_rpath, m_vpath);
+        return 0;
+    }
+
+    size_t ZipFile::read(std::string& data)
+    {
+        if (!isOpened())
+        {
+            LOG_WARN("Read file not opened {}, {}", m_vpath, m_rpath);
+            return std::size_t(0);
+        }
+
+        std::size_t read_size = size();
+        if (m_mode & File::read_text)
+        {
+            data.resize(read_size + 1);
+        }
+        else
+        {
+            data.resize(read_size);
+        }
+
+        zip_fread(m_zip_file, data.data(), read_size);
+
+        if (m_mode & File::read_text)
+        {
+            data[read_size] = '\0';
+        }
+        return read_size;
+    }
+
+    size_t ZipFile::write(const std::string& data)
     {
         LOG_WARN("Unable to Weite in Zip File, {} {}", m_rpath, m_vpath);
         return 0;

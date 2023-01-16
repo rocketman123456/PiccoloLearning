@@ -96,17 +96,51 @@ namespace Piccolo
 
     size_t MemoryFile::write(const std::vector<std::byte>& data)
     {
-        if (m_mode & File::read_text)
+        if (m_mode & File::write_text)
+        {
+            m_buffer.resize(data.size() + 1);
+            std::copy(data.begin(), data.end(), m_buffer.begin());
+            m_buffer[m_buffer.size() - 1] = std::byte('\0');
+            return m_buffer.size();
+        }
+        else if (m_mode & File::write_bin)
         {
             m_buffer.resize(data.size());
             std::copy(data.begin(), data.end(), m_buffer.begin());
+            return m_buffer.size();
+        }
+    }
+
+    size_t MemoryFile::read(std::string& data)
+    {
+        if (m_mode & File::read_text)
+        {
+            data.resize(m_buffer.size() + 1);
+            std::memcpy(data.data(), m_buffer.data(), m_buffer.size());
+            data.data()[data.size() - 1] = '\0';
+            return data.size();
+        }
+        else if (m_mode & File::read_bin)
+        {
+            data.resize(m_buffer.size());
+            std::memcpy(data.data(), m_buffer.data(), m_buffer.size());
+            return data.size();
+        }
+    }
+
+    size_t MemoryFile::write(const std::string& data)
+    {
+        if (m_mode & File::read_text)
+        {
+            m_buffer.resize(data.size() + 1);
+            std::memcpy(m_buffer.data(), data.data(), m_buffer.size());
             m_buffer[m_buffer.size() - 1] = std::byte('\0');
             return m_buffer.size();
         }
         else if (m_mode & File::read_bin)
         {
             m_buffer.resize(data.size());
-            std::copy(data.begin(), data.end(), m_buffer.begin());
+            std::memcpy(m_buffer.data(), data.data(), m_buffer.size());
             return m_buffer.size();
         }
     }

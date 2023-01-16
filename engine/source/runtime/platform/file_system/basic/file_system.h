@@ -28,15 +28,27 @@ namespace Piccolo
 
         size_t read(FilePtr file, std::vector<std::byte>& buffer) { return file->read(buffer); }
         size_t write(FilePtr file, const std::vector<std::byte>& buffer) { return file->write(buffer); }
+        size_t read(FilePtr file, std::string& buffer) { return file->read(buffer); }
+        size_t write(FilePtr file, const std::string& buffer) { return file->write(buffer); }
 
         std::future<size_t> readAsync(std::shared_ptr<thread_pool> tp, FilePtr file, std::vector<std::byte>& buffer)
         {
-            return tp->enqueue_task(&FileSystem::read, this, file, buffer);
+            return tp->enqueue_task([file, &buffer]() { return file->read(buffer); });
         }
 
         std::future<size_t> writeAsync(std::shared_ptr<thread_pool> tp, FilePtr file, const std::vector<std::byte>& buffer)
         {
-            return tp->enqueue_task(&FileSystem::write, this, file, buffer);
+            return tp->enqueue_task([file, &buffer]() { return file->write(buffer); });
+        }
+
+        std::future<size_t> readAsync(std::shared_ptr<thread_pool> tp, FilePtr file, std::string& buffer)
+        {
+            return tp->enqueue_task([file, &buffer]() { return file->read(buffer); });
+        }
+
+        std::future<size_t> writeAsync(std::shared_ptr<thread_pool> tp, FilePtr file, const std::string& buffer)
+        {
+            return tp->enqueue_task([file, &buffer]() { return file->write(buffer); });
         }
 
         // TODO
@@ -55,8 +67,7 @@ namespace Piccolo
         // -------------------------------------------------------------------
         // -------------------------------------------------------------------
 
-        virtual void buildFSCache() = 0;
-
+        virtual void    buildFSCache()                                = 0;
         virtual FilePtr open(const std::string& vpath, uint32_t mode) = 0;
         virtual bool    close(FilePtr file)                           = 0;
 

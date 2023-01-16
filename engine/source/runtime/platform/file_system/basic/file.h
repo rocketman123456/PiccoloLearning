@@ -48,6 +48,8 @@ namespace Piccolo
         // If Read Text, will read [size - 1] bytes, because last will be ['\0'] for string
         virtual size_t read(std::vector<std::byte>& data)        = 0;
         virtual size_t write(const std::vector<std::byte>& data) = 0;
+        virtual size_t read(std::string& data)                   = 0;
+        virtual size_t write(const std::string& data)            = 0;
 
     public:
         uint32_t m_mode;
