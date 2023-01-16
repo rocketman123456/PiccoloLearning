@@ -12,4 +12,7 @@ namespace Piccolo
     std::string replace_all(const std::string& target, const std::string& from, const std::string& to);
 
     float string_match(const std::string& left, const std::string& right);
+
+    bool start_with(const std::string& full_string, const std::string& starting);
+    bool end_with(const std::string& full_string, const std::string& ending);
 } // namespace Piccolo

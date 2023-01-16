@@ -6,7 +6,7 @@ namespace Piccolo
     class NativeFileSystem : public FileSystem
     {
     public:
-        NativeFileSystem(const std::string& vpath, const std::string rpath);
+        NativeFileSystem(const std::string& vpath, const std::string& rpath);
         virtual ~NativeFileSystem() = default;
 
         virtual void buildFSCache() override;

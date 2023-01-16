@@ -7,7 +7,7 @@ namespace Piccolo
     class MemoryFileSystem : public FileSystem
     {
     public:
-        MemoryFileSystem(const std::string& vpath, const std::string rpath);
+        MemoryFileSystem(const std::string& vpath, const std::string& rpath);
         virtual ~MemoryFileSystem() = default;
 
         virtual void buildFSCache() override;

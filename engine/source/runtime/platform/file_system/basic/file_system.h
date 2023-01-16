@@ -11,7 +11,7 @@ namespace Piccolo
     class FileSystem
     {
     public:
-        FileSystem(const std::string& vpath, const std::string rpath) : m_vpath {vpath}, m_rpath {rpath} {}
+        FileSystem(const std::string& vpath, const std::string& rpath) : m_vpath {vpath}, m_rpath {rpath} {}
         virtual ~FileSystem() = default;
 
         bool isFileExist(const std::string& file_name) const

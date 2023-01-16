@@ -3,11 +3,13 @@
 
 namespace Piccolo
 {
+    MemoryFileSystem::MemoryFileSystem(const std::string& vpath, const std::string& rpath) : FileSystem(vpath, rpath) {}
+
     void MemoryFileSystem::buildFSCache() {}
 
     FilePtr MemoryFileSystem::open(const std::string& vpath_, uint32_t mode)
     {
-        auto vpath = getNormalizedPath(vpath_);
+        auto vpath = get_normalized_path(vpath_);
         return std::make_shared<MemoryFile>(vpath, vpath);
     }
 

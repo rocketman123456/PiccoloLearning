@@ -21,11 +21,11 @@ namespace Piccolo
         }
         else if (fs.m_type == "memory")
         {
-            // TODO
+            m_fs.emplace_back(std::make_shared<MemoryFileSystem>(fs.m_vpath, fs.m_rpath));
         }
         else if (fs.m_type == "zip")
         {
-            // TODO
+            m_fs.emplace_back(std::make_shared<ZipFileSystem>(fs.m_vpath, fs.m_rpath));
         }
     }
 
@@ -50,6 +50,8 @@ namespace Piccolo
     {
         for (auto fs : m_fs)
         {
+            fs->buildFSCache();
+
             for (auto file : fs->m_vfiles)
             {
                 m_fileCache.emplace(file, fs);

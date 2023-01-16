@@ -160,4 +160,28 @@ namespace Piccolo
         }
         return match_val;
     }
+
+    bool start_with(const std::string& full_string, const std::string& starting)
+    {
+        if (full_string.length() >= starting.length())
+        {
+            return (0 == full_string.compare(0, starting.length(), starting));
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool end_with(const std::string& full_string, const std::string& ending)
+    {
+        if (full_string.length() >= ending.length())
+        {
+            return (0 == full_string.compare(full_string.length() - ending.length(), ending.length(), ending));
+        }
+        else
+        {
+            return false;
+        }
+    }
 } // namespace Piccolo

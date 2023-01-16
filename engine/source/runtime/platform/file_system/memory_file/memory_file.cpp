@@ -22,11 +22,7 @@ namespace Piccolo
         this->m_mode         = mode;
         this->m_seek_pos     = 0;
         this->m_is_read_only = true;
-        if (mode & File::write_bin)
-        {
-            m_is_read_only = false;
-        }
-        if (mode & File::write_text)
+        if (mode & File::write_bin || mode & File::write_text)
         {
             m_is_read_only = false;
         }
@@ -40,7 +36,7 @@ namespace Piccolo
             m_is_read_only = false;
             m_buffer.clear();
         }
-        m_is_opened = true;
+        m_opened = true;
         return true;
     }
 
@@ -48,12 +44,12 @@ namespace Piccolo
     {
         m_buffer.clear();
         m_is_read_only = true;
-        m_is_opened    = false;
+        m_opened    = false;
         m_seek_pos     = 0;
         return true;
     }
 
-    bool MemoryFile::isOpened() const { return m_is_opened; }
+    bool MemoryFile::isOpened() const { return m_opened; }
 
     bool MemoryFile::isReadOnly() const { return m_is_read_only; }
 

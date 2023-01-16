@@ -37,18 +37,27 @@ int main(int argc, char** argv)
     auto path = g_runtime_global_context.m_config_manager->getRootFolder();
 
     {
-        auto fs = std::make_shared<NativeFileSystem>("asset", path.string() + "/asset-test");
+        // auto fs = std::make_shared<NativeFileSystem>("asset", path.string() + "/asset-test");
+        // fs->buildFSCache();
+
+        // auto file = fs->open("asset/world/test01.world.json", File::read_bin);
+
+        // FileBuffer buffer;
+        // file->read(buffer);
+        // file->close();
+        // std::cout << (char*)buffer.data() << std::endl;
+    }
+
+    {
+        auto fs = std::make_shared<ZipFileSystem>("asset", path.string() + "/asset-test.zip");
         fs->buildFSCache();
 
-        auto file = fs->open("asset/world/test01.world.json", File::read_bin);
+        auto file = fs->open("asset/asset-test/world/test01.world.json", File::read_bin);
 
         FileBuffer buffer;
         file->read(buffer);
         file->close();
         std::cout << (char*)buffer.data() << std::endl;
-    }
-
-    {
     }
 
     // engine->run();

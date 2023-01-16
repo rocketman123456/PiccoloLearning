@@ -4,7 +4,7 @@
 
 namespace Piccolo
 {
-    std::string getNormalizedPath(const std::string& path)
+    std::string get_normalized_path(const std::string& path)
     {
         // replace '\\'
         auto temp = replace_all(path, "\\", "/");
@@ -14,5 +14,17 @@ namespace Piccolo
             temp = temp.substr(1, temp.size() - 1);
         }
         return temp;
+    }
+
+    std::string combine_path(const std::string& path1, const std::string& path2)
+    {
+        if(path1.size() == 0)
+        {
+            return path2;
+        }
+        else
+        {
+            return path1 + "/" + path2;
+        }
     }
 } // namespace Piccolo

@@ -25,8 +25,10 @@ namespace Piccolo
         size_t   m_seek_pos     = 0;
         uint32_t m_mode         = 0;
         bool     m_is_read_only = false;
-        bool     m_is_opened    = false;
+        bool     m_opened    = false;
 
         FileBuffer m_buffer;
     };
+
+    using MemoryFilePtr = std::shared_ptr<MemoryFile>;
 } // namespace Piccolo
