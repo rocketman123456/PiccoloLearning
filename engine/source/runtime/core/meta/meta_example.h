@@ -1,5 +1,4 @@
 #pragma once
-
 #include "runtime/core/meta/reflection/reflection.h"
 
 namespace Piccolo

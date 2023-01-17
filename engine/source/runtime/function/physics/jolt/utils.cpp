@@ -94,7 +94,7 @@ namespace Piccolo
         JPH::Vec4 cols[4];
         for (int i = 0; i < 4; i++)
         {
-            cols[i] = JPH::Vec4(m.m_mat[0][i], m.m_mat[1][i], m.m_mat[2][i], m.m_mat[3][i]);
+            cols[i] = JPH::Vec4(m.m_rows[0][i], m.m_rows[1][i], m.m_rows[2][i], m.m_rows[3][i]);
         }
 
         return {cols[0], cols[1], cols[2], cols[3]};

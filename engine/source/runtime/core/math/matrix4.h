@@ -6,7 +6,7 @@
 #include "runtime/core/math/vector3.h"
 #include "runtime/core/math/vector4.h"
 
-// TODO : 
+// TODO :
 
 namespace Piccolo
 {
@@ -42,202 +42,127 @@ namespace Piccolo
     [ m[3][0]  m[3][1]  m[3][2]  m[3][3] ]   {1}
     </pre>
     */
-    REFLECTION_TYPE(Matrix4x4_)
-    CLASS(Matrix4x4_, Fields)
-    {
-        REFLECTION_BODY(Matrix4x4_);
 
-    public:
-        Matrix4x4_() {}
-        float v0 {1.f};
-        float v1 {0};
-        float v2 {0};
-        float v3 {0};
-        float v4 {0};
-        float v5 {1.f};
-        float v6 {0};
-        float v7 {0};
-        float v8 {0};
-        float v9 {0};
-        float v10 {1.f};
-        float v11 {0};
-        float v12 {0};
-        float v13 {0};
-        float v14 {0};
-        float v15 {1.f};
-    };
-
-    class Matrix4x4
+    REFLECTION_TYPE(Matrix4x4)
+    CLASS(Matrix4x4, Fields)
     {
+        REFLECTION_BODY(Matrix4x4);
+
     public:
         /// The matrix entries, indexed by [row][col]
-        float m_mat[4][4];
+        std::vector<Vector4> m_rows {Vector4::ZERO, Vector4::ZERO, Vector4::ZERO, Vector4::ZERO};
 
     public:
-        /** Default constructor.
-        @note
-        It does <b>NOT</b> initialize the matrix for efficiency.
-        */
-        Matrix4x4(const Matrix4x4_& mat)
-        {
-            m_mat[0][0] = mat.v0;
-            m_mat[0][1] = mat.v1;
-            m_mat[0][2] = mat.v2;
-            m_mat[0][3] = mat.v3;
-            m_mat[1][0] = mat.v4;
-            m_mat[1][1] = mat.v5;
-            m_mat[1][2] = mat.v6;
-            m_mat[1][3] = mat.v7;
-            m_mat[2][0] = mat.v8;
-            m_mat[2][1] = mat.v9;
-            m_mat[2][2] = mat.v10;
-            m_mat[2][3] = mat.v11;
-            m_mat[3][0] = mat.v12;
-            m_mat[3][1] = mat.v13;
-            m_mat[3][2] = mat.v14;
-            m_mat[3][3] = mat.v15;
-        }
-
-        Matrix4x4_ toMatrix4x4_()
-        {
-            Matrix4x4_ res;
-
-            res.v0  = m_mat[0][0];
-            res.v1  = m_mat[0][1];
-            res.v2  = m_mat[0][2];
-            res.v3  = m_mat[0][3];
-            res.v4  = m_mat[1][0];
-            res.v5  = m_mat[1][1];
-            res.v6  = m_mat[1][2];
-            res.v7  = m_mat[1][3];
-            res.v8  = m_mat[2][0];
-            res.v9  = m_mat[2][1];
-            res.v10 = m_mat[2][2];
-            res.v11 = m_mat[2][3];
-            res.v12 = m_mat[3][0];
-            res.v13 = m_mat[3][1];
-            res.v14 = m_mat[3][2];
-            res.v15 = m_mat[3][3];
-            return res;
-        }
-
         Matrix4x4() { operator=(IDENTITY); }
 
-        Matrix4x4(const float (&float_array)[16])
+        Matrix4x4(const float(&float_array)[16])
         {
-            m_mat[0][0] = float_array[0];
-            m_mat[0][1] = float_array[1];
-            m_mat[0][2] = float_array[2];
-            m_mat[0][3] = float_array[3];
-            m_mat[1][0] = float_array[4];
-            m_mat[1][1] = float_array[5];
-            m_mat[1][2] = float_array[6];
-            m_mat[1][3] = float_array[7];
-            m_mat[2][0] = float_array[8];
-            m_mat[2][1] = float_array[9];
-            m_mat[2][2] = float_array[10];
-            m_mat[2][3] = float_array[11];
-            m_mat[3][0] = float_array[12];
-            m_mat[3][1] = float_array[13];
-            m_mat[3][2] = float_array[14];
-            m_mat[3][3] = float_array[15];
+            m_rows[0][0] = float_array[0];
+            m_rows[0][1] = float_array[1];
+            m_rows[0][2] = float_array[2];
+            m_rows[0][3] = float_array[3];
+            m_rows[1][0] = float_array[4];
+            m_rows[1][1] = float_array[5];
+            m_rows[1][2] = float_array[6];
+            m_rows[1][3] = float_array[7];
+            m_rows[2][0] = float_array[8];
+            m_rows[2][1] = float_array[9];
+            m_rows[2][2] = float_array[10];
+            m_rows[2][3] = float_array[11];
+            m_rows[3][0] = float_array[12];
+            m_rows[3][1] = float_array[13];
+            m_rows[3][2] = float_array[14];
+            m_rows[3][3] = float_array[15];
         }
 
-        Matrix4x4(float m00,
-                  float m01,
-                  float m02,
-                  float m03,
-                  float m10,
-                  float m11,
-                  float m12,
-                  float m13,
-                  float m20,
-                  float m21,
-                  float m22,
-                  float m23,
-                  float m30,
-                  float m31,
-                  float m32,
-                  float m33)
+        explicit Matrix4x4(float arr[4][4])
         {
-            m_mat[0][0] = m00;
-            m_mat[0][1] = m01;
-            m_mat[0][2] = m02;
-            m_mat[0][3] = m03;
-            m_mat[1][0] = m10;
-            m_mat[1][1] = m11;
-            m_mat[1][2] = m12;
-            m_mat[1][3] = m13;
-            m_mat[2][0] = m20;
-            m_mat[2][1] = m21;
-            m_mat[2][2] = m22;
-            m_mat[2][3] = m23;
-            m_mat[3][0] = m30;
-            m_mat[3][1] = m31;
-            m_mat[3][2] = m32;
-            m_mat[3][3] = m33;
+            memcpy(m_rows[0].ptr(), arr[0], 4 * sizeof(float));
+            memcpy(m_rows[1].ptr(), arr[1], 4 * sizeof(float));
+            memcpy(m_rows[2].ptr(), arr[2], 4 * sizeof(float));
+            memcpy(m_rows[3].ptr(), arr[2], 4 * sizeof(float));
+        }
+
+        Matrix4x4(float(&float_array)[9])
+        {
+            m_rows[0][0] = float_array[0];
+            m_rows[0][1] = float_array[1];
+            m_rows[0][2] = float_array[2];
+            m_rows[0][3] = float_array[3];
+            m_rows[1][0] = float_array[4];
+            m_rows[1][1] = float_array[5];
+            m_rows[1][2] = float_array[6];
+            m_rows[1][3] = float_array[7];
+            m_rows[2][0] = float_array[8];
+            m_rows[2][1] = float_array[9];
+            m_rows[2][2] = float_array[10];
+            m_rows[2][3] = float_array[11];
+            m_rows[3][0] = float_array[12];
+            m_rows[3][1] = float_array[13];
+            m_rows[3][2] = float_array[14];
+            m_rows[3][3] = float_array[15];
         }
 
         Matrix4x4(const Vector4& row0, const Vector4& row1, const Vector4& row2, const Vector4& row3)
         {
-            m_mat[0][0] = row0.x;
-            m_mat[0][1] = row0.y;
-            m_mat[0][2] = row0.z;
-            m_mat[0][3] = row0.w;
-            m_mat[1][0] = row1.x;
-            m_mat[1][1] = row1.y;
-            m_mat[1][2] = row1.z;
-            m_mat[1][3] = row1.w;
-            m_mat[2][0] = row2.x;
-            m_mat[2][1] = row2.y;
-            m_mat[2][2] = row2.z;
-            m_mat[2][3] = row2.w;
-            m_mat[3][0] = row3.x;
-            m_mat[3][1] = row3.y;
-            m_mat[3][2] = row3.z;
-            m_mat[3][3] = row3.w;
+            m_rows[0][0] = row0.x;
+            m_rows[0][1] = row0.y;
+            m_rows[0][2] = row0.z;
+            m_rows[0][3] = row0.w;
+            m_rows[1][0] = row1.x;
+            m_rows[1][1] = row1.y;
+            m_rows[1][2] = row1.z;
+            m_rows[1][3] = row1.w;
+            m_rows[2][0] = row2.x;
+            m_rows[2][1] = row2.y;
+            m_rows[2][2] = row2.z;
+            m_rows[2][3] = row2.w;
+            m_rows[3][0] = row3.x;
+            m_rows[3][1] = row3.y;
+            m_rows[3][2] = row3.z;
+            m_rows[3][3] = row3.w;
         }
 
         Matrix4x4(const Vector3& position, const Vector3& scale, const Quaternion& rotation) { makeTransform(position, scale, rotation); }
 
-        void fromData(const float (&float_array)[16])
+        void fromData(const float(&float_array)[16])
         {
-            m_mat[0][0] = float_array[0];
-            m_mat[0][1] = float_array[1];
-            m_mat[0][2] = float_array[2];
-            m_mat[0][3] = float_array[3];
-            m_mat[1][0] = float_array[4];
-            m_mat[1][1] = float_array[5];
-            m_mat[1][2] = float_array[6];
-            m_mat[1][3] = float_array[7];
-            m_mat[2][0] = float_array[8];
-            m_mat[2][1] = float_array[9];
-            m_mat[2][2] = float_array[10];
-            m_mat[2][3] = float_array[11];
-            m_mat[3][0] = float_array[12];
-            m_mat[3][1] = float_array[13];
-            m_mat[3][2] = float_array[14];
-            m_mat[3][3] = float_array[15];
+            m_rows[0][0] = float_array[0];
+            m_rows[0][1] = float_array[1];
+            m_rows[0][2] = float_array[2];
+            m_rows[0][3] = float_array[3];
+            m_rows[1][0] = float_array[4];
+            m_rows[1][1] = float_array[5];
+            m_rows[1][2] = float_array[6];
+            m_rows[1][3] = float_array[7];
+            m_rows[2][0] = float_array[8];
+            m_rows[2][1] = float_array[9];
+            m_rows[2][2] = float_array[10];
+            m_rows[2][3] = float_array[11];
+            m_rows[3][0] = float_array[12];
+            m_rows[3][1] = float_array[13];
+            m_rows[3][2] = float_array[14];
+            m_rows[3][3] = float_array[15];
         }
 
-        void toData(float (&float_array)[16]) const
+        void toData(float(&float_array)[16]) const
         {
-            float_array[0]  = m_mat[0][0];
-            float_array[1]  = m_mat[0][1];
-            float_array[2]  = m_mat[0][2];
-            float_array[3]  = m_mat[0][3];
-            float_array[4]  = m_mat[1][0];
-            float_array[5]  = m_mat[1][1];
-            float_array[6]  = m_mat[1][2];
-            float_array[7]  = m_mat[1][3];
-            float_array[8]  = m_mat[2][0];
-            float_array[9]  = m_mat[2][1];
-            float_array[10] = m_mat[2][2];
-            float_array[11] = m_mat[2][3];
-            float_array[12] = m_mat[3][0];
-            float_array[13] = m_mat[3][1];
-            float_array[14] = m_mat[3][2];
-            float_array[15] = m_mat[3][3];
+            float_array[0]  = m_rows[0][0];
+            float_array[1]  = m_rows[0][1];
+            float_array[2]  = m_rows[0][2];
+            float_array[3]  = m_rows[0][3];
+            float_array[4]  = m_rows[1][0];
+            float_array[5]  = m_rows[1][1];
+            float_array[6]  = m_rows[1][2];
+            float_array[7]  = m_rows[1][3];
+            float_array[8]  = m_rows[2][0];
+            float_array[9]  = m_rows[2][1];
+            float_array[10] = m_rows[2][2];
+            float_array[11] = m_rows[2][3];
+            float_array[12] = m_rows[3][0];
+            float_array[13] = m_rows[3][1];
+            float_array[14] = m_rows[3][2];
+            float_array[15] = m_rows[3][3];
         }
 
         /** Creates a standard 4x4 transformation matrix with a zero translation part from a rotation/scaling 3x3
@@ -245,22 +170,22 @@ namespace Piccolo
          */
         void setMatrix3x3(const Matrix3x3& mat3)
         {
-            m_mat[0][0] = mat3.m_mat[0][0];
-            m_mat[0][1] = mat3.m_mat[0][1];
-            m_mat[0][2] = mat3.m_mat[0][2];
-            m_mat[0][3] = 0;
-            m_mat[1][0] = mat3.m_mat[1][0];
-            m_mat[1][1] = mat3.m_mat[1][1];
-            m_mat[1][2] = mat3.m_mat[1][2];
-            m_mat[1][3] = 0;
-            m_mat[2][0] = mat3.m_mat[2][0];
-            m_mat[2][1] = mat3.m_mat[2][1];
-            m_mat[2][2] = mat3.m_mat[2][2];
-            m_mat[2][3] = 0;
-            m_mat[3][0] = 0;
-            m_mat[3][1] = 0;
-            m_mat[3][2] = 0;
-            m_mat[3][3] = 1;
+            m_rows[0][0] = mat3.m_rows[0][0];
+            m_rows[0][1] = mat3.m_rows[0][1];
+            m_rows[0][2] = mat3.m_rows[0][2];
+            m_rows[0][3] = 0;
+            m_rows[1][0] = mat3.m_rows[1][0];
+            m_rows[1][1] = mat3.m_rows[1][1];
+            m_rows[1][2] = mat3.m_rows[1][2];
+            m_rows[1][3] = 0;
+            m_rows[2][0] = mat3.m_rows[2][0];
+            m_rows[2][1] = mat3.m_rows[2][1];
+            m_rows[2][2] = mat3.m_rows[2][2];
+            m_rows[2][3] = 0;
+            m_rows[3][0] = 0;
+            m_rows[3][1] = 0;
+            m_rows[3][2] = 0;
+            m_rows[3][3] = 1;
         }
 
         /** Creates a standard 4x4 transformation matrix with a zero translation part from a rotation/scaling
@@ -277,37 +202,37 @@ namespace Piccolo
         float* operator[](size_t row_index)
         {
             assert(row_index < 4);
-            return m_mat[row_index];
+            return m_rows[row_index].ptr();
         }
 
         const float* operator[](size_t row_index) const
         {
             assert(row_index < 4);
-            return m_mat[row_index];
+            return m_rows[row_index].ptr();
         }
 
         Matrix4x4 concatenate(const Matrix4x4& m2) const
         {
             Matrix4x4 r;
-            r.m_mat[0][0] = m_mat[0][0] * m2.m_mat[0][0] + m_mat[0][1] * m2.m_mat[1][0] + m_mat[0][2] * m2.m_mat[2][0] + m_mat[0][3] * m2.m_mat[3][0];
-            r.m_mat[0][1] = m_mat[0][0] * m2.m_mat[0][1] + m_mat[0][1] * m2.m_mat[1][1] + m_mat[0][2] * m2.m_mat[2][1] + m_mat[0][3] * m2.m_mat[3][1];
-            r.m_mat[0][2] = m_mat[0][0] * m2.m_mat[0][2] + m_mat[0][1] * m2.m_mat[1][2] + m_mat[0][2] * m2.m_mat[2][2] + m_mat[0][3] * m2.m_mat[3][2];
-            r.m_mat[0][3] = m_mat[0][0] * m2.m_mat[0][3] + m_mat[0][1] * m2.m_mat[1][3] + m_mat[0][2] * m2.m_mat[2][3] + m_mat[0][3] * m2.m_mat[3][3];
+            r.m_rows[0][0] = m_rows[0][0] * m2.m_rows[0][0] + m_rows[0][1] * m2.m_rows[1][0] + m_rows[0][2] * m2.m_rows[2][0] + m_rows[0][3] * m2.m_rows[3][0];
+            r.m_rows[0][1] = m_rows[0][0] * m2.m_rows[0][1] + m_rows[0][1] * m2.m_rows[1][1] + m_rows[0][2] * m2.m_rows[2][1] + m_rows[0][3] * m2.m_rows[3][1];
+            r.m_rows[0][2] = m_rows[0][0] * m2.m_rows[0][2] + m_rows[0][1] * m2.m_rows[1][2] + m_rows[0][2] * m2.m_rows[2][2] + m_rows[0][3] * m2.m_rows[3][2];
+            r.m_rows[0][3] = m_rows[0][0] * m2.m_rows[0][3] + m_rows[0][1] * m2.m_rows[1][3] + m_rows[0][2] * m2.m_rows[2][3] + m_rows[0][3] * m2.m_rows[3][3];
 
-            r.m_mat[1][0] = m_mat[1][0] * m2.m_mat[0][0] + m_mat[1][1] * m2.m_mat[1][0] + m_mat[1][2] * m2.m_mat[2][0] + m_mat[1][3] * m2.m_mat[3][0];
-            r.m_mat[1][1] = m_mat[1][0] * m2.m_mat[0][1] + m_mat[1][1] * m2.m_mat[1][1] + m_mat[1][2] * m2.m_mat[2][1] + m_mat[1][3] * m2.m_mat[3][1];
-            r.m_mat[1][2] = m_mat[1][0] * m2.m_mat[0][2] + m_mat[1][1] * m2.m_mat[1][2] + m_mat[1][2] * m2.m_mat[2][2] + m_mat[1][3] * m2.m_mat[3][2];
-            r.m_mat[1][3] = m_mat[1][0] * m2.m_mat[0][3] + m_mat[1][1] * m2.m_mat[1][3] + m_mat[1][2] * m2.m_mat[2][3] + m_mat[1][3] * m2.m_mat[3][3];
+            r.m_rows[1][0] = m_rows[1][0] * m2.m_rows[0][0] + m_rows[1][1] * m2.m_rows[1][0] + m_rows[1][2] * m2.m_rows[2][0] + m_rows[1][3] * m2.m_rows[3][0];
+            r.m_rows[1][1] = m_rows[1][0] * m2.m_rows[0][1] + m_rows[1][1] * m2.m_rows[1][1] + m_rows[1][2] * m2.m_rows[2][1] + m_rows[1][3] * m2.m_rows[3][1];
+            r.m_rows[1][2] = m_rows[1][0] * m2.m_rows[0][2] + m_rows[1][1] * m2.m_rows[1][2] + m_rows[1][2] * m2.m_rows[2][2] + m_rows[1][3] * m2.m_rows[3][2];
+            r.m_rows[1][3] = m_rows[1][0] * m2.m_rows[0][3] + m_rows[1][1] * m2.m_rows[1][3] + m_rows[1][2] * m2.m_rows[2][3] + m_rows[1][3] * m2.m_rows[3][3];
 
-            r.m_mat[2][0] = m_mat[2][0] * m2.m_mat[0][0] + m_mat[2][1] * m2.m_mat[1][0] + m_mat[2][2] * m2.m_mat[2][0] + m_mat[2][3] * m2.m_mat[3][0];
-            r.m_mat[2][1] = m_mat[2][0] * m2.m_mat[0][1] + m_mat[2][1] * m2.m_mat[1][1] + m_mat[2][2] * m2.m_mat[2][1] + m_mat[2][3] * m2.m_mat[3][1];
-            r.m_mat[2][2] = m_mat[2][0] * m2.m_mat[0][2] + m_mat[2][1] * m2.m_mat[1][2] + m_mat[2][2] * m2.m_mat[2][2] + m_mat[2][3] * m2.m_mat[3][2];
-            r.m_mat[2][3] = m_mat[2][0] * m2.m_mat[0][3] + m_mat[2][1] * m2.m_mat[1][3] + m_mat[2][2] * m2.m_mat[2][3] + m_mat[2][3] * m2.m_mat[3][3];
+            r.m_rows[2][0] = m_rows[2][0] * m2.m_rows[0][0] + m_rows[2][1] * m2.m_rows[1][0] + m_rows[2][2] * m2.m_rows[2][0] + m_rows[2][3] * m2.m_rows[3][0];
+            r.m_rows[2][1] = m_rows[2][0] * m2.m_rows[0][1] + m_rows[2][1] * m2.m_rows[1][1] + m_rows[2][2] * m2.m_rows[2][1] + m_rows[2][3] * m2.m_rows[3][1];
+            r.m_rows[2][2] = m_rows[2][0] * m2.m_rows[0][2] + m_rows[2][1] * m2.m_rows[1][2] + m_rows[2][2] * m2.m_rows[2][2] + m_rows[2][3] * m2.m_rows[3][2];
+            r.m_rows[2][3] = m_rows[2][0] * m2.m_rows[0][3] + m_rows[2][1] * m2.m_rows[1][3] + m_rows[2][2] * m2.m_rows[2][3] + m_rows[2][3] * m2.m_rows[3][3];
 
-            r.m_mat[3][0] = m_mat[3][0] * m2.m_mat[0][0] + m_mat[3][1] * m2.m_mat[1][0] + m_mat[3][2] * m2.m_mat[2][0] + m_mat[3][3] * m2.m_mat[3][0];
-            r.m_mat[3][1] = m_mat[3][0] * m2.m_mat[0][1] + m_mat[3][1] * m2.m_mat[1][1] + m_mat[3][2] * m2.m_mat[2][1] + m_mat[3][3] * m2.m_mat[3][1];
-            r.m_mat[3][2] = m_mat[3][0] * m2.m_mat[0][2] + m_mat[3][1] * m2.m_mat[1][2] + m_mat[3][2] * m2.m_mat[2][2] + m_mat[3][3] * m2.m_mat[3][2];
-            r.m_mat[3][3] = m_mat[3][0] * m2.m_mat[0][3] + m_mat[3][1] * m2.m_mat[1][3] + m_mat[3][2] * m2.m_mat[2][3] + m_mat[3][3] * m2.m_mat[3][3];
+            r.m_rows[3][0] = m_rows[3][0] * m2.m_rows[0][0] + m_rows[3][1] * m2.m_rows[1][0] + m_rows[3][2] * m2.m_rows[2][0] + m_rows[3][3] * m2.m_rows[3][0];
+            r.m_rows[3][1] = m_rows[3][0] * m2.m_rows[0][1] + m_rows[3][1] * m2.m_rows[1][1] + m_rows[3][2] * m2.m_rows[2][1] + m_rows[3][3] * m2.m_rows[3][1];
+            r.m_rows[3][2] = m_rows[3][0] * m2.m_rows[0][2] + m_rows[3][1] * m2.m_rows[1][2] + m_rows[3][2] * m2.m_rows[2][2] + m_rows[3][3] * m2.m_rows[3][2];
+            r.m_rows[3][3] = m_rows[3][0] * m2.m_rows[0][3] + m_rows[3][1] * m2.m_rows[1][3] + m_rows[3][2] * m2.m_rows[2][3] + m_rows[3][3] * m2.m_rows[3][3];
 
             return r;
         }
@@ -329,21 +254,21 @@ namespace Piccolo
         {
             Vector3 r;
 
-            float inv_w = 1.0f / (m_mat[3][0] * v.x + m_mat[3][1] * v.y + m_mat[3][2] * v.z + m_mat[3][3]);
+            float inv_w = 1.0f / (m_rows[3][0] * v.x + m_rows[3][1] * v.y + m_rows[3][2] * v.z + m_rows[3][3]);
 
-            r.x = (m_mat[0][0] * v.x + m_mat[0][1] * v.y + m_mat[0][2] * v.z + m_mat[0][3]) * inv_w;
-            r.y = (m_mat[1][0] * v.x + m_mat[1][1] * v.y + m_mat[1][2] * v.z + m_mat[1][3]) * inv_w;
-            r.z = (m_mat[2][0] * v.x + m_mat[2][1] * v.y + m_mat[2][2] * v.z + m_mat[2][3]) * inv_w;
+            r.x = (m_rows[0][0] * v.x + m_rows[0][1] * v.y + m_rows[0][2] * v.z + m_rows[0][3]) * inv_w;
+            r.y = (m_rows[1][0] * v.x + m_rows[1][1] * v.y + m_rows[1][2] * v.z + m_rows[1][3]) * inv_w;
+            r.z = (m_rows[2][0] * v.x + m_rows[2][1] * v.y + m_rows[2][2] * v.z + m_rows[2][3]) * inv_w;
 
             return r;
         }
 
         Vector4 operator*(const Vector4& v) const
         {
-            return Vector4(m_mat[0][0] * v.x + m_mat[0][1] * v.y + m_mat[0][2] * v.z + m_mat[0][3] * v.w,
-                           m_mat[1][0] * v.x + m_mat[1][1] * v.y + m_mat[1][2] * v.z + m_mat[1][3] * v.w,
-                           m_mat[2][0] * v.x + m_mat[2][1] * v.y + m_mat[2][2] * v.z + m_mat[2][3] * v.w,
-                           m_mat[3][0] * v.x + m_mat[3][1] * v.y + m_mat[3][2] * v.z + m_mat[3][3] * v.w);
+            return Vector4(m_rows[0][0] * v.x + m_rows[0][1] * v.y + m_rows[0][2] * v.z + m_rows[0][3] * v.w,
+                           m_rows[1][0] * v.x + m_rows[1][1] * v.y + m_rows[1][2] * v.z + m_rows[1][3] * v.w,
+                           m_rows[2][0] * v.x + m_rows[2][1] * v.y + m_rows[2][2] * v.z + m_rows[2][3] * v.w,
+                           m_rows[3][0] * v.x + m_rows[3][1] * v.y + m_rows[3][2] * v.z + m_rows[3][3] * v.w);
         }
 
         /** Matrix addition.
@@ -352,25 +277,25 @@ namespace Piccolo
         {
             Matrix4x4 r;
 
-            r.m_mat[0][0] = m_mat[0][0] + m2.m_mat[0][0];
-            r.m_mat[0][1] = m_mat[0][1] + m2.m_mat[0][1];
-            r.m_mat[0][2] = m_mat[0][2] + m2.m_mat[0][2];
-            r.m_mat[0][3] = m_mat[0][3] + m2.m_mat[0][3];
+            r.m_rows[0][0] = m_rows[0][0] + m2.m_rows[0][0];
+            r.m_rows[0][1] = m_rows[0][1] + m2.m_rows[0][1];
+            r.m_rows[0][2] = m_rows[0][2] + m2.m_rows[0][2];
+            r.m_rows[0][3] = m_rows[0][3] + m2.m_rows[0][3];
 
-            r.m_mat[1][0] = m_mat[1][0] + m2.m_mat[1][0];
-            r.m_mat[1][1] = m_mat[1][1] + m2.m_mat[1][1];
-            r.m_mat[1][2] = m_mat[1][2] + m2.m_mat[1][2];
-            r.m_mat[1][3] = m_mat[1][3] + m2.m_mat[1][3];
+            r.m_rows[1][0] = m_rows[1][0] + m2.m_rows[1][0];
+            r.m_rows[1][1] = m_rows[1][1] + m2.m_rows[1][1];
+            r.m_rows[1][2] = m_rows[1][2] + m2.m_rows[1][2];
+            r.m_rows[1][3] = m_rows[1][3] + m2.m_rows[1][3];
 
-            r.m_mat[2][0] = m_mat[2][0] + m2.m_mat[2][0];
-            r.m_mat[2][1] = m_mat[2][1] + m2.m_mat[2][1];
-            r.m_mat[2][2] = m_mat[2][2] + m2.m_mat[2][2];
-            r.m_mat[2][3] = m_mat[2][3] + m2.m_mat[2][3];
+            r.m_rows[2][0] = m_rows[2][0] + m2.m_rows[2][0];
+            r.m_rows[2][1] = m_rows[2][1] + m2.m_rows[2][1];
+            r.m_rows[2][2] = m_rows[2][2] + m2.m_rows[2][2];
+            r.m_rows[2][3] = m_rows[2][3] + m2.m_rows[2][3];
 
-            r.m_mat[3][0] = m_mat[3][0] + m2.m_mat[3][0];
-            r.m_mat[3][1] = m_mat[3][1] + m2.m_mat[3][1];
-            r.m_mat[3][2] = m_mat[3][2] + m2.m_mat[3][2];
-            r.m_mat[3][3] = m_mat[3][3] + m2.m_mat[3][3];
+            r.m_rows[3][0] = m_rows[3][0] + m2.m_rows[3][0];
+            r.m_rows[3][1] = m_rows[3][1] + m2.m_rows[3][1];
+            r.m_rows[3][2] = m_rows[3][2] + m2.m_rows[3][2];
+            r.m_rows[3][3] = m_rows[3][3] + m2.m_rows[3][3];
 
             return r;
         }
@@ -380,95 +305,71 @@ namespace Piccolo
         Matrix4x4 operator-(const Matrix4x4& m2) const
         {
             Matrix4x4 r;
-            r.m_mat[0][0] = m_mat[0][0] - m2.m_mat[0][0];
-            r.m_mat[0][1] = m_mat[0][1] - m2.m_mat[0][1];
-            r.m_mat[0][2] = m_mat[0][2] - m2.m_mat[0][2];
-            r.m_mat[0][3] = m_mat[0][3] - m2.m_mat[0][3];
+            r.m_rows[0][0] = m_rows[0][0] - m2.m_rows[0][0];
+            r.m_rows[0][1] = m_rows[0][1] - m2.m_rows[0][1];
+            r.m_rows[0][2] = m_rows[0][2] - m2.m_rows[0][2];
+            r.m_rows[0][3] = m_rows[0][3] - m2.m_rows[0][3];
 
-            r.m_mat[1][0] = m_mat[1][0] - m2.m_mat[1][0];
-            r.m_mat[1][1] = m_mat[1][1] - m2.m_mat[1][1];
-            r.m_mat[1][2] = m_mat[1][2] - m2.m_mat[1][2];
-            r.m_mat[1][3] = m_mat[1][3] - m2.m_mat[1][3];
+            r.m_rows[1][0] = m_rows[1][0] - m2.m_rows[1][0];
+            r.m_rows[1][1] = m_rows[1][1] - m2.m_rows[1][1];
+            r.m_rows[1][2] = m_rows[1][2] - m2.m_rows[1][2];
+            r.m_rows[1][3] = m_rows[1][3] - m2.m_rows[1][3];
 
-            r.m_mat[2][0] = m_mat[2][0] - m2.m_mat[2][0];
-            r.m_mat[2][1] = m_mat[2][1] - m2.m_mat[2][1];
-            r.m_mat[2][2] = m_mat[2][2] - m2.m_mat[2][2];
-            r.m_mat[2][3] = m_mat[2][3] - m2.m_mat[2][3];
+            r.m_rows[2][0] = m_rows[2][0] - m2.m_rows[2][0];
+            r.m_rows[2][1] = m_rows[2][1] - m2.m_rows[2][1];
+            r.m_rows[2][2] = m_rows[2][2] - m2.m_rows[2][2];
+            r.m_rows[2][3] = m_rows[2][3] - m2.m_rows[2][3];
 
-            r.m_mat[3][0] = m_mat[3][0] - m2.m_mat[3][0];
-            r.m_mat[3][1] = m_mat[3][1] - m2.m_mat[3][1];
-            r.m_mat[3][2] = m_mat[3][2] - m2.m_mat[3][2];
-            r.m_mat[3][3] = m_mat[3][3] - m2.m_mat[3][3];
+            r.m_rows[3][0] = m_rows[3][0] - m2.m_rows[3][0];
+            r.m_rows[3][1] = m_rows[3][1] - m2.m_rows[3][1];
+            r.m_rows[3][2] = m_rows[3][2] - m2.m_rows[3][2];
+            r.m_rows[3][3] = m_rows[3][3] - m2.m_rows[3][3];
 
             return r;
         }
 
         Matrix4x4 operator*(float scalar) const
         {
-            return Matrix4x4(scalar * m_mat[0][0],
-                             scalar * m_mat[0][1],
-                             scalar * m_mat[0][2],
-                             scalar * m_mat[0][3],
-                             scalar * m_mat[1][0],
-                             scalar * m_mat[1][1],
-                             scalar * m_mat[1][2],
-                             scalar * m_mat[1][3],
-                             scalar * m_mat[2][0],
-                             scalar * m_mat[2][1],
-                             scalar * m_mat[2][2],
-                             scalar * m_mat[2][3],
-                             scalar * m_mat[3][0],
-                             scalar * m_mat[3][1],
-                             scalar * m_mat[3][2],
-                             scalar * m_mat[3][3]);
+            return Matrix4x4({{scalar * m_rows[0][0], scalar * m_rows[0][1], scalar * m_rows[0][2], scalar * m_rows[0][3]},
+                              {scalar * m_rows[1][0], scalar * m_rows[1][1], scalar * m_rows[1][2], scalar * m_rows[1][3]},
+                              {scalar * m_rows[2][0], scalar * m_rows[2][1], scalar * m_rows[2][2], scalar * m_rows[2][3]},
+                              {scalar * m_rows[3][0], scalar * m_rows[3][1], scalar * m_rows[3][2], scalar * m_rows[3][3]}});
         }
 
         /** Tests 2 matrices for equality.
          */
         bool operator==(const Matrix4x4& m2) const
         {
-            return !(m_mat[0][0] != m2.m_mat[0][0] || m_mat[0][1] != m2.m_mat[0][1] || m_mat[0][2] != m2.m_mat[0][2] || m_mat[0][3] != m2.m_mat[0][3] ||
-                     m_mat[1][0] != m2.m_mat[1][0] || m_mat[1][1] != m2.m_mat[1][1] || m_mat[1][2] != m2.m_mat[1][2] || m_mat[1][3] != m2.m_mat[1][3] ||
-                     m_mat[2][0] != m2.m_mat[2][0] || m_mat[2][1] != m2.m_mat[2][1] || m_mat[2][2] != m2.m_mat[2][2] || m_mat[2][3] != m2.m_mat[2][3] ||
-                     m_mat[3][0] != m2.m_mat[3][0] || m_mat[3][1] != m2.m_mat[3][1] || m_mat[3][2] != m2.m_mat[3][2] || m_mat[3][3] != m2.m_mat[3][3]);
+            return !(m_rows[0][0] != m2.m_rows[0][0] || m_rows[0][1] != m2.m_rows[0][1] || m_rows[0][2] != m2.m_rows[0][2] || m_rows[0][3] != m2.m_rows[0][3] ||
+                     m_rows[1][0] != m2.m_rows[1][0] || m_rows[1][1] != m2.m_rows[1][1] || m_rows[1][2] != m2.m_rows[1][2] || m_rows[1][3] != m2.m_rows[1][3] ||
+                     m_rows[2][0] != m2.m_rows[2][0] || m_rows[2][1] != m2.m_rows[2][1] || m_rows[2][2] != m2.m_rows[2][2] || m_rows[2][3] != m2.m_rows[2][3] ||
+                     m_rows[3][0] != m2.m_rows[3][0] || m_rows[3][1] != m2.m_rows[3][1] || m_rows[3][2] != m2.m_rows[3][2] || m_rows[3][3] != m2.m_rows[3][3]);
         }
 
         /** Tests 2 matrices for inequality.
          */
         bool operator!=(const Matrix4x4& m2) const
         {
-            return m_mat[0][0] != m2.m_mat[0][0] || m_mat[0][1] != m2.m_mat[0][1] || m_mat[0][2] != m2.m_mat[0][2] || m_mat[0][3] != m2.m_mat[0][3] ||
-                   m_mat[1][0] != m2.m_mat[1][0] || m_mat[1][1] != m2.m_mat[1][1] || m_mat[1][2] != m2.m_mat[1][2] || m_mat[1][3] != m2.m_mat[1][3] ||
-                   m_mat[2][0] != m2.m_mat[2][0] || m_mat[2][1] != m2.m_mat[2][1] || m_mat[2][2] != m2.m_mat[2][2] || m_mat[2][3] != m2.m_mat[2][3] ||
-                   m_mat[3][0] != m2.m_mat[3][0] || m_mat[3][1] != m2.m_mat[3][1] || m_mat[3][2] != m2.m_mat[3][2] || m_mat[3][3] != m2.m_mat[3][3];
+            return m_rows[0][0] != m2.m_rows[0][0] || m_rows[0][1] != m2.m_rows[0][1] || m_rows[0][2] != m2.m_rows[0][2] || m_rows[0][3] != m2.m_rows[0][3] ||
+                   m_rows[1][0] != m2.m_rows[1][0] || m_rows[1][1] != m2.m_rows[1][1] || m_rows[1][2] != m2.m_rows[1][2] || m_rows[1][3] != m2.m_rows[1][3] ||
+                   m_rows[2][0] != m2.m_rows[2][0] || m_rows[2][1] != m2.m_rows[2][1] || m_rows[2][2] != m2.m_rows[2][2] || m_rows[2][3] != m2.m_rows[2][3] ||
+                   m_rows[3][0] != m2.m_rows[3][0] || m_rows[3][1] != m2.m_rows[3][1] || m_rows[3][2] != m2.m_rows[3][2] || m_rows[3][3] != m2.m_rows[3][3];
         }
 
         Matrix4x4 transpose() const
         {
-            return Matrix4x4(m_mat[0][0],
-                             m_mat[1][0],
-                             m_mat[2][0],
-                             m_mat[3][0],
-                             m_mat[0][1],
-                             m_mat[1][1],
-                             m_mat[2][1],
-                             m_mat[3][1],
-                             m_mat[0][2],
-                             m_mat[1][2],
-                             m_mat[2][2],
-                             m_mat[3][2],
-                             m_mat[0][3],
-                             m_mat[1][3],
-                             m_mat[2][3],
-                             m_mat[3][3]);
+            return Matrix4x4({{m_rows[0][0], m_rows[1][0], m_rows[2][0], m_rows[3][0]},
+                              {m_rows[0][1], m_rows[1][1], m_rows[2][1], m_rows[3][1]},
+                              {m_rows[0][2], m_rows[1][2], m_rows[2][2], m_rows[3][2]},
+                              {m_rows[0][3], m_rows[1][3], m_rows[2][3], m_rows[3][3]}});
         }
 
         //-----------------------------------------------------------------------
         float getMinor(size_t r0, size_t r1, size_t r2, size_t c0, size_t c1, size_t c2) const
         {
-            return m_mat[r0][c0] * (m_mat[r1][c1] * m_mat[r2][c2] - m_mat[r2][c1] * m_mat[r1][c2]) -
-                   m_mat[r0][c1] * (m_mat[r1][c0] * m_mat[r2][c2] - m_mat[r2][c0] * m_mat[r1][c2]) +
-                   m_mat[r0][c2] * (m_mat[r1][c0] * m_mat[r2][c1] - m_mat[r2][c0] * m_mat[r1][c1]);
+            return m_rows[r0][c0] * (m_rows[r1][c1] * m_rows[r2][c2] - m_rows[r2][c1] * m_rows[r1][c2]) -
+                   m_rows[r0][c1] * (m_rows[r1][c0] * m_rows[r2][c2] - m_rows[r2][c0] * m_rows[r1][c2]) +
+                   m_rows[r0][c2] * (m_rows[r1][c0] * m_rows[r2][c1] - m_rows[r2][c0] * m_rows[r1][c1]);
         }
 
         /*
@@ -480,57 +381,45 @@ namespace Piccolo
          */
         void setTrans(const Vector3& v)
         {
-            m_mat[0][3] = v.x;
-            m_mat[1][3] = v.y;
-            m_mat[2][3] = v.z;
+            m_rows[0][3] = v.x;
+            m_rows[1][3] = v.y;
+            m_rows[2][3] = v.z;
         }
 
         /** Extracts the translation transformation part of the matrix.
          */
-        Vector3 getTrans() const { return Vector3(m_mat[0][3], m_mat[1][3], m_mat[2][3]); }
+        Vector3 getTrans() const { return Vector3(m_rows[0][3], m_rows[1][3], m_rows[2][3]); }
 
         Matrix4x4 buildViewportMatrix(uint32_t width, uint32_t height)
         {
-            return Matrix4x4(0.5f * (float)width,
-                             0.0f,
-                             0.0f,
-                             0.5f * (float)width,
-                             0.0f,
-                             -0.5f * (float)height,
-                             0.0f,
-                             0.5f * (float)height,
-                             0.0f,
-                             0.0f,
-                             -1.0f,
-                             1.0f,
-                             0.0f,
-                             0.0f,
-                             0.0f,
-                             1.0f);
+            return Matrix4x4({{0.5f * (float)width, 0.0f, 0.0f, 0.5f * (float)width},
+                              {0.0f, -0.5f * (float)height, 0.0f, 0.5f * (float)height},
+                              {0.0f, 0.0f, -1.0f, 1.0f},
+                              {0.0f, 0.0f, 0.0f, 1.0f}});
         }
 
         static Matrix4x4 mirrorMatrix(Vector4 mirror_plane)
         {
             Matrix4x4 result;
-            result.m_mat[0][0] = -2 * mirror_plane.x * mirror_plane.x + 1;
-            result.m_mat[1][0] = -2 * mirror_plane.x * mirror_plane.y;
-            result.m_mat[2][0] = -2 * mirror_plane.x * mirror_plane.z;
-            result.m_mat[3][0] = 0;
+            result.m_rows[0][0] = -2 * mirror_plane.x * mirror_plane.x + 1;
+            result.m_rows[1][0] = -2 * mirror_plane.x * mirror_plane.y;
+            result.m_rows[2][0] = -2 * mirror_plane.x * mirror_plane.z;
+            result.m_rows[3][0] = 0;
 
-            result.m_mat[0][1] = -2 * mirror_plane.y * mirror_plane.x;
-            result.m_mat[1][1] = -2 * mirror_plane.y * mirror_plane.y + 1;
-            result.m_mat[2][1] = -2 * mirror_plane.y * mirror_plane.z;
-            result.m_mat[3][1] = 0;
+            result.m_rows[0][1] = -2 * mirror_plane.y * mirror_plane.x;
+            result.m_rows[1][1] = -2 * mirror_plane.y * mirror_plane.y + 1;
+            result.m_rows[2][1] = -2 * mirror_plane.y * mirror_plane.z;
+            result.m_rows[3][1] = 0;
 
-            result.m_mat[0][2] = -2 * mirror_plane.z * mirror_plane.x;
-            result.m_mat[1][2] = -2 * mirror_plane.z * mirror_plane.y;
-            result.m_mat[2][2] = -2 * mirror_plane.z * mirror_plane.z + 1;
-            result.m_mat[3][2] = 0;
+            result.m_rows[0][2] = -2 * mirror_plane.z * mirror_plane.x;
+            result.m_rows[1][2] = -2 * mirror_plane.z * mirror_plane.y;
+            result.m_rows[2][2] = -2 * mirror_plane.z * mirror_plane.z + 1;
+            result.m_rows[3][2] = 0;
 
-            result.m_mat[0][3] = -2 * mirror_plane.w * mirror_plane.x;
-            result.m_mat[1][3] = -2 * mirror_plane.w * mirror_plane.y;
-            result.m_mat[2][3] = -2 * mirror_plane.w * mirror_plane.z;
-            result.m_mat[3][3] = 1;
+            result.m_rows[0][3] = -2 * mirror_plane.w * mirror_plane.x;
+            result.m_rows[1][3] = -2 * mirror_plane.w * mirror_plane.y;
+            result.m_rows[2][3] = -2 * mirror_plane.w * mirror_plane.z;
+            result.m_rows[3][3] = 1;
 
             return result;
         }
@@ -559,42 +448,42 @@ namespace Piccolo
          */
         void makeTrans(const Vector3& v)
         {
-            m_mat[0][0] = 1.0;
-            m_mat[0][1] = 0.0;
-            m_mat[0][2] = 0.0;
-            m_mat[0][3] = v.x;
-            m_mat[1][0] = 0.0;
-            m_mat[1][1] = 1.0;
-            m_mat[1][2] = 0.0;
-            m_mat[1][3] = v.y;
-            m_mat[2][0] = 0.0;
-            m_mat[2][1] = 0.0;
-            m_mat[2][2] = 1.0;
-            m_mat[2][3] = v.z;
-            m_mat[3][0] = 0.0;
-            m_mat[3][1] = 0.0;
-            m_mat[3][2] = 0.0;
-            m_mat[3][3] = 1.0;
+            m_rows[0][0] = 1.0;
+            m_rows[0][1] = 0.0;
+            m_rows[0][2] = 0.0;
+            m_rows[0][3] = v.x;
+            m_rows[1][0] = 0.0;
+            m_rows[1][1] = 1.0;
+            m_rows[1][2] = 0.0;
+            m_rows[1][3] = v.y;
+            m_rows[2][0] = 0.0;
+            m_rows[2][1] = 0.0;
+            m_rows[2][2] = 1.0;
+            m_rows[2][3] = v.z;
+            m_rows[3][0] = 0.0;
+            m_rows[3][1] = 0.0;
+            m_rows[3][2] = 0.0;
+            m_rows[3][3] = 1.0;
         }
 
         void makeTrans(float tx, float ty, float tz)
         {
-            m_mat[0][0] = 1.0;
-            m_mat[0][1] = 0.0;
-            m_mat[0][2] = 0.0;
-            m_mat[0][3] = tx;
-            m_mat[1][0] = 0.0;
-            m_mat[1][1] = 1.0;
-            m_mat[1][2] = 0.0;
-            m_mat[1][3] = ty;
-            m_mat[2][0] = 0.0;
-            m_mat[2][1] = 0.0;
-            m_mat[2][2] = 1.0;
-            m_mat[2][3] = tz;
-            m_mat[3][0] = 0.0;
-            m_mat[3][1] = 0.0;
-            m_mat[3][2] = 0.0;
-            m_mat[3][3] = 1.0;
+            m_rows[0][0] = 1.0;
+            m_rows[0][1] = 0.0;
+            m_rows[0][2] = 0.0;
+            m_rows[0][3] = tx;
+            m_rows[1][0] = 0.0;
+            m_rows[1][1] = 1.0;
+            m_rows[1][2] = 0.0;
+            m_rows[1][3] = ty;
+            m_rows[2][0] = 0.0;
+            m_rows[2][1] = 0.0;
+            m_rows[2][2] = 1.0;
+            m_rows[2][3] = tz;
+            m_rows[3][0] = 0.0;
+            m_rows[3][1] = 0.0;
+            m_rows[3][2] = 0.0;
+            m_rows[3][3] = 1.0;
         }
 
         /** Gets a translation matrix.
@@ -603,22 +492,22 @@ namespace Piccolo
         {
             Matrix4x4 r;
 
-            r.m_mat[0][0] = 1.0;
-            r.m_mat[0][1] = 0.0;
-            r.m_mat[0][2] = 0.0;
-            r.m_mat[0][3] = v.x;
-            r.m_mat[1][0] = 0.0;
-            r.m_mat[1][1] = 1.0;
-            r.m_mat[1][2] = 0.0;
-            r.m_mat[1][3] = v.y;
-            r.m_mat[2][0] = 0.0;
-            r.m_mat[2][1] = 0.0;
-            r.m_mat[2][2] = 1.0;
-            r.m_mat[2][3] = v.z;
-            r.m_mat[3][0] = 0.0;
-            r.m_mat[3][1] = 0.0;
-            r.m_mat[3][2] = 0.0;
-            r.m_mat[3][3] = 1.0;
+            r.m_rows[0][0] = 1.0;
+            r.m_rows[0][1] = 0.0;
+            r.m_rows[0][2] = 0.0;
+            r.m_rows[0][3] = v.x;
+            r.m_rows[1][0] = 0.0;
+            r.m_rows[1][1] = 1.0;
+            r.m_rows[1][2] = 0.0;
+            r.m_rows[1][3] = v.y;
+            r.m_rows[2][0] = 0.0;
+            r.m_rows[2][1] = 0.0;
+            r.m_rows[2][2] = 1.0;
+            r.m_rows[2][3] = v.z;
+            r.m_rows[3][0] = 0.0;
+            r.m_rows[3][1] = 0.0;
+            r.m_rows[3][2] = 0.0;
+            r.m_rows[3][3] = 1.0;
 
             return r;
         }
@@ -629,22 +518,22 @@ namespace Piccolo
         {
             Matrix4x4 r;
 
-            r.m_mat[0][0] = 1.0;
-            r.m_mat[0][1] = 0.0;
-            r.m_mat[0][2] = 0.0;
-            r.m_mat[0][3] = t_x;
-            r.m_mat[1][0] = 0.0;
-            r.m_mat[1][1] = 1.0;
-            r.m_mat[1][2] = 0.0;
-            r.m_mat[1][3] = t_y;
-            r.m_mat[2][0] = 0.0;
-            r.m_mat[2][1] = 0.0;
-            r.m_mat[2][2] = 1.0;
-            r.m_mat[2][3] = t_z;
-            r.m_mat[3][0] = 0.0;
-            r.m_mat[3][1] = 0.0;
-            r.m_mat[3][2] = 0.0;
-            r.m_mat[3][3] = 1.0;
+            r.m_rows[0][0] = 1.0;
+            r.m_rows[0][1] = 0.0;
+            r.m_rows[0][2] = 0.0;
+            r.m_rows[0][3] = t_x;
+            r.m_rows[1][0] = 0.0;
+            r.m_rows[1][1] = 1.0;
+            r.m_rows[1][2] = 0.0;
+            r.m_rows[1][3] = t_y;
+            r.m_rows[2][0] = 0.0;
+            r.m_rows[2][1] = 0.0;
+            r.m_rows[2][2] = 1.0;
+            r.m_rows[2][3] = t_z;
+            r.m_rows[3][0] = 0.0;
+            r.m_rows[3][1] = 0.0;
+            r.m_rows[3][2] = 0.0;
+            r.m_rows[3][3] = 1.0;
 
             return r;
         }
@@ -658,9 +547,9 @@ namespace Piccolo
          */
         void setScale(const Vector3& v)
         {
-            m_mat[0][0] = v.x;
-            m_mat[1][1] = v.y;
-            m_mat[2][2] = v.z;
+            m_rows[0][0] = v.x;
+            m_rows[1][1] = v.y;
+            m_rows[2][2] = v.z;
         }
 
         /** Gets a scale matrix.
@@ -668,22 +557,22 @@ namespace Piccolo
         static Matrix4x4 getScale(const Vector3& v)
         {
             Matrix4x4 r;
-            r.m_mat[0][0] = v.x;
-            r.m_mat[0][1] = 0.0;
-            r.m_mat[0][2] = 0.0;
-            r.m_mat[0][3] = 0.0;
-            r.m_mat[1][0] = 0.0;
-            r.m_mat[1][1] = v.y;
-            r.m_mat[1][2] = 0.0;
-            r.m_mat[1][3] = 0.0;
-            r.m_mat[2][0] = 0.0;
-            r.m_mat[2][1] = 0.0;
-            r.m_mat[2][2] = v.z;
-            r.m_mat[2][3] = 0.0;
-            r.m_mat[3][0] = 0.0;
-            r.m_mat[3][1] = 0.0;
-            r.m_mat[3][2] = 0.0;
-            r.m_mat[3][3] = 1.0;
+            r.m_rows[0][0] = v.x;
+            r.m_rows[0][1] = 0.0;
+            r.m_rows[0][2] = 0.0;
+            r.m_rows[0][3] = 0.0;
+            r.m_rows[1][0] = 0.0;
+            r.m_rows[1][1] = v.y;
+            r.m_rows[1][2] = 0.0;
+            r.m_rows[1][3] = 0.0;
+            r.m_rows[2][0] = 0.0;
+            r.m_rows[2][1] = 0.0;
+            r.m_rows[2][2] = v.z;
+            r.m_rows[2][3] = 0.0;
+            r.m_rows[3][0] = 0.0;
+            r.m_rows[3][1] = 0.0;
+            r.m_rows[3][2] = 0.0;
+            r.m_rows[3][3] = 1.0;
 
             return r;
         }
@@ -693,22 +582,22 @@ namespace Piccolo
         static Matrix4x4 buildScaleMatrix(float s_x, float s_y, float s_z)
         {
             Matrix4x4 r;
-            r.m_mat[0][0] = s_x;
-            r.m_mat[0][1] = 0.0;
-            r.m_mat[0][2] = 0.0;
-            r.m_mat[0][3] = 0.0;
-            r.m_mat[1][0] = 0.0;
-            r.m_mat[1][1] = s_y;
-            r.m_mat[1][2] = 0.0;
-            r.m_mat[1][3] = 0.0;
-            r.m_mat[2][0] = 0.0;
-            r.m_mat[2][1] = 0.0;
-            r.m_mat[2][2] = s_z;
-            r.m_mat[2][3] = 0.0;
-            r.m_mat[3][0] = 0.0;
-            r.m_mat[3][1] = 0.0;
-            r.m_mat[3][2] = 0.0;
-            r.m_mat[3][3] = 1.0;
+            r.m_rows[0][0] = s_x;
+            r.m_rows[0][1] = 0.0;
+            r.m_rows[0][2] = 0.0;
+            r.m_rows[0][3] = 0.0;
+            r.m_rows[1][0] = 0.0;
+            r.m_rows[1][1] = s_y;
+            r.m_rows[1][2] = 0.0;
+            r.m_rows[1][3] = 0.0;
+            r.m_rows[2][0] = 0.0;
+            r.m_rows[2][1] = 0.0;
+            r.m_rows[2][2] = s_z;
+            r.m_rows[2][3] = 0.0;
+            r.m_rows[3][0] = 0.0;
+            r.m_rows[3][1] = 0.0;
+            r.m_rows[3][2] = 0.0;
+            r.m_rows[3][3] = 1.0;
 
             return r;
         }
@@ -716,26 +605,26 @@ namespace Piccolo
         /** Extracts the rotation / scaling part of the Matrix as a 3x3 matrix.
         @param m3x3 Destination Matrix3
         */
-        void extract3x3Matrix(Matrix3x3& m3x3) const
+        void extract3x3Matrix(Matrix3x3 & m3x3) const
         {
-            m3x3.m_mat[0][0] = m_mat[0][0];
-            m3x3.m_mat[0][1] = m_mat[0][1];
-            m3x3.m_mat[0][2] = m_mat[0][2];
-            m3x3.m_mat[1][0] = m_mat[1][0];
-            m3x3.m_mat[1][1] = m_mat[1][1];
-            m3x3.m_mat[1][2] = m_mat[1][2];
-            m3x3.m_mat[2][0] = m_mat[2][0];
-            m3x3.m_mat[2][1] = m_mat[2][1];
-            m3x3.m_mat[2][2] = m_mat[2][2];
+            m3x3.m_rows[0][0] = m_rows[0][0];
+            m3x3.m_rows[0][1] = m_rows[0][1];
+            m3x3.m_rows[0][2] = m_rows[0][2];
+            m3x3.m_rows[1][0] = m_rows[1][0];
+            m3x3.m_rows[1][1] = m_rows[1][1];
+            m3x3.m_rows[1][2] = m_rows[1][2];
+            m3x3.m_rows[2][0] = m_rows[2][0];
+            m3x3.m_rows[2][1] = m_rows[2][1];
+            m3x3.m_rows[2][2] = m_rows[2][2];
         }
 
-        void extractAxes(Vector3& out_x, Vector3& out_y, Vector3& out_z) const
+        void extractAxes(Vector3 & out_x, Vector3 & out_y, Vector3 & out_z) const
         {
-            out_x = Vector3(m_mat[0][0], m_mat[1][0], m_mat[2][0]);
+            out_x = Vector3(m_rows[0][0], m_rows[1][0], m_rows[2][0]);
             out_x.normalise();
-            out_y = Vector3(m_mat[0][1], m_mat[1][1], m_mat[2][1]);
+            out_y = Vector3(m_rows[0][1], m_rows[1][1], m_rows[2][1]);
             out_y.normalise();
-            out_z = Vector3(m_mat[0][2], m_mat[1][2], m_mat[2][2]);
+            out_z = Vector3(m_rows[0][2], m_rows[1][2], m_rows[2][2]);
             out_z.normalise();
         }
 
@@ -743,13 +632,13 @@ namespace Piccolo
         bool hasScale() const
         {
             // check magnitude of column vectors (==local axes)
-            float t = m_mat[0][0] * m_mat[0][0] + m_mat[1][0] * m_mat[1][0] + m_mat[2][0] * m_mat[2][0];
+            float t = m_rows[0][0] * m_rows[0][0] + m_rows[1][0] * m_rows[1][0] + m_rows[2][0] * m_rows[2][0];
             if (!Math::realEqual(t, 1.0, (float)1e-04))
                 return true;
-            t = m_mat[0][1] * m_mat[0][1] + m_mat[1][1] * m_mat[1][1] + m_mat[2][1] * m_mat[2][1];
+            t = m_rows[0][1] * m_rows[0][1] + m_rows[1][1] * m_rows[1][1] + m_rows[2][1] * m_rows[2][1];
             if (!Math::realEqual(t, 1.0, (float)1e-04))
                 return true;
-            t = m_mat[0][2] * m_mat[0][2] + m_mat[1][2] * m_mat[1][2] + m_mat[2][2] * m_mat[2][2];
+            t = m_rows[0][2] * m_rows[0][2] + m_rows[1][2] * m_rows[1][2] + m_rows[2][2] * m_rows[2][2];
             return !Math::realEqual(t, 1.0, (float)1e-04);
         }
 
@@ -769,8 +658,8 @@ namespace Piccolo
 
         float determinant() const
         {
-            return m_mat[0][0] * getMinor(1, 2, 3, 1, 2, 3) - m_mat[0][1] * getMinor(1, 2, 3, 0, 2, 3) + m_mat[0][2] * getMinor(1, 2, 3, 0, 1, 3) -
-                   m_mat[0][3] * getMinor(1, 2, 3, 0, 1, 2);
+            return m_rows[0][0] * getMinor(1, 2, 3, 1, 2, 3) - m_rows[0][1] * getMinor(1, 2, 3, 0, 2, 3) + m_rows[0][2] * getMinor(1, 2, 3, 0, 1, 3) -
+                   m_rows[0][3] * getMinor(1, 2, 3, 0, 1, 2);
         }
 
         /** Building a Matrix4 from orientation / scale / position.
@@ -790,16 +679,16 @@ namespace Piccolo
 
         /** Decompose a Matrix4 to orientation / scale / position.
          */
-        void decomposition(Vector3& position, Vector3& scale, Quaternion& orientation) const;
+        void decomposition(Vector3 & position, Vector3 & scale, Quaternion & orientation) const;
 
-        void decompositionWithoutScale(Vector3& position, Quaternion& rotation) const;
+        void decompositionWithoutScale(Vector3 & position, Quaternion & rotation) const;
 
         /** Check whether or not the matrix is affine matrix.
         @remarks
         An affine matrix is a 4x4 matrix with row 3 equal to (0, 0, 0, 1),
         e.g. no projective coefficients.
         */
-        bool isAffine(void) const { return m_mat[3][0] == 0 && m_mat[3][1] == 0 && m_mat[3][2] == 0 && m_mat[3][3] == 1; }
+        bool isAffine(void) const { return m_rows[3][0] == 0 && m_rows[3][1] == 0 && m_rows[3][2] == 0 && m_rows[3][3] == 1; }
 
         /** Returns the inverse of the affine matrix.
         @note
@@ -815,24 +704,22 @@ namespace Piccolo
         {
             assert(isAffine() && m2.isAffine());
 
-            return Matrix4x4(m_mat[0][0] * m2.m_mat[0][0] + m_mat[0][1] * m2.m_mat[1][0] + m_mat[0][2] * m2.m_mat[2][0],
-                             m_mat[0][0] * m2.m_mat[0][1] + m_mat[0][1] * m2.m_mat[1][1] + m_mat[0][2] * m2.m_mat[2][1],
-                             m_mat[0][0] * m2.m_mat[0][2] + m_mat[0][1] * m2.m_mat[1][2] + m_mat[0][2] * m2.m_mat[2][2],
-                             m_mat[0][0] * m2.m_mat[0][3] + m_mat[0][1] * m2.m_mat[1][3] + m_mat[0][2] * m2.m_mat[2][3] + m_mat[0][3],
+            return Matrix4x4({{m_rows[0][0] * m2.m_rows[0][0] + m_rows[0][1] * m2.m_rows[1][0] + m_rows[0][2] * m2.m_rows[2][0],
+                               m_rows[0][0] * m2.m_rows[0][1] + m_rows[0][1] * m2.m_rows[1][1] + m_rows[0][2] * m2.m_rows[2][1],
+                               m_rows[0][0] * m2.m_rows[0][2] + m_rows[0][1] * m2.m_rows[1][2] + m_rows[0][2] * m2.m_rows[2][2],
+                               m_rows[0][0] * m2.m_rows[0][3] + m_rows[0][1] * m2.m_rows[1][3] + m_rows[0][2] * m2.m_rows[2][3] + m_rows[0][3]},
 
-                             m_mat[1][0] * m2.m_mat[0][0] + m_mat[1][1] * m2.m_mat[1][0] + m_mat[1][2] * m2.m_mat[2][0],
-                             m_mat[1][0] * m2.m_mat[0][1] + m_mat[1][1] * m2.m_mat[1][1] + m_mat[1][2] * m2.m_mat[2][1],
-                             m_mat[1][0] * m2.m_mat[0][2] + m_mat[1][1] * m2.m_mat[1][2] + m_mat[1][2] * m2.m_mat[2][2],
-                             m_mat[1][0] * m2.m_mat[0][3] + m_mat[1][1] * m2.m_mat[1][3] + m_mat[1][2] * m2.m_mat[2][3] + m_mat[1][3],
+                              {m_rows[1][0] * m2.m_rows[0][0] + m_rows[1][1] * m2.m_rows[1][0] + m_rows[1][2] * m2.m_rows[2][0],
+                               m_rows[1][0] * m2.m_rows[0][1] + m_rows[1][1] * m2.m_rows[1][1] + m_rows[1][2] * m2.m_rows[2][1],
+                               m_rows[1][0] * m2.m_rows[0][2] + m_rows[1][1] * m2.m_rows[1][2] + m_rows[1][2] * m2.m_rows[2][2],
+                               m_rows[1][0] * m2.m_rows[0][3] + m_rows[1][1] * m2.m_rows[1][3] + m_rows[1][2] * m2.m_rows[2][3] + m_rows[1][3]},
 
-                             m_mat[2][0] * m2.m_mat[0][0] + m_mat[2][1] * m2.m_mat[1][0] + m_mat[2][2] * m2.m_mat[2][0],
-                             m_mat[2][0] * m2.m_mat[0][1] + m_mat[2][1] * m2.m_mat[1][1] + m_mat[2][2] * m2.m_mat[2][1],
-                             m_mat[2][0] * m2.m_mat[0][2] + m_mat[2][1] * m2.m_mat[1][2] + m_mat[2][2] * m2.m_mat[2][2],
-                             m_mat[2][0] * m2.m_mat[0][3] + m_mat[2][1] * m2.m_mat[1][3] + m_mat[2][2] * m2.m_mat[2][3] + m_mat[2][3],
-                             0,
-                             0,
-                             0,
-                             1);
+                              {m_rows[2][0] * m2.m_rows[0][0] + m_rows[2][1] * m2.m_rows[1][0] + m_rows[2][2] * m2.m_rows[2][0],
+                               m_rows[2][0] * m2.m_rows[0][1] + m_rows[2][1] * m2.m_rows[1][1] + m_rows[2][2] * m2.m_rows[2][1],
+                               m_rows[2][0] * m2.m_rows[0][2] + m_rows[2][1] * m2.m_rows[1][2] + m_rows[2][2] * m2.m_rows[2][2],
+                               m_rows[2][0] * m2.m_rows[0][3] + m_rows[2][1] * m2.m_rows[1][3] + m_rows[2][2] * m2.m_rows[2][3] + m_rows[2][3]},
+
+                              {0, 0, 0, 1}});
         }
 
         /** 3-D Vector transformation specially for an affine matrix.
@@ -846,9 +733,9 @@ namespace Piccolo
         {
             assert(isAffine());
 
-            return Vector3(m_mat[0][0] * v.x + m_mat[0][1] * v.y + m_mat[0][2] * v.z + m_mat[0][3],
-                           m_mat[1][0] * v.x + m_mat[1][1] * v.y + m_mat[1][2] * v.z + m_mat[1][3],
-                           m_mat[2][0] * v.x + m_mat[2][1] * v.y + m_mat[2][2] * v.z + m_mat[2][3]);
+            return Vector3(m_rows[0][0] * v.x + m_rows[0][1] * v.y + m_rows[0][2] * v.z + m_rows[0][3],
+                           m_rows[1][0] * v.x + m_rows[1][1] * v.y + m_rows[1][2] * v.z + m_rows[1][3],
+                           m_rows[2][0] * v.x + m_rows[2][1] * v.y + m_rows[2][2] * v.z + m_rows[2][3]);
         }
 
         /** 4-D Vector transformation specially for an affine matrix.
@@ -859,18 +746,18 @@ namespace Piccolo
         {
             assert(isAffine());
 
-            return Vector4(m_mat[0][0] * v.x + m_mat[0][1] * v.y + m_mat[0][2] * v.z + m_mat[0][3] * v.w,
-                           m_mat[1][0] * v.x + m_mat[1][1] * v.y + m_mat[1][2] * v.z + m_mat[1][3] * v.w,
-                           m_mat[2][0] * v.x + m_mat[2][1] * v.y + m_mat[2][2] * v.z + m_mat[2][3] * v.w,
+            return Vector4(m_rows[0][0] * v.x + m_rows[0][1] * v.y + m_rows[0][2] * v.z + m_rows[0][3] * v.w,
+                           m_rows[1][0] * v.x + m_rows[1][1] * v.y + m_rows[1][2] * v.z + m_rows[1][3] * v.w,
+                           m_rows[2][0] * v.x + m_rows[2][1] * v.y + m_rows[2][2] * v.z + m_rows[2][3] * v.w,
                            v.w);
         }
 
         Matrix4x4 inverse() const
         {
-            float m00 = m_mat[0][0], m01 = m_mat[0][1], m02 = m_mat[0][2], m03 = m_mat[0][3];
-            float m10 = m_mat[1][0], m11 = m_mat[1][1], m12 = m_mat[1][2], m13 = m_mat[1][3];
-            float m20 = m_mat[2][0], m21 = m_mat[2][1], m22 = m_mat[2][2], m23 = m_mat[2][3];
-            float m30 = m_mat[3][0], m31 = m_mat[3][1], m32 = m_mat[3][2], m33 = m_mat[3][3];
+            float m00 = m_rows[0][0], m01 = m_rows[0][1], m02 = m_rows[0][2], m03 = m_rows[0][3];
+            float m10 = m_rows[1][0], m11 = m_rows[1][1], m12 = m_rows[1][2], m13 = m_rows[1][3];
+            float m20 = m_rows[2][0], m21 = m_rows[2][1], m22 = m_rows[2][2], m23 = m_rows[2][3];
+            float m30 = m_rows[3][0], m31 = m_rows[3][1], m32 = m_rows[3][2], m33 = m_rows[3][3];
 
             float v0 = m20 * m31 - m21 * m30;
             float v1 = m20 * m32 - m22 * m30;
@@ -920,7 +807,7 @@ namespace Piccolo
             float d23 = -(v4 * m00 - v2 * m01 + v0 * m03) * invDet;
             float d33 = +(v3 * m00 - v1 * m01 + v0 * m02) * invDet;
 
-            return Matrix4x4(d00, d01, d02, d03, d10, d11, d12, d13, d20, d21, d22, d23, d30, d31, d32, d33);
+            return Matrix4x4({{d00, d01, d02, d03}, {d10, d11, d12, d13}, {d20, d21, d22, d23}, {d30, d31, d32, d33}});
         }
 
         Vector3 transformCoord(const Vector3& v)

@@ -8,9 +8,9 @@ namespace Piccolo
     //-----------------------------------------------------------------------
     void Matrix3x3::setColumn(size_t col_index, const Vector3& vec)
     {
-        m_mat[0][col_index] = vec.x;
-        m_mat[1][col_index] = vec.y;
-        m_mat[2][col_index] = vec.z;
+        m_rows[0][col_index] = vec.x;
+        m_rows[1][col_index] = vec.y;
+        m_rows[2][col_index] = vec.z;
     }
     //-----------------------------------------------------------------------
     void Matrix3x3::fromAxes(const Vector3& x_axis, const Vector3& y_axis, const Vector3& z_axis)
@@ -50,18 +50,18 @@ namespace Piccolo
         // U stores the entries U[0] = u01, U[1] = u02, U[2] = u12
 
         // build orthogonal matrix Q
-        float inv_length = m_mat[0][0] * m_mat[0][0] + m_mat[1][0] * m_mat[1][0] + m_mat[2][0] * m_mat[2][0];
+        float inv_length = m_rows[0][0] * m_rows[0][0] + m_rows[1][0] * m_rows[1][0] + m_rows[2][0] * m_rows[2][0];
         if (!Math::realEqual(inv_length, 0))
             inv_length = Math::invSqrt(inv_length);
 
-        out_Q[0][0] = m_mat[0][0] * inv_length;
-        out_Q[1][0] = m_mat[1][0] * inv_length;
-        out_Q[2][0] = m_mat[2][0] * inv_length;
+        out_Q[0][0] = m_rows[0][0] * inv_length;
+        out_Q[1][0] = m_rows[1][0] * inv_length;
+        out_Q[2][0] = m_rows[2][0] * inv_length;
 
-        float dot   = out_Q[0][0] * m_mat[0][1] + out_Q[1][0] * m_mat[1][1] + out_Q[2][0] * m_mat[2][1];
-        out_Q[0][1] = m_mat[0][1] - dot * out_Q[0][0];
-        out_Q[1][1] = m_mat[1][1] - dot * out_Q[1][0];
-        out_Q[2][1] = m_mat[2][1] - dot * out_Q[2][0];
+        float dot   = out_Q[0][0] * m_rows[0][1] + out_Q[1][0] * m_rows[1][1] + out_Q[2][0] * m_rows[2][1];
+        out_Q[0][1] = m_rows[0][1] - dot * out_Q[0][0];
+        out_Q[1][1] = m_rows[1][1] - dot * out_Q[1][0];
+        out_Q[2][1] = m_rows[2][1] - dot * out_Q[2][0];
         inv_length  = out_Q[0][1] * out_Q[0][1] + out_Q[1][1] * out_Q[1][1] + out_Q[2][1] * out_Q[2][1];
         if (!Math::realEqual(inv_length, 0))
             inv_length = Math::invSqrt(inv_length);
@@ -70,11 +70,11 @@ namespace Piccolo
         out_Q[1][1] *= inv_length;
         out_Q[2][1] *= inv_length;
 
-        dot         = out_Q[0][0] * m_mat[0][2] + out_Q[1][0] * m_mat[1][2] + out_Q[2][0] * m_mat[2][2];
-        out_Q[0][2] = m_mat[0][2] - dot * out_Q[0][0];
-        out_Q[1][2] = m_mat[1][2] - dot * out_Q[1][0];
-        out_Q[2][2] = m_mat[2][2] - dot * out_Q[2][0];
-        dot         = out_Q[0][1] * m_mat[0][2] + out_Q[1][1] * m_mat[1][2] + out_Q[2][1] * m_mat[2][2];
+        dot         = out_Q[0][0] * m_rows[0][2] + out_Q[1][0] * m_rows[1][2] + out_Q[2][0] * m_rows[2][2];
+        out_Q[0][2] = m_rows[0][2] - dot * out_Q[0][0];
+        out_Q[1][2] = m_rows[1][2] - dot * out_Q[1][0];
+        out_Q[2][2] = m_rows[2][2] - dot * out_Q[2][0];
+        dot         = out_Q[0][1] * m_rows[0][2] + out_Q[1][1] * m_rows[1][2] + out_Q[2][1] * m_rows[2][2];
         out_Q[0][2] -= dot * out_Q[0][1];
         out_Q[1][2] -= dot * out_Q[1][1];
         out_Q[2][2] -= dot * out_Q[2][1];
@@ -99,12 +99,12 @@ namespace Piccolo
 
         // build "right" matrix R
         Matrix3x3 R;
-        R[0][0] = out_Q[0][0] * m_mat[0][0] + out_Q[1][0] * m_mat[1][0] + out_Q[2][0] * m_mat[2][0];
-        R[0][1] = out_Q[0][0] * m_mat[0][1] + out_Q[1][0] * m_mat[1][1] + out_Q[2][0] * m_mat[2][1];
-        R[1][1] = out_Q[0][1] * m_mat[0][1] + out_Q[1][1] * m_mat[1][1] + out_Q[2][1] * m_mat[2][1];
-        R[0][2] = out_Q[0][0] * m_mat[0][2] + out_Q[1][0] * m_mat[1][2] + out_Q[2][0] * m_mat[2][2];
-        R[1][2] = out_Q[0][1] * m_mat[0][2] + out_Q[1][1] * m_mat[1][2] + out_Q[2][1] * m_mat[2][2];
-        R[2][2] = out_Q[0][2] * m_mat[0][2] + out_Q[1][2] * m_mat[1][2] + out_Q[2][2] * m_mat[2][2];
+        R[0][0] = out_Q[0][0] * m_rows[0][0] + out_Q[1][0] * m_rows[1][0] + out_Q[2][0] * m_rows[2][0];
+        R[0][1] = out_Q[0][0] * m_rows[0][1] + out_Q[1][0] * m_rows[1][1] + out_Q[2][0] * m_rows[2][1];
+        R[1][1] = out_Q[0][1] * m_rows[0][1] + out_Q[1][1] * m_rows[1][1] + out_Q[2][1] * m_rows[2][1];
+        R[0][2] = out_Q[0][0] * m_rows[0][2] + out_Q[1][0] * m_rows[1][2] + out_Q[2][0] * m_rows[2][2];
+        R[1][2] = out_Q[0][1] * m_rows[0][2] + out_Q[1][1] * m_rows[1][2] + out_Q[2][1] * m_rows[2][2];
+        R[2][2] = out_Q[0][2] * m_rows[0][2] + out_Q[1][2] * m_rows[1][2] + out_Q[2][2] * m_rows[2][2];
 
         // the scaling component
         out_D[0] = R[0][0];
@@ -142,7 +142,7 @@ namespace Piccolo
         // z^2-1.  We can solve these for axis (x,y,z).  Because the angle is pi,
         // it does not matter which sign you choose on the square roots.
 
-        float trace = m_mat[0][0] + m_mat[1][1] + m_mat[2][2];
+        float trace = m_rows[0][0] + m_rows[1][1] + m_rows[2][2];
         float cos_v = 0.5f * (trace - 1.0f);
         radian      = Math::acos(cos_v); // in [0,PI]
 
@@ -150,53 +150,53 @@ namespace Piccolo
         {
             if (radian < Radian(Math_PI))
             {
-                axis.x = m_mat[2][1] - m_mat[1][2];
-                axis.y = m_mat[0][2] - m_mat[2][0];
-                axis.z = m_mat[1][0] - m_mat[0][1];
+                axis.x = m_rows[2][1] - m_rows[1][2];
+                axis.y = m_rows[0][2] - m_rows[2][0];
+                axis.z = m_rows[1][0] - m_rows[0][1];
                 axis.normalise();
             }
             else
             {
                 // angle is PI
                 float half_inv;
-                if (m_mat[0][0] >= m_mat[1][1])
+                if (m_rows[0][0] >= m_rows[1][1])
                 {
                     // r00 >= r11
-                    if (m_mat[0][0] >= m_mat[2][2])
+                    if (m_rows[0][0] >= m_rows[2][2])
                     {
                         // r00 is maximum diagonal term
-                        axis.x   = 0.5f * Math::sqrt(m_mat[0][0] - m_mat[1][1] - m_mat[2][2] + 1.0f);
+                        axis.x   = 0.5f * Math::sqrt(m_rows[0][0] - m_rows[1][1] - m_rows[2][2] + 1.0f);
                         half_inv = 0.5f / axis.x;
-                        axis.y   = half_inv * m_mat[0][1];
-                        axis.z   = half_inv * m_mat[0][2];
+                        axis.y   = half_inv * m_rows[0][1];
+                        axis.z   = half_inv * m_rows[0][2];
                     }
                     else
                     {
                         // r22 is maximum diagonal term
-                        axis.z   = 0.5f * Math::sqrt(m_mat[2][2] - m_mat[0][0] - m_mat[1][1] + 1.0f);
+                        axis.z   = 0.5f * Math::sqrt(m_rows[2][2] - m_rows[0][0] - m_rows[1][1] + 1.0f);
                         half_inv = 0.5f / axis.z;
-                        axis.x   = half_inv * m_mat[0][2];
-                        axis.y   = half_inv * m_mat[1][2];
+                        axis.x   = half_inv * m_rows[0][2];
+                        axis.y   = half_inv * m_rows[1][2];
                     }
                 }
                 else
                 {
                     // r11 > r00
-                    if (m_mat[1][1] >= m_mat[2][2])
+                    if (m_rows[1][1] >= m_rows[2][2])
                     {
                         // r11 is maximum diagonal term
-                        axis.y   = 0.5f * Math::sqrt(m_mat[1][1] - m_mat[0][0] - m_mat[2][2] + 1.0f);
+                        axis.y   = 0.5f * Math::sqrt(m_rows[1][1] - m_rows[0][0] - m_rows[2][2] + 1.0f);
                         half_inv = 0.5f / axis.y;
-                        axis.x   = half_inv * m_mat[0][1];
-                        axis.z   = half_inv * m_mat[1][2];
+                        axis.x   = half_inv * m_rows[0][1];
+                        axis.z   = half_inv * m_rows[1][2];
                     }
                     else
                     {
                         // r22 is maximum diagonal term
-                        axis.z   = 0.5f * Math::sqrt(m_mat[2][2] - m_mat[0][0] - m_mat[1][1] + 1.0f);
+                        axis.z   = 0.5f * Math::sqrt(m_rows[2][2] - m_rows[0][0] - m_rows[1][1] + 1.0f);
                         half_inv = 0.5f / axis.z;
-                        axis.x   = half_inv * m_mat[0][2];
-                        axis.y   = half_inv * m_mat[1][2];
+                        axis.x   = half_inv * m_rows[0][2];
+                        axis.y   = half_inv * m_rows[1][2];
                     }
                 }
             }
@@ -226,14 +226,14 @@ namespace Piccolo
         float y_sin_v       = axis.y * sin_v;
         float z_sinv        = axis.z * sin_v;
 
-        m_mat[0][0] = x2 * one_minus_cos + cos_v;
-        m_mat[0][1] = xym - z_sinv;
-        m_mat[0][2] = xzm + y_sin_v;
-        m_mat[1][0] = xym + z_sinv;
-        m_mat[1][1] = y2 * one_minus_cos + cos_v;
-        m_mat[1][2] = yzm - x_sin_v;
-        m_mat[2][0] = xzm - y_sin_v;
-        m_mat[2][1] = yzm + x_sin_v;
-        m_mat[2][2] = z2 * one_minus_cos + cos_v;
+        m_rows[0][0] = x2 * one_minus_cos + cos_v;
+        m_rows[0][1] = xym - z_sinv;
+        m_rows[0][2] = xzm + y_sin_v;
+        m_rows[1][0] = xym + z_sinv;
+        m_rows[1][1] = y2 * one_minus_cos + cos_v;
+        m_rows[1][2] = yzm - x_sin_v;
+        m_rows[2][0] = xzm - y_sin_v;
+        m_rows[2][1] = yzm + x_sin_v;
+        m_rows[2][2] = z2 * one_minus_cos + cos_v;
     }
 } // namespace Piccolo
