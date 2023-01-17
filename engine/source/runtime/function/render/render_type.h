@@ -1223,7 +1223,7 @@ namespace Piccolo
         RHI_PHYSICAL_DEVICE_TYPE_MAX_ENUM       = 0x7FFFFFFF
     };
 
-    enum RHIPipelineBindPoint32_t : int32_t
+    enum RHIPipelineBindPoint : int32_t
     {
         RHI_PIPELINE_BIND_POINT_GRAPHICS               = 0,
         RHI_PIPELINE_BIND_POINT_COMPUTE                = 1,

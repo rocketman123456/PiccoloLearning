@@ -6,8 +6,8 @@
 
 namespace Piccolo
 {
-    template<typename T, size_t Alignment = 64>
-    class CacheAlignedAllocator
+    template<typename T>
+    class CacheAlignedAllocator : public Allocator<T, 0>
     {
     public:
         using value_type      = T;
@@ -16,23 +16,23 @@ namespace Piccolo
         template<typename U>
         struct rebind
         {
-            using other = CacheAlignedAllocator<U, Alignment>;
+            using other = CacheAlignedAllocator<U>;
         };
 
         CacheAlignedAllocator() = default;
 
         template<typename U>
-        CacheAlignedAllocator(const CacheAlignedAllocator<U, Alignment>& other)
+        CacheAlignedAllocator(const CacheAlignedAllocator<U>& other)
         {
             (void)other;
         }
 
-        T* allocate(size_t n)
+        T* allocate(size_t n, const std::size_t alignment) override
         {
 #ifdef _WIN32
-            auto ptr = static_cast<T*>(_aligned_malloc(Alignment, sizeof(T) * n));
+            auto ptr = static_cast<T*>(_aligned_malloc(alignment, sizeof(T) * n));
 #else
-            auto ptr = static_cast<T*>(std::aligned_alloc(Alignment, sizeof(T) * n));
+            auto ptr = static_cast<T*>(std::aligned_alloc(alignment, sizeof(T) * n));
 #endif
             if (ptr)
                 return ptr;
@@ -40,7 +40,7 @@ namespace Piccolo
             throw std::bad_alloc();
         }
 
-        void deallocate(T* ptr, size_t n)
+        void deallocate(T* ptr, size_t n) override
         {
             (void)n;
 #ifdef _WIN32
@@ -49,5 +49,7 @@ namespace Piccolo
             std::free(ptr);
 #endif
         }
+
+        void reset() override {}
     };
 } // namespace Piccolo

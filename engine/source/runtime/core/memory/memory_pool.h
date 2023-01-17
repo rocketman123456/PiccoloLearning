@@ -20,28 +20,28 @@
 namespace Piccolo
 {
     template<std::size_t ChunkSize, std::size_t ChunksPerBlock = 32>
-    class memory_pool
+    class MemoryPool
     {
     public:
         static_assert(ChunkSize >= sizeof(void*));
         static_assert(ChunksPerBlock > 0);
 
-        explicit memory_pool() = default;
+        explicit MemoryPool() = default;
 
-        memory_pool(const memory_pool&) = delete;
+        MemoryPool(const MemoryPool&) = delete;
 
-        memory_pool(memory_pool&& other) :
+        MemoryPool(MemoryPool&& other) :
             m_chunks {std::exchange(other.m_chunks, 0)}, m_next_chunk {std::exchange(other.m_next_chunk, nullptr)}, m_allocated_blocks {
                                                                                                                         std::move(other.m_allocated_blocks)}
         {}
 
-        memory_pool& operator=(memory_pool other)
+        MemoryPool& operator=(MemoryPool other)
         {
             swap(other);
             return *this;
         }
 
-        ~memory_pool()
+        ~MemoryPool()
         {
             for (auto block : m_allocated_blocks)
                 std::free(block);
@@ -136,7 +136,7 @@ namespace Piccolo
             return block;
         }
 
-        void swap(memory_pool& other)
+        void swap(MemoryPool& other)
         {
             std::swap(m_chunks, other.m_chunks);
             std::swap(m_next_chunk, other.m_next_chunk);
@@ -151,7 +151,7 @@ namespace Piccolo
     };
 
     template<std::size_t ChunkSize, std::size_t ChunksPerBlock>
-    inline std::ostream& operator<<(std::ostream& os, const memory_pool<ChunkSize, ChunksPerBlock>& pool)
+    inline std::ostream& operator<<(std::ostream& os, const MemoryPool<ChunkSize, ChunksPerBlock>& pool)
     {
         os << "CS: " << pool.chunk_size() << ", BS: " << pool.block_size() << ", CPB: " << pool.chunks_per_block() << ", chunks: " << pool.allocated_chunks()
            << ", blocks: " << pool.allocated_blocks() << ", chunk capacit: " << pool.chunk_capacity() << ", full: " << (pool.full() ? "yes" : "no");

@@ -35,11 +35,9 @@ int posix_memalign(void** ptr, size_t align, size_t size)
 }
 #else
 #include <sys/mman.h> // for posix_memalign
-#endif
 
 namespace Piccolo
 {
-#if defined(UNIX)
     template<typename T, size_t HugePageSize = 1 << 21>
     class THPAllocator
     {
@@ -89,5 +87,5 @@ namespace Piccolo
             free(p);
         }
     };
-#endif
 } // namespace Piccolo
+#endif

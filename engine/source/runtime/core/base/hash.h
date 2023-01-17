@@ -5,6 +5,7 @@
 #include <functional>
 #include <string>
 
+// From glm
 template<typename T>
 inline void hash_combine(std::size_t& seed, const T& v)
 {

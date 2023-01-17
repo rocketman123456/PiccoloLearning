@@ -2,11 +2,12 @@
 #include "runtime/core/memory/allocator.h"
 
 #include <cstdlib>
+#include <deque>
 
 namespace Piccolo
 {
     template<typename T>
-    class SimpleAllocator
+    class SimpleAllocator : public Allocator<T>
     {
     public:
         using value_type = T;
@@ -19,7 +20,7 @@ namespace Piccolo
             (void)other;
         }
 
-        T* allocate(size_t n)
+        T* allocate(const std::size_t size, const std::size_t alignment) override
         {
             auto ptr = static_cast<T*>(malloc(sizeof(T) * n));
             if (ptr)
@@ -28,11 +29,13 @@ namespace Piccolo
             throw std::bad_alloc();
         }
 
-        void deallocate(T* ptr, size_t n)
+        void deallocate(T* ptr, std::size_t n) override
         {
             (void)n;
             free(ptr);
         }
+
+        void reset() override {}
     };
 
     template<typename T, typename U>
