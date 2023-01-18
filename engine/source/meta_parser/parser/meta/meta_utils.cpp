@@ -163,6 +163,21 @@ namespace Utils
         }
     }
 
+    std::size_t getSizeWithoutContainer(std::string name)
+    {
+
+        size_t left  = name.find_first_of(',') + 1;
+        size_t right = name.find_last_of('>');
+        if (left > 0 && right < name.size() && left < right)
+        {
+            return atol(name.substr(left, right - left).c_str());
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
     std::string getStringWithoutQuot(std::string input)
     {
         size_t left  = input.find_first_of('\"') + 1;

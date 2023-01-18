@@ -5,6 +5,7 @@
 #include "language_types/class.h"
 #include "template_manager/template_manager.h"
 
+#include <iostream>
 #include <map>
 #include <set>
 
@@ -31,6 +32,7 @@ namespace Generator
 
     int ReflectionGenerator::generate(std::string path, SchemaMoudle schema)
     {
+        static const std::string array_prefix  = "std::array<";
         static const std::string vector_prefix = "std::vector<";
 
         std::string file_path = processFileName(path);
@@ -53,6 +55,7 @@ namespace Generator
 
             std::vector<std::string>                                   field_names;
             std::map<std::string, std::pair<std::string, std::string>> vector_map;
+            std::map<std::string, std::pair<std::string, std::string>> array_map;
 
             Mustache::data class_def;
             Mustache::data vector_defines(Mustache::data::type::list);
@@ -63,18 +66,30 @@ namespace Generator
                 if (!field->shouldCompile())
                     continue;
                 field_names.emplace_back(field->m_name);
-                bool is_array = field->m_type.find(vector_prefix) == 0;
-                if (is_array)
+                bool is_vector = field->m_type.find(vector_prefix) == 0;
+                if (is_vector)
                 {
                     std::string array_useful_name = field->m_type;
-
                     Utils::formatQualifiedName(array_useful_name);
 
                     std::string item_type = field->m_type;
-
-                    item_type = Utils::getNameWithoutContainer(item_type);
+                    item_type             = Utils::getNameWithoutContainer(item_type);
 
                     vector_map[field->m_type] = std::make_pair(array_useful_name, item_type);
+                }
+                bool is_array = field->m_type.find(array_prefix) == 0;
+                if (is_array)
+                {
+                    std::string array_useful_name = field->m_type;
+                    Utils::formatQualifiedName(array_useful_name);
+
+                    std::string item_type = field->m_type;
+                    item_type             = Utils::getNameWithoutContainer(item_type);
+
+                    std::string item_size_str = field->m_type;
+                    std::size_t item_size     = Utils::getSizeWithoutContainer(item_size_str);
+
+                    array_map[field->m_type] = std::make_pair(array_useful_name, item_type);
                 }
             }
 

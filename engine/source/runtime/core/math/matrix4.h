@@ -662,6 +662,15 @@ namespace Piccolo
                    m_rows[0][3] * getMinor(1, 2, 3, 0, 1, 2);
         }
 
+        float trace() const
+        {
+            const float xx = m_rows[0][0] * m_rows[0][0];
+            const float yy = m_rows[1][1] * m_rows[1][1];
+            const float zz = m_rows[2][2] * m_rows[2][2];
+            const float ww = m_rows[3][3] * m_rows[3][3];
+            return (xx + yy + zz + ww);
+        }
+
         /** Building a Matrix4 from orientation / scale / position.
         @remarks
         Transform is performed in the order scale, rotate, translation, i.e. translation is independent
@@ -827,10 +836,66 @@ namespace Piccolo
             return Vector3::ZERO;
         }
 
+        void lookAt(Vector3 pos, Vector3 target, Vector3 up)
+        {
+            Vector3 fwd = pos - target;
+            fwd.normalise();
+
+            Vector3 right = up.crossProduct(fwd);
+            right.normalise();
+
+            up = fwd.crossProduct(right);
+            up.normalise();
+
+            // For NDC coordinate system where:
+            // +x-axis = right
+            // +y-axis = up
+            // +z-axis = fwd
+            m_rows[0] = Vector4(right.x, right.y, right.z, -pos.dotProduct(right));
+            m_rows[1] = Vector4(up.x, up.y, up.z, -pos.dotProduct(up));
+            m_rows[2] = Vector4(fwd.x, fwd.y, fwd.z, -pos.dotProduct(fwd));
+            m_rows[3] = Vector4(0, 0, 0, 1);
+        }
+
+        void perspectiveOpenGL(float fovy, float aspect_ratio, float near_, float far_)
+        {
+            const float pi           = acosf(-1.0f);
+            const float fovy_radians = fovy * pi / 180.0f;
+            const float f            = 1.0f / tanf(fovy_radians * 0.5f);
+            const float xscale       = f;
+            const float yscale       = f / aspect_ratio;
+
+            m_rows[0] = Vector4(xscale, 0, 0, 0);
+            m_rows[1] = Vector4(0, yscale, 0, 0);
+            m_rows[2] = Vector4(0, 0, (far_ + near_) / (near_ - far_), (2.0f * far_ * near_) / (near_ - far_));
+            m_rows[3] = Vector4(0, 0, -1, 0);
+        }
+
+        void perspectiveVulkan(float fovy, float aspect_ratio, float near_, float far_)
+        {
+            // Vulkan changed its NDC.  It switch from a left handed coordinate system to a right handed one.
+            // +x points to the right, +z points into the screen, +y points down (it used to point up, in opengl).
+            // It also changed the range from [-1,1] to [0,1] for the z.
+            // Clip space remains [-1,1] for x and y.
+            // Check section 23 of the specification.
+            Matrix4x4 matVulkan;
+            matVulkan.m_rows[0] = Vector4(1, 0, 0, 0);
+            matVulkan.m_rows[1] = Vector4(0, -1, 0, 0);
+            matVulkan.m_rows[2] = Vector4(0, 0, 0.5f, 0.5f);
+            matVulkan.m_rows[3] = Vector4(0, 0, 0, 1);
+
+            Matrix4x4 matOpenGL;
+            matOpenGL.perspectiveOpenGL(fovy, aspect_ratio, near_, far_);
+
+            *this = matVulkan * matOpenGL;
+        }
+
         static const Matrix4x4 ZERO;
         static const Matrix4x4 ZEROAFFINE;
         static const Matrix4x4 IDENTITY;
     };
+
+    Matrix4x4 operator*(float scalar, const Matrix4x4& rhs);
 
     Vector4 operator*(const Vector4& v, const Matrix4x4& mat);
 } // namespace Piccolo

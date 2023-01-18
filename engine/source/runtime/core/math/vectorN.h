@@ -14,35 +14,43 @@ namespace Piccolo
         REFLECTION_BODY(VectorN);
 
     public:
-        VectorN() : data {} {}
+        std::vector<float> m_data;
 
-        VectorN(int N) { data.resize(N); }
+    public:
+        VectorN() : m_data {} {}
+
+        VectorN(int N) { m_data.resize(N); }
 
         VectorN(const VectorN& rhs)
         {
-            data.resize(rhs.data.size());
-            std::memcpy(data.data(), rhs.data.data(), sizeof(float) * data.size());
+            m_data.resize(rhs.m_data.size());
+            std::memcpy(m_data.data(), rhs.m_data.data(), sizeof(float) * m_data.size());
         }
 
         VectorN& operator=(const VectorN& rhs)
         {
-            data.clear();
-            data.resize(rhs.data.size());
-            std::memcpy(data.data(), rhs.data.data(), sizeof(float) * data.size());
+            m_data.clear();
+            m_data.resize(rhs.m_data.size());
+            std::memcpy(m_data.data(), rhs.m_data.data(), sizeof(float) * m_data.size());
             return *this;
         }
 
         ~VectorN() = default;
 
-        float operator[](const int idx) const { return data[idx]; }
+        float operator[](const int idx) const { return m_data[idx]; }
 
-        float& operator[](const int idx) { return data[idx]; }
+        float& operator[](const int idx) { return m_data[idx]; }
+
+        /// Pointer accessor for direct copying
+        float* ptr() { return m_data.data(); }
+        /// Pointer accessor for direct copying
+        const float* ptr() const { return m_data.data(); }
 
         const VectorN& operator*=(float rhs)
         {
-            for (int i = 0; i < data.size(); i++)
+            for (int i = 0; i < m_data.size(); i++)
             {
-                data[i] *= rhs;
+                m_data[i] *= rhs;
             }
             return *this;
         }
@@ -57,9 +65,9 @@ namespace Piccolo
         VectorN operator+(const VectorN& rhs) const
         {
             VectorN tmp = *this;
-            for (int i = 0; i < tmp.data.size(); i++)
+            for (int i = 0; i < tmp.m_data.size(); i++)
             {
-                tmp.data[i] += rhs.data[i];
+                tmp.m_data[i] += rhs.m_data[i];
             }
             return tmp;
         }
@@ -67,27 +75,27 @@ namespace Piccolo
         VectorN operator-(const VectorN& rhs) const
         {
             VectorN tmp = *this;
-            for (int i = 0; i < tmp.data.size(); i++)
+            for (int i = 0; i < tmp.m_data.size(); i++)
             {
-                tmp.data[i] -= rhs.data[i];
+                tmp.m_data[i] -= rhs.m_data[i];
             }
             return tmp;
         }
 
         const VectorN& operator+=(const VectorN& rhs)
         {
-            for (int i = 0; i < data.size(); i++)
+            for (int i = 0; i < m_data.size(); i++)
             {
-                data[i] += rhs.data[i];
+                m_data[i] += rhs.m_data[i];
             }
             return *this;
         }
 
         const VectorN& operator-=(const VectorN& rhs)
         {
-            for (int i = 0; i < data.size(); i++)
+            for (int i = 0; i < m_data.size(); i++)
             {
-                data[i] -= rhs.data[i];
+                m_data[i] -= rhs.m_data[i];
             }
             return *this;
         }
@@ -95,26 +103,26 @@ namespace Piccolo
         float dotProduct(const VectorN& rhs) const
         {
             float sum = 0;
-            for (int i = 0; i < data.size(); i++)
+            for (int i = 0; i < m_data.size(); i++)
             {
-                sum += data[i] * rhs.data[i];
+                sum += m_data[i] * rhs.m_data[i];
             }
             return sum;
         }
 
         void zero()
         {
-            for (int i = 0; i < data.size(); i++)
+            for (int i = 0; i < m_data.size(); i++)
             {
-                data[i] = 0.0f;
+                m_data[i] = 0.0f;
             }
         }
 
         bool isValid() const
         {
-            for (int i = 0; i < data.size(); ++i)
+            for (int i = 0; i < m_data.size(); ++i)
             {
-                if (data[i] * 0.0f != data[i] * 0.0f)
+                if (m_data[i] * 0.0f != m_data[i] * 0.0f)
                 {
                     return false;
                 }
@@ -124,15 +132,12 @@ namespace Piccolo
 
         bool isNaN() const
         {
-            for (auto x : data)
+            for (auto x : m_data)
             {
                 if (Math::isNan(x))
                     return true;
             }
             return false;
         }
-
-    public:
-        std::vector<float> data;
     };
 } // namespace Piccolo

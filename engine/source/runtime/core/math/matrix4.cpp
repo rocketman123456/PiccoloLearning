@@ -11,6 +11,27 @@ namespace Piccolo
     const Matrix4x4 Matrix4x4::IDENTITY({{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}});
 
     //-----------------------------------------------------------------------
+    Matrix4x4 operator*(float scalar, const Matrix4x4& rhs)
+    {
+        Matrix4x4 prod;
+        for (size_t row_index = 0; row_index < 4; row_index++)
+        {
+            for (size_t col_index = 0; col_index < 4; col_index++)
+            {
+                prod[row_index][col_index] = scalar * rhs.m_rows[row_index][col_index];
+            }
+        }
+        return prod;
+    }
+    //-----------------------------------------------------------------------
+    Vector4 operator*(const Vector4& v, const Matrix4x4& mat)
+    {
+        return Vector4(v.x * mat[0][0] + v.y * mat[1][0] + v.z * mat[2][0] + v.w * mat[3][0],
+                       v.x * mat[0][1] + v.y * mat[1][1] + v.z * mat[2][1] + v.w * mat[3][1],
+                       v.x * mat[0][2] + v.y * mat[1][2] + v.z * mat[2][2] + v.w * mat[3][2],
+                       v.x * mat[0][3] + v.y * mat[1][3] + v.z * mat[2][3] + v.w * mat[3][3]);
+    }
+    //-----------------------------------------------------------------------
     Matrix4x4 Matrix4x4::adjoint() const
     {
         return Matrix4x4({{getMinor(1, 2, 3, 1, 2, 3), -getMinor(0, 2, 3, 1, 2, 3), getMinor(0, 1, 3, 1, 2, 3), -getMinor(0, 1, 2, 1, 2, 3)},
@@ -163,13 +184,5 @@ namespace Piccolo
 
         rotation = Quaternion(mat_q);
         position = Vector3(m_rows[0][3], m_rows[1][3], m_rows[2][3]);
-    }
-
-    Vector4 operator*(const Vector4& v, const Matrix4x4& mat)
-    {
-        return Vector4(v.x * mat[0][0] + v.y * mat[1][0] + v.z * mat[2][0] + v.w * mat[3][0],
-                       v.x * mat[0][1] + v.y * mat[1][1] + v.z * mat[2][1] + v.w * mat[3][1],
-                       v.x * mat[0][2] + v.y * mat[1][2] + v.z * mat[2][2] + v.w * mat[3][2],
-                       v.x * mat[0][3] + v.y * mat[1][3] + v.z * mat[2][3] + v.w * mat[3][3]);
     }
 } // namespace Piccolo

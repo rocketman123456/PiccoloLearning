@@ -95,22 +95,26 @@ namespace Piccolo
             return *this;
         }
 
+        // matrix * scalar
+        Matrix2x2 operator*(float scalar) const
+        {
+            Matrix2x2 prod;
+            for (size_t row_index = 0; row_index < 2; row_index++)
+            {
+                for (size_t col_index = 0; col_index < 2; col_index++)
+                {
+                    prod[row_index][col_index] = scalar * m_rows[row_index][col_index];
+                }
+            }
+            return prod;
+        }
+
         Vector2 operator*(const Vector2& rhs) const
         {
             Vector2 prod;
             for (size_t row_index = 0; row_index < 2; row_index++)
             {
                 prod[row_index] = m_rows[row_index][0] * rhs.x + m_rows[row_index][1] * rhs.y;
-            }
-            return prod;
-        }
-
-        friend Vector2 operator*(const Vector2& point, const Matrix2x2& rhs)
-        {
-            Vector2 prod;
-            for (size_t row_index = 0; row_index < 2; row_index++)
-            {
-                prod[row_index] = point.x * rhs.m_rows[0][row_index] + point.y * rhs.m_rows[1][row_index];
             }
             return prod;
         }
@@ -142,4 +146,8 @@ namespace Piccolo
         static const Matrix2x2 ZERO;
         static const Matrix2x2 IDENTITY;
     };
+
+    Matrix2x2 operator*(float scalar, const Matrix2x2& rhs);
+
+    Vector2 operator*(const Vector2& point, const Matrix2x2& rhs);
 } // namespace Piccolo

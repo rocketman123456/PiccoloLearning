@@ -33,6 +33,8 @@ namespace Utils
 
     std::string getNameWithoutContainer(std::string name);
 
+    std::size_t getSizeWithoutContainer(std::string name);
+
     std::string getStringWithoutQuot(std::string input);
 
     std::string replace(std::string& source_string, std::string sub_string, const std::string new_string);

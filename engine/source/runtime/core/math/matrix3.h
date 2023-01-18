@@ -38,7 +38,7 @@ namespace Piccolo
         REFLECTION_BODY(Matrix3x3);
 
     public:
-        std::vector<Vector3> m_rows { Vector3::ZERO, Vector3::ZERO, Vector3::ZERO };
+        std::vector<Vector3> m_rows {Vector3::ZERO, Vector3::ZERO, Vector3::ZERO};
 
     public:
         /** Default constructor.
@@ -54,7 +54,7 @@ namespace Piccolo
             memcpy(m_rows[2].ptr(), arr[2], 3 * sizeof(float));
         }
 
-        Matrix3x3(float (&float_array)[9])
+        Matrix3x3(float(&float_array)[9])
         {
             m_rows[0][0] = float_array[0];
             m_rows[0][1] = float_array[1];
@@ -118,7 +118,7 @@ namespace Piccolo
             m_rows[2][2] = 1 - 2 * xx - 2 * yy;
         }
 
-        void fromData(float (&float_array)[9])
+        void fromData(float(&float_array)[9])
         {
             m_rows[0][0] = float_array[0];
             m_rows[0][1] = float_array[1];
@@ -131,7 +131,7 @@ namespace Piccolo
             m_rows[2][2] = float_array[8];
         }
 
-        void toData(float (&float_array)[9]) const
+        void toData(float(&float_array)[9]) const
         {
             float_array[0] = m_rows[0][0];
             float_array[1] = m_rows[0][1];
@@ -205,12 +205,11 @@ namespace Piccolo
         Matrix3x3 operator*(const Matrix3x3& rhs) const
         {
             Matrix3x3 prod;
-            for (size_t row_index = 0; row_index < 3; row_index++)
+            for (size_t r = 0; r < 3; r++)
             {
-                for (size_t col_index = 0; col_index < 3; col_index++)
+                for (size_t c = 0; c < 3; c++)
                 {
-                    prod.m_rows[row_index][col_index] = m_rows[row_index][0] * rhs.m_rows[0][col_index] + m_rows[row_index][1] * rhs.m_rows[1][col_index] +
-                                                       m_rows[row_index][2] * rhs.m_rows[2][col_index];
+                    prod.m_rows[r][c] = m_rows[r][0] * rhs.m_rows[0][c] + m_rows[r][1] * rhs.m_rows[1][c] + m_rows[r][2] * rhs.m_rows[2][c];
                 }
             }
             return prod;
@@ -223,17 +222,6 @@ namespace Piccolo
             for (size_t row_index = 0; row_index < 3; row_index++)
             {
                 prod[row_index] = m_rows[row_index][0] * rhs.x + m_rows[row_index][1] * rhs.y + m_rows[row_index][2] * rhs.z;
-            }
-            return prod;
-        }
-
-        // vector * matrix [1x3 * 3x3 = 1x3]
-        friend Vector3 operator*(const Vector3& point, const Matrix3x3& rhs)
-        {
-            Vector3 prod;
-            for (size_t row_index = 0; row_index < 3; row_index++)
-            {
-                prod[row_index] = point.x * rhs.m_rows[0][row_index] + point.y * rhs.m_rows[1][row_index] + point.z * rhs.m_rows[2][row_index];
             }
             return prod;
         }
@@ -256,19 +244,9 @@ namespace Piccolo
             for (size_t row_index = 0; row_index < 3; row_index++)
             {
                 for (size_t col_index = 0; col_index < 3; col_index++)
+                {
                     prod[row_index][col_index] = scalar * m_rows[row_index][col_index];
-            }
-            return prod;
-        }
-
-        // scalar * matrix
-        friend Matrix3x3 operator*(float scalar, const Matrix3x3& rhs)
-        {
-            Matrix3x3 prod;
-            for (size_t row_index = 0; row_index < 3; row_index++)
-            {
-                for (size_t col_index = 0; col_index < 3; col_index++)
-                    prod[row_index][col_index] = scalar * rhs.m_rows[row_index][col_index];
+                }
             }
             return prod;
         }
@@ -285,7 +263,7 @@ namespace Piccolo
             return transpose_v;
         }
 
-        bool inverse(Matrix3x3& inv_mat, float fTolerance = 1e-06) const
+        bool inverse(Matrix3x3 & inv_mat, float fTolerance = 1e-06) const
         {
             // Invert a 3x3 using cofactors.  This is about 8 times faster than
             // the Numerical Recipes code which uses Gaussian elimination.
@@ -332,11 +310,11 @@ namespace Piccolo
             return det;
         }
 
-        void calculateQDUDecomposition(Matrix3x3& out_Q, Vector3& out_D, Vector3& out_U) const;
+        void calculateQDUDecomposition(Matrix3x3 & out_Q, Vector3 & out_D, Vector3 & out_U) const;
 
         // matrix must be orthonormal
-        void toAngleAxis(Vector3& axis, Radian& angle) const;
-        void toAngleAxis(Vector3& axis, Degree& angle) const
+        void toAngleAxis(Vector3 & axis, Radian & angle) const;
+        void toAngleAxis(Vector3 & axis, Degree & angle) const
         {
             Radian r;
             toAngleAxis(axis, r);
@@ -358,4 +336,9 @@ namespace Piccolo
         static const Matrix3x3 ZERO;
         static const Matrix3x3 IDENTITY;
     };
+
+    // scalar * matrix
+    Matrix3x3 operator*(float scalar, const Matrix3x3& rhs);
+
+    Vector3 operator*(const Vector3& v, const Matrix3x3& mat);
 } // namespace Piccolo

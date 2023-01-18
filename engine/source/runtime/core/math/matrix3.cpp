@@ -6,6 +6,26 @@ namespace Piccolo
     const Matrix3x3 Matrix3x3::IDENTITY({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
 
     //-----------------------------------------------------------------------
+    Matrix3x3 operator*(float scalar, const Matrix3x3& rhs)
+    {
+        Matrix3x3 prod;
+        for (size_t row_index = 0; row_index < 3; row_index++)
+        {
+            for (size_t col_index = 0; col_index < 3; col_index++)
+            {
+                prod[row_index][col_index] = scalar * rhs.m_rows[row_index][col_index];
+            }
+        }
+        return prod;
+    }
+    //-----------------------------------------------------------------------
+    Vector3 operator*(const Vector3& v, const Matrix3x3& mat)
+    {
+        return Vector3(v.x * mat[0][0] + v.y * mat[1][0] + v.z * mat[2][0],
+                       v.x * mat[0][1] + v.y * mat[1][1] + v.z * mat[2][1],
+                       v.x * mat[0][2] + v.y * mat[1][2] + v.z * mat[2][2]);
+    }
+    //-----------------------------------------------------------------------
     void Matrix3x3::setColumn(size_t col_index, const Vector3& vec)
     {
         m_rows[0][col_index] = vec.x;
