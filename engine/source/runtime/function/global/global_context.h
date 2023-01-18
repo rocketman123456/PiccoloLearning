@@ -10,7 +10,7 @@ namespace Piccolo
     class AssetManager;
     class ConfigManager;
     // class PhysicsManager;
-    // class InputSystem;
+    class InputSystem;
     // class WorldManager;
     // class RenderSystem;
     class WindowSystem;
@@ -36,7 +36,7 @@ namespace Piccolo
         std::shared_ptr<ConfigManager>     m_config_manager;
         // std::shared_ptr<WorldManager>      m_world_manager;
         // std::shared_ptr<PhysicsManager>    m_physics_manager;
-        // std::shared_ptr<InputSystem>       m_input_system;
+        std::shared_ptr<InputSystem>       m_input_system;
         std::shared_ptr<WindowSystem>      m_window_system;
         // std::shared_ptr<RenderSystem>      m_render_system;
         // std::shared_ptr<ParticleManager>   m_particle_manager;

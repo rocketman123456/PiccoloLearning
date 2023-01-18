@@ -27,6 +27,7 @@ namespace Piccolo
     LogSystem::~LogSystem()
     {
         m_logger->flush();
+        spdlog::shutdown();
         spdlog::drop_all();
     }
 
