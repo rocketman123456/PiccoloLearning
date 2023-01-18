@@ -16,7 +16,7 @@ namespace Piccolo
     void AssetManager::readTextFile(const std::filesystem::path& file_path, std::string& content) const
     {
         std::ifstream fin(file_path, std::ios::in);
-        if(!fin)
+        if (!fin)
         {
             LOG_ERROR("open file: {} failed!", file_path.generic_string());
             return;
@@ -27,7 +27,7 @@ namespace Piccolo
     void AssetManager::readBinaryFile(const std::filesystem::path& file_path, std::vector<std::byte>& content) const
     {
         std::ifstream fin(file_path, std::ios::in | std::ios::binary);
-        if(!fin)
+        if (!fin)
         {
             LOG_ERROR("open file: {} failed!", file_path.generic_string());
             return;
@@ -40,4 +40,33 @@ namespace Piccolo
         fin.read(reinterpret_cast<char*>(content.data()), sizeof(file_size));
         fin.close();
     }
+
+    void AssetManager::readVFSTextFile(const std::filesystem::path& file_path, std::string& content) const
+    {
+        auto file = g_runtime_global_context.m_vfs->open(file_path.string(), File::read_text);
+        file->read(content);
+        file->close();
+    }
+
+    void AssetManager::readVFSBinaryFile(const std::filesystem::path& file_path, std::vector<std::byte>& content) const
+    {
+        auto file = g_runtime_global_context.m_vfs->open(file_path.string(), File::read_bin);
+        file->read(content);
+        file->close();
+    }
+
+    void AssetManager::writeVFSTextFile(const std::filesystem::path& file_path, const std::string& content) const
+    {
+        auto file = g_runtime_global_context.m_vfs->open(file_path.string(), File::write_text);
+        file->write(content);
+        file->close();
+    }
+
+    void AssetManager::writeVFSBinaryFile(const std::filesystem::path& file_path, const std::vector<std::byte>& content) const
+    {
+        auto file = g_runtime_global_context.m_vfs->open(file_path.string(), File::write_bin);
+        file->write(content);
+        file->close();
+    }
+
 } // namespace Piccolo

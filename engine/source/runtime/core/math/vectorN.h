@@ -37,6 +37,8 @@ namespace Piccolo
 
         ~VectorN() = default;
 
+        std::size_t n() const { return m_data.size(); }
+
         float operator[](const int idx) const { return m_data[idx]; }
 
         float& operator[](const int idx) { return m_data[idx]; }

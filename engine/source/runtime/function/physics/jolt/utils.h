@@ -82,6 +82,6 @@ namespace Piccolo
     JPH::Mat44 toMat44(const Matrix4x4& m);
     Matrix4x4  toMat44(const JPH::Mat44& m);
 
-    // JPH::Shape* toShape(const RigidBodyShape& shape, const Vector3& scale);
+    JPH::Shape* toShape(const RigidBodyShape& shape, const Vector3& scale);
 
 } // namespace Piccolo

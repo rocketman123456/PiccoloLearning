@@ -44,7 +44,7 @@ namespace Piccolo
     {
         m_buffer.clear();
         m_is_read_only = true;
-        m_opened    = false;
+        m_opened       = false;
         m_seek_pos     = 0;
         return true;
     }
@@ -92,6 +92,10 @@ namespace Piccolo
             std::copy(m_buffer.begin(), m_buffer.end(), data.begin());
             return data.size();
         }
+        else
+        {
+            return 0;
+        }
     }
 
     size_t MemoryFile::write(const std::vector<std::byte>& data)
@@ -108,6 +112,10 @@ namespace Piccolo
             m_buffer.resize(data.size());
             std::copy(data.begin(), data.end(), m_buffer.begin());
             return m_buffer.size();
+        }
+        else
+        {
+            return 0;
         }
     }
 
@@ -126,6 +134,10 @@ namespace Piccolo
             std::memcpy(data.data(), m_buffer.data(), m_buffer.size());
             return data.size();
         }
+        else
+        {
+            return 0;
+        }
     }
 
     size_t MemoryFile::write(const std::string& data)
@@ -142,6 +154,10 @@ namespace Piccolo
             m_buffer.resize(data.size());
             std::memcpy(m_buffer.data(), data.data(), m_buffer.size());
             return m_buffer.size();
+        }
+        else
+        {
+            return 0;
         }
     }
 } // namespace Piccolo

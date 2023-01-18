@@ -35,7 +35,8 @@ namespace Piccolo
 
         VFSConfig config;
         m_asset_manager->loadAsset<VFSConfig>("config/config.vfs.json", config);
-        g_vfs.mount(config);
+        m_vfs = std::make_shared<VFS>();
+        m_vfs->mount(config);
 
         // m_physics_manager = std::make_shared<PhysicsManager>();
         // m_physics_manager->initialize();

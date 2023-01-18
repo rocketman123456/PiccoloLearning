@@ -1,6 +1,6 @@
 #include "runtime/function/physics/jolt/utils.h"
 
-// #include "runtime/resource/res_type/components/rigid_body.h"
+#include "runtime/resource/res_type/components/rigid_body.h"
 
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
@@ -111,42 +111,42 @@ namespace Piccolo
         return Matrix4x4(cols[0], cols[1], cols[2], cols[3]).transpose();
     }
 
-    // JPH::Shape* toShape(const RigidBodyShape& shape, const Vector3& scale)
-    // {
-    //     JPH::Shape* jph_shape = nullptr;
+    JPH::Shape* toShape(const RigidBodyShape& shape, const Vector3& scale)
+    {
+        JPH::Shape* jph_shape = nullptr;
 
-    //     const std::string shape_type_str = shape.m_geometry.getTypeName();
-    //     if (shape_type_str == "Box")
-    //     {
-    //         const Box* box_geometry = static_cast<const Box*>(shape.m_geometry.getPtr());
-    //         if (box_geometry)
-    //         {
-    //             JPH::Vec3 jph_box(scale.x * box_geometry->m_half_extents.x, scale.y * box_geometry->m_half_extents.y, scale.z * box_geometry->m_half_extents.z);
-    //             jph_shape = new JPH::BoxShape(jph_box, 0.f);
-    //         }
-    //     }
-    //     else if (shape_type_str == "Sphere")
-    //     {
-    //         const Sphere* sphere_geometry = static_cast<const Sphere*>(shape.m_geometry.getPtr());
-    //         if (sphere_geometry)
-    //         {
-    //             jph_shape = new JPH::SphereShape((scale.x + scale.y + scale.z) / 3 * sphere_geometry->m_radius);
-    //         }
-    //     }
-    //     else if (shape_type_str == "Capsule")
-    //     {
-    //         const Capsule* capsule_geometry = static_cast<const Capsule*>(shape.m_geometry.getPtr());
-    //         if (capsule_geometry)
-    //         {
-    //             jph_shape = new JPH::CapsuleShape(scale.z * capsule_geometry->m_half_height, (scale.x + scale.y) / 2 * capsule_geometry->m_radius);
-    //         }
-    //     }
-    //     else
-    //     {
-    //         LOG_ERROR("Unsupported Shape")
-    //     }
+        const std::string shape_type_str = shape.m_geometry.getTypeName();
+        if (shape_type_str == "Box")
+        {
+            const Box* box_geometry = static_cast<const Box*>(shape.m_geometry.getPtr());
+            if (box_geometry)
+            {
+                JPH::Vec3 jph_box(scale.x * box_geometry->m_half_extents.x, scale.y * box_geometry->m_half_extents.y, scale.z * box_geometry->m_half_extents.z);
+                jph_shape = new JPH::BoxShape(jph_box, 0.f);
+            }
+        }
+        else if (shape_type_str == "Sphere")
+        {
+            const Sphere* sphere_geometry = static_cast<const Sphere*>(shape.m_geometry.getPtr());
+            if (sphere_geometry)
+            {
+                jph_shape = new JPH::SphereShape((scale.x + scale.y + scale.z) / 3 * sphere_geometry->m_radius);
+            }
+        }
+        else if (shape_type_str == "Capsule")
+        {
+            const Capsule* capsule_geometry = static_cast<const Capsule*>(shape.m_geometry.getPtr());
+            if (capsule_geometry)
+            {
+                jph_shape = new JPH::CapsuleShape(scale.z * capsule_geometry->m_half_height, (scale.x + scale.y) / 2 * capsule_geometry->m_radius);
+            }
+        }
+        else
+        {
+            LOG_ERROR("Unsupported Shape")
+        }
 
-    //     return jph_shape;
-    // }
+        return jph_shape;
+    }
 
 } // namespace Piccolo

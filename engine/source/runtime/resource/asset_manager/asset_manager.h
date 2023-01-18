@@ -56,7 +56,6 @@ namespace Piccolo
             // write to file
             asset_json_file << asset_json_text;
             asset_json_file.flush();
-
             return true;
         }
 
@@ -64,9 +63,8 @@ namespace Piccolo
         bool loadVFSAsset(const std::string& asset_url, AssetType& out_asset) const
         {
             // read json file to string
-            auto       file = g_vfs.open(asset_url, File::read_text);
             std::string asset_json_text;
-            file->read(asset_json_text);
+            readVFSTextFile(asset_url, asset_json_text);
 
             // parse to json object and read to runtime res object
             std::string error;
@@ -84,26 +82,22 @@ namespace Piccolo
         template<typename AssetType>
         bool saveVFSAsset(const AssetType& out_asset, const std::string& asset_url) const
         {
-            // read json file to string
-            auto file = g_vfs.open(asset_url, File::write_text);
-            if (!file)
-            {
-                LOG_ERROR("open file {} failed!", asset_url);
-                return false;
-            }
-
             // write to json object and dump to string
             auto&&        asset_json      = Serializer::write(out_asset);
             std::string&& asset_json_text = asset_json.dump();
 
             // write to file
-            file->write(asset_json_text);
-
+            writeVFSTextFile(asset_url, asset_json_text);
             return true;
         }
 
         void readTextFile(const std::filesystem::path& file_path, std::string& content) const;
         void readBinaryFile(const std::filesystem::path& file_path, std::vector<std::byte>& content) const;
+
+        void readVFSTextFile(const std::filesystem::path& file_path, std::string& content) const;
+        void readVFSBinaryFile(const std::filesystem::path& file_path, std::vector<std::byte>& content) const;
+        void writeVFSTextFile(const std::filesystem::path& file_path, const std::string& content) const;
+        void writeVFSBinaryFile(const std::filesystem::path& file_path, const std::vector<std::byte>& content) const;
 
         std::filesystem::path getFullPath(const std::string& relative_path) const;
     };

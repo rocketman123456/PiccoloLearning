@@ -1,5 +1,4 @@
 #pragma once
-
 #include <memory>
 #include <string>
 
@@ -17,6 +16,7 @@ namespace Piccolo
     // class ParticleManager;
     // class DebugDrawManager;
     // class RenderDebugConfig;
+    class VFS;
 
     // struct EngineInitParams;
 
@@ -42,6 +42,7 @@ namespace Piccolo
         // std::shared_ptr<ParticleManager>   m_particle_manager;
         // std::shared_ptr<DebugDrawManager>  m_debugdraw_manager;
         // std::shared_ptr<RenderDebugConfig> m_render_debug_config;
+        std::shared_ptr<VFS>               m_vfs;
     };
 
     extern RuntimeGlobalContext g_runtime_global_context;
