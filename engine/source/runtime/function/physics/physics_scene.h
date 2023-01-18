@@ -55,6 +55,7 @@ namespace Piccolo
 
         JPH::Character* createCharacter();
         void            removeCharacter(JPH::Character* body_id);
+        void            removeCharacter(uint32_t body_id);
 
         void updateRigidBodyGlobalTransform(uint32_t body_id, const Transform& global_transform);
 

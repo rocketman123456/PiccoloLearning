@@ -49,8 +49,6 @@ namespace Piccolo
         m_physics.m_jolt_job_system =
             new JPH::JobSystemThreadPool(m_config.m_max_job_count, m_config.m_max_barrier_count, static_cast<int>(m_config.m_max_concurrent_job_count));
 
-        // TODO : care memory allocator in newer jolt
-
         // 16M temp memory
         m_physics.m_temp_allocator = new JPH::TempAllocatorImpl(16 * 1024 * 1024);
 
@@ -179,6 +177,7 @@ namespace Piccolo
     }
 
     void PhysicsScene::removeCharacter(JPH::Character* body) { m_pending_remove_bodies.push_back(body->GetBodyID().GetIndexAndSequenceNumber()); }
+    void PhysicsScene::removeCharacter(uint32_t body_id) { m_pending_remove_bodies.push_back(body_id); }
 
     void PhysicsScene::updateRigidBodyGlobalTransform(uint32_t body_id, const Transform& global_transform)
     {

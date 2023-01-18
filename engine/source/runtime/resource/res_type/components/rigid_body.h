@@ -1,6 +1,5 @@
 #pragma once
-
-#include "runtime/resource/res_type/data/basic_shape.h"
+#include "runtime/resource/res_type/data/geometry.h"
 
 #include "runtime/core/math/axis_aligned.h"
 #include "runtime/core/math/transform.h"

@@ -40,6 +40,13 @@ namespace Piccolo
         /// Pointer accessor for direct copying
         const float* ptr() const { return &x; }
 
+        void zero()
+        {
+            x = 0;
+            y = 0;
+            z = 0;
+        }
+
         bool operator==(const Vector3& rhs) const { return (x == rhs.x && y == rhs.y && z == rhs.z); }
 
         bool operator!=(const Vector3& rhs) const { return x != rhs.x || y != rhs.y || z != rhs.z; }

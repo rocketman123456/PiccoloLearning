@@ -37,6 +37,14 @@ namespace Piccolo
         /// Pointer accessor for direct copying
         const float* ptr() const { return &x; }
 
+        void zero()
+        {
+            x = 0;
+            y = 0;
+            z = 0;
+            w = 0;
+        }
+
         Vector4& operator=(float scalar)
         {
             x = scalar;

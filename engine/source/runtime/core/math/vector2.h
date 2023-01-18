@@ -31,6 +31,12 @@ namespace Piccolo
 
         const float* ptr() const { return &x; }
 
+        void zero()
+        {
+            x = 0;
+            y = 0;
+        }
+
         float operator[](size_t i) const
         {
             assert(i < 2);

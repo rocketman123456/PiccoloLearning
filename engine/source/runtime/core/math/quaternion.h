@@ -35,9 +35,14 @@ namespace Piccolo
         /// Pointer accessor for direct copying
         const float* ptr() const { return &w; }
 
-        void fromRotationMatrix(const Matrix3x3& rotation);
-        void toRotationMatrix(Matrix3x3 & rotation) const;
-        void toRotationMatrix(Matrix4x4 & rotation) const;
+        void      fromRotationMatrix(const Matrix3x3& rotation);
+        void      toRotationMatrix(Matrix3x3 & rotation) const;
+        void      toRotationMatrix(Matrix4x4 & rotation) const;
+        Matrix3x3 toRotationMatrix3() const;
+        Matrix4x4 toRotationMatrix4() const;
+
+        Vector3   rotatePoint(const Vector3& rhs) const;
+        Matrix3x3 rotateMatrix(const Matrix3x3& rhs) const;
 
         void fromAngleAxis(const Radian& angle, const Vector3& axis);
 
