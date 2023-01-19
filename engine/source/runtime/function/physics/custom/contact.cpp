@@ -1,4 +1,4 @@
-#include "runtime/function/physics/custom/contact_info.h"
+#include "runtime/function/physics/custom/contact.h"
 
 namespace Piccolo
 {
