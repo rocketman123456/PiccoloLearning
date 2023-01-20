@@ -12,7 +12,7 @@
 // #include "runtime/function/framework/world/world_manager.h"
 #include "runtime/function/input/input_system.h"
 // #include "runtime/function/particle/particle_manager.h"
-// #include "runtime/function/physics/physics_manager.h"
+#include "runtime/function/physics/physics_manager.h"
 // #include "runtime/function/render/debugdraw/debug_draw_manager.h"
 // #include "runtime/function/render/render_debug_config.h"
 // #include "runtime/function/render/render_system.h"
@@ -38,8 +38,8 @@ namespace Piccolo
         m_vfs = std::make_shared<VFS>();
         m_vfs->mount(config);
 
-        // m_physics_manager = std::make_shared<PhysicsManager>();
-        // m_physics_manager->initialize();
+        m_physics_manager = std::make_shared<PhysicsManager>();
+        m_physics_manager->initialize();
 
         // m_world_manager = std::make_shared<WorldManager>();
         // m_world_manager->initialize();
@@ -82,8 +82,8 @@ namespace Piccolo
         // m_world_manager->clear();
         // m_world_manager.reset();
 
-        // m_physics_manager->clear();
-        // m_physics_manager.reset();
+        m_physics_manager->clear();
+        m_physics_manager.reset();
 
         m_input_system->clear();
         m_input_system.reset();

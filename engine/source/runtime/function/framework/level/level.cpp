@@ -9,8 +9,8 @@
 // #include "runtime/function/character/character.h"
 #include "runtime/function/framework/object/object.h"
 // #include "runtime/function/particle/particle_manager.h"
-// #include "runtime/function/physics/physics_manager.h"
-// #include "runtime/function/physics/physics_scene.h"
+#include "runtime/function/physics/physics_manager.h"
+#include "runtime/function/physics/physics_scene.h"
 
 #include <limits>
 
@@ -21,8 +21,8 @@ namespace Piccolo
         // m_current_active_character.reset();
         m_gobjects.clear();
 
-        // ASSERT(g_runtime_global_context.m_physics_manager);
-        // g_runtime_global_context.m_physics_manager->deletePhysicsScene(m_physics_scene);
+        ASSERT(g_runtime_global_context.m_physics_manager);
+        g_runtime_global_context.m_physics_manager->deletePhysicsScene(m_physics_scene);
     }
 
     GObjectID Level::createObject(const ObjectInstanceRes& object_instance_res)
@@ -156,11 +156,11 @@ namespace Piccolo
         //     m_current_active_character->tick(delta_time);
         // }
 
-        // std::shared_ptr<PhysicsScene> physics_scene = m_physics_scene.lock();
-        // if (physics_scene)
-        // {
-        //     physics_scene->tick(delta_time);
-        // }
+        std::shared_ptr<PhysicsScene> physics_scene = m_physics_scene.lock();
+        if (physics_scene)
+        {
+            physics_scene->tick(delta_time);
+        }
     }
 
     std::weak_ptr<GObject> Level::getGObjectByID(GObjectID go_id) const
