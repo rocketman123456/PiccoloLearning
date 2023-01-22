@@ -9,7 +9,7 @@
 #include "runtime/resource/config_manager/config_manager.h"
 
 #include "runtime/engine.h"
-// #include "runtime/function/framework/world/world_manager.h"
+#include "runtime/function/framework/world/world_manager.h"
 #include "runtime/function/input/input_system.h"
 // #include "runtime/function/particle/particle_manager.h"
 #include "runtime/function/physics/physics_manager.h"
@@ -41,8 +41,8 @@ namespace Piccolo
         m_physics_manager = std::make_shared<PhysicsManager>();
         m_physics_manager->initialize();
 
-        // m_world_manager = std::make_shared<WorldManager>();
-        // m_world_manager->initialize();
+        m_world_manager = std::make_shared<WorldManager>();
+        m_world_manager->initialize();
 
         m_window_system = std::make_shared<WindowSystem>();
         WindowCreateInfo window_create_info;
@@ -79,8 +79,8 @@ namespace Piccolo
 
         m_window_system.reset();
 
-        // m_world_manager->clear();
-        // m_world_manager.reset();
+        m_world_manager->clear();
+        m_world_manager.reset();
 
         m_physics_manager->clear();
         m_physics_manager.reset();

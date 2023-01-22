@@ -1,9 +1,6 @@
 #pragma once
-
 #include "runtime/function/render/render_data.h"
 #include "runtime/function/render/render_type.h"
-
-#include <optional>
 
 namespace Piccolo
 {
@@ -1156,28 +1153,8 @@ namespace Piccolo
 
     struct RHIDepthImageDesc
     {
-        RHIImage*     depth_image      = VK_NULL_HANDLE;
-        RHIImageView* depth_image_view = VK_NULL_HANDLE;
+        RHIImage*     depth_image      = nullptr;
+        RHIImageView* depth_image_view = nullptr;
         RHIFormat     depth_image_format;
-    };
-
-    struct QueueFamilyIndices
-    {
-        std::optional<uint32_t> graphics_family;
-        std::optional<uint32_t> present_family;
-        std::optional<uint32_t> compute_family;
-
-        bool isComplete()
-        {
-            return graphics_family.has_value() && present_family.has_value() && compute_family.has_value();
-            ;
-        }
-    };
-
-    struct SwapChainSupportDetails
-    {
-        VkSurfaceCapabilitiesKHR        capabilities;
-        std::vector<VkSurfaceFormatKHR> formats;
-        std::vector<VkPresentModeKHR>   presentModes;
     };
 } // namespace Piccolo

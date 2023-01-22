@@ -49,10 +49,11 @@ namespace Piccolo
     // Default include class for normal include convention of search backward
     // through the stack of active include paths (for nested includes).
     // Can be overridden to customize.
-    class DirStackFileIncluder : public glslang::TShader::Includer
+    class VulkanHeaderIncluder : public glslang::TShader::Includer
     {
     public:
-        DirStackFileIncluder() : externalLocalDirectoryCount(0) {}
+        VulkanHeaderIncluder() : externalLocalDirectoryCount(0) {}
+        virtual ~VulkanHeaderIncluder() override = default;
 
         virtual IncludeResult* includeLocal(const char* headerName, const char* includerName, size_t inclusionDepth) override
         {
@@ -86,8 +87,6 @@ namespace Piccolo
         }
 
         virtual std::set<std::string> getIncludedFiles() { return includedFiles; }
-
-        virtual ~DirStackFileIncluder() override {}
 
     protected:
         typedef char             tUserDataElement;

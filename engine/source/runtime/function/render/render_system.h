@@ -67,7 +67,7 @@ namespace Piccolo
         // void clearForLevelReloading();
 
     private:
-        void processSwapData();
+        // void processSwapData();
 
     private:
         RENDER_PIPELINE_TYPE m_render_pipeline_type {RENDER_PIPELINE_TYPE::DEFERRED_PIPELINE};
