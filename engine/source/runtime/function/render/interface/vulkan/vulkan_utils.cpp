@@ -52,60 +52,6 @@ namespace Piccolo
         return EShLangVertex;
     }
 
-    const char* shaderLanguageBinaryName(EShLanguage stage)
-    {
-        const char* name;
-        switch (stage)
-        {
-            case EShLangVertex:
-                name = "vert.spv";
-                break;
-            case EShLangTessControl:
-                name = "tesc.spv";
-                break;
-            case EShLangTessEvaluation:
-                name = "tese.spv";
-                break;
-            case EShLangGeometry:
-                name = "geom.spv";
-                break;
-            case EShLangFragment:
-                name = "frag.spv";
-                break;
-            case EShLangCompute:
-                name = "comp.spv";
-                break;
-            case EShLangRayGen:
-                name = "rgen.spv";
-                break;
-            case EShLangIntersect:
-                name = "rint.spv";
-                break;
-            case EShLangAnyHit:
-                name = "rahit.spv";
-                break;
-            case EShLangClosestHit:
-                name = "rchit.spv";
-                break;
-            case EShLangMiss:
-                name = "rmiss.spv";
-                break;
-            case EShLangCallable:
-                name = "rcall.spv";
-                break;
-            case EShLangMeshNV:
-                name = "mesh.spv";
-                break;
-            case EShLangTaskNV:
-                name = "task.spv";
-                break;
-            default:
-                name = "unknown";
-                break;
-        }
-        return name;
-    }
-
     VkShaderModule VulkanUtil::createShaderModule(VkDevice device, const std::string& shader_file)
     {
         std::filesystem::path asset_path       = g_runtime_global_context.m_config_manager->getRootFolder();

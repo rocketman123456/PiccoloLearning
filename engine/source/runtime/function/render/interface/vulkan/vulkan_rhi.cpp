@@ -74,7 +74,7 @@ namespace Piccolo
             vkDestroyFence(m_device, m_is_frame_in_flight_fences[i], nullptr);
         }
 
-        vkDestroyCommandPool(m_device, m_vk_command_pools, nullptr);
+        vkDestroyCommandPool(m_device, ((VulkanCommandPool*)m_rhi_command_pool)->getResource(), nullptr);
 
         for (auto framebuffer : m_swapchain_framebuffers)
         {
@@ -87,7 +87,7 @@ namespace Piccolo
 
         for (auto imageView : m_swapchain_imageviews)
         {
-            vkDestroyImageView(m_device, imageView, nullptr);
+            vkDestroyImageView(m_device, ((VulkanImageView*)imageView)->getResource(), nullptr);
         }
 
         vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
@@ -369,8 +369,7 @@ namespace Piccolo
         m_swapchain_images.resize(image_count);
         vkGetSwapchainImagesKHR(m_device, m_swapchain, &image_count, m_swapchain_images.data());
 
-        // m_swapchain_image_format  = (RHIFormat)chosen_surface_format.format;
-        m_swapchain_image_format  = chosen_surface_format.format;
+        m_swapchain_image_format  = (RHIFormat)chosen_surface_format.format;
         m_swapchain_extent.height = chosen_extent.height;
         m_swapchain_extent.width  = chosen_extent.width;
 
@@ -387,7 +386,7 @@ namespace Piccolo
             createInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
             createInfo.image                           = m_swapchain_images[i];
             createInfo.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
-            createInfo.format                          = m_swapchain_image_format;
+            createInfo.format                          = (VkFormat)m_swapchain_image_format;
             createInfo.components.r                    = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.g                    = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.b                    = VK_COMPONENT_SWIZZLE_IDENTITY;
@@ -398,17 +397,21 @@ namespace Piccolo
             createInfo.subresourceRange.baseArrayLayer = 0;
             createInfo.subresourceRange.layerCount     = 1;
 
-            if (vkCreateImageView(m_device, &createInfo, nullptr, &m_swapchain_imageviews[i]) != VK_SUCCESS)
+            VkImageView vk_image_view;
+            if (vkCreateImageView(m_device, &createInfo, nullptr, &vk_image_view) != VK_SUCCESS)
             {
                 throw std::runtime_error("failed to create image views!");
             }
+
+            m_swapchain_imageviews[i] = new VulkanImageView();
+            ((VulkanImageView*)m_swapchain_imageviews[i])->setResource(vk_image_view);
         }
     }
 
     void VulkanRHI::createRenderPass()
     {
         VkAttachmentDescription colorAttachment {};
-        colorAttachment.format         = m_swapchain_image_format;
+        colorAttachment.format         = (VkFormat)m_swapchain_image_format;
         colorAttachment.samples        = VK_SAMPLE_COUNT_1_BIT;
         colorAttachment.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;
         colorAttachment.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
@@ -560,7 +563,7 @@ namespace Piccolo
 
         for (size_t i = 0; i < m_swapchain_imageviews.size(); i++)
         {
-            VkImageView attachments[] = {m_swapchain_imageviews[i]};
+            VkImageView attachments[] = {((VulkanImageView*)m_swapchain_imageviews[i])->getResource()};
 
             VkFramebufferCreateInfo framebufferInfo {};
             framebufferInfo.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -580,85 +583,72 @@ namespace Piccolo
 
     void VulkanRHI::createCommandPool()
     {
-        // // default graphics command pool
-        // {
-        //     m_rhi_command_pool = new VulkanCommandPool();
-        //     VkCommandPool           vk_command_pool;
-        //     VkCommandPoolCreateInfo command_pool_create_info {};
-        //     command_pool_create_info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        //     command_pool_create_info.pNext            = NULL;
-        //     command_pool_create_info.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        //     command_pool_create_info.queueFamilyIndex = m_queue_indices.graphics_family.value();
-
-        //     if (vkCreateCommandPool(m_device, &command_pool_create_info, nullptr, &vk_command_pool) != VK_SUCCESS)
-        //     {
-        //         LOG_ERROR("vk create command pool");
-        //     }
-
-        //     ((VulkanCommandPool*)m_rhi_command_pool)->setResource(vk_command_pool);
-        // }
-
-        // // other command pools
-        // {
-        //     VkCommandPoolCreateInfo command_pool_create_info;
-        //     command_pool_create_info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        //     command_pool_create_info.pNext            = NULL;
-        //     command_pool_create_info.flags            = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
-        //     command_pool_create_info.queueFamilyIndex = m_queue_indices.graphics_family.value();
-
-        //     for (uint32_t i = 0; i < k_max_frames_in_flight; ++i)
-        //     {
-        //         if (vkCreateCommandPool(m_device, &command_pool_create_info, NULL, &m_vk_command_pools[i]) != VK_SUCCESS)
-        //         {
-        //             LOG_ERROR("vk create command pool");
-        //         }
-        //     }
-        // }
-
-        QueueFamilyIndices queueFamilyIndices = VulkanCreationUtils::findQueueFamilies(m_physical_device, m_surface);
-
-        VkCommandPoolCreateInfo poolInfo {};
-        poolInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        poolInfo.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        poolInfo.queueFamilyIndex = queueFamilyIndices.graphics_family.value();
-
-        if (vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_vk_command_pools) != VK_SUCCESS)
+        // default graphics command pool
         {
-            throw std::runtime_error("failed to create command pool!");
+            m_rhi_command_pool = new VulkanCommandPool();
+            VkCommandPoolCreateInfo command_pool_create_info {};
+            command_pool_create_info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+            command_pool_create_info.pNext            = NULL;
+            command_pool_create_info.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+            command_pool_create_info.queueFamilyIndex = m_queue_indices.graphics_family.value();
+
+            if (vkCreateCommandPool(m_device, &command_pool_create_info, nullptr, &m_vk_rhi_command_pool) != VK_SUCCESS)
+            {
+                LOG_ERROR("vk create command pool");
+            }
+
+            ((VulkanCommandPool*)m_rhi_command_pool)->setResource(m_vk_rhi_command_pool);
+        }
+
+        // other command pools
+        {
+            VkCommandPoolCreateInfo command_pool_create_info;
+            command_pool_create_info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+            command_pool_create_info.pNext            = NULL;
+            command_pool_create_info.flags            = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
+            command_pool_create_info.queueFamilyIndex = m_queue_indices.graphics_family.value();
+
+            for (uint32_t i = 0; i < k_max_frames_in_flight; ++i)
+            {
+                if (vkCreateCommandPool(m_device, &command_pool_create_info, NULL, &m_vk_command_pools[i]) != VK_SUCCESS)
+                {
+                    LOG_ERROR("vk create command pool");
+                }
+            }
         }
     }
 
     void VulkanRHI::createCommandBuffers()
     {
-        // VkCommandBufferAllocateInfo command_buffer_allocate_info {};
-        // command_buffer_allocate_info.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        // command_buffer_allocate_info.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        // command_buffer_allocate_info.commandBufferCount = 1U;
-
-        // for (uint32_t i = 0; i < k_max_frames_in_flight; ++i)
-        // {
-        //     command_buffer_allocate_info.commandPool = m_vk_command_pools[i];
-        //     VkCommandBuffer vk_command_buffer;
-        //     if (vkAllocateCommandBuffers(m_device, &command_buffer_allocate_info, &vk_command_buffer) != VK_SUCCESS)
-        //     {
-        //         LOG_ERROR("vk allocate command buffers");
-        //     }
-        //     m_vk_command_buffers[i] = vk_command_buffer;
-        //     m_command_buffers[i]    = new VulkanCommandBuffer();
-        //     ((VulkanCommandBuffer*)m_command_buffers[i])->setResource(vk_command_buffer);
-        // }
-
-        m_vk_command_buffers.resize(k_max_frames_in_flight);
-
         VkCommandBufferAllocateInfo allocInfo {};
         allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.commandPool        = m_vk_command_pools;
+        allocInfo.commandPool        = m_vk_rhi_command_pool;
         allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandBufferCount = (uint32_t)m_vk_command_buffers.size();
+        allocInfo.commandBufferCount = (uint32_t)k_max_frames_in_flight;
 
-        if (vkAllocateCommandBuffers(m_device, &allocInfo, m_vk_command_buffers.data()) != VK_SUCCESS)
+        if (vkAllocateCommandBuffers(m_device, &allocInfo, m_vk_rhi_command_buffers) != VK_SUCCESS)
         {
+            LOG_ERROR("vk allocate command buffers");
             throw std::runtime_error("failed to allocate command buffers!");
+        }
+
+        VkCommandBufferAllocateInfo command_buffer_allocate_info {};
+        command_buffer_allocate_info.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        command_buffer_allocate_info.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        command_buffer_allocate_info.commandBufferCount = 1U;
+
+        for (uint32_t i = 0; i < k_max_frames_in_flight; ++i)
+        {
+            command_buffer_allocate_info.commandPool = m_vk_command_pools[i];
+            VkCommandBuffer vk_command_buffer;
+            if (vkAllocateCommandBuffers(m_device, &command_buffer_allocate_info, &vk_command_buffer) != VK_SUCCESS)
+            {
+                LOG_ERROR("vk allocate command buffers");
+                throw std::runtime_error("failed to allocate command buffers!");
+            }
+            m_vk_command_buffers[i] = vk_command_buffer;
+            m_command_buffers[i]    = new VulkanCommandBuffer();
+            ((VulkanCommandBuffer*)m_command_buffers[i])->setResource(vk_command_buffer);
         }
     }
 
@@ -677,7 +667,7 @@ namespace Piccolo
         renderPassInfo.renderPass        = renderPass;
         renderPassInfo.framebuffer       = m_swapchain_framebuffers[imageIndex];
         renderPassInfo.renderArea.offset = {0, 0};
-        renderPassInfo.renderArea.extent = m_swapchain_extent;
+        renderPassInfo.renderArea.extent = {m_swapchain_extent.width, m_swapchain_extent.height};
 
         VkClearValue clearColor        = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
         renderPassInfo.clearValueCount = 1;
@@ -698,7 +688,7 @@ namespace Piccolo
 
         VkRect2D scissor {};
         scissor.offset = {0, 0};
-        scissor.extent = m_swapchain_extent;
+        scissor.extent = {m_swapchain_extent.width, m_swapchain_extent.height};
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
         vkCmdDraw(commandBuffer, 3, 1, 0, 0);
@@ -774,8 +764,8 @@ namespace Piccolo
         uint32_t imageIndex;
         vkAcquireNextImageKHR(m_device, m_swapchain, UINT64_MAX, m_image_available_for_render_semaphores[m_current_frame_index], VK_NULL_HANDLE, &imageIndex);
 
-        vkResetCommandBuffer(m_vk_command_buffers[m_current_frame_index], /*VkCommandBufferResetFlagBits*/ 0);
-        recordCommandBuffer(m_vk_command_buffers[m_current_frame_index], imageIndex);
+        vkResetCommandBuffer(m_vk_rhi_command_buffers[m_current_frame_index], /*VkCommandBufferResetFlagBits*/ 0);
+        recordCommandBuffer(m_vk_rhi_command_buffers[m_current_frame_index], imageIndex);
 
         VkSubmitInfo submitInfo {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -787,7 +777,7 @@ namespace Piccolo
         submitInfo.pWaitDstStageMask          = waitStages;
 
         submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers    = &m_vk_command_buffers[m_current_frame_index];
+        submitInfo.pCommandBuffers    = &m_vk_rhi_command_buffers[m_current_frame_index];
 
         VkSemaphore signalSemaphores[]  = {m_image_finished_for_presentation_semaphores[m_current_frame_index]};
         submitInfo.signalSemaphoreCount = 1;
