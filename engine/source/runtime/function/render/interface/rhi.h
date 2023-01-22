@@ -2,7 +2,8 @@
 
 #include "runtime/function/render/interface/rhi_struct.h"
 
-#define GLFW_INCLUDE_VULKAN
+#include <volk.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <vk_mem_alloc.h>
 
@@ -223,7 +224,7 @@ namespace Piccolo
         // virtual void              popEvent(RHICommandBuffer* commond_buffer)                                        = 0;
 
         // // destory
-        // virtual void clear()                                                                                                         = 0;
+        virtual void clear()                                                                                                         = 0;
         // virtual void clearSwapchain()                                                                                                = 0;
         // virtual void destroyDefaultSampler(RHIDefaultSamplerType type)                                                               = 0;
         // virtual void destroyMipmappedSampler()                                                                                       = 0;

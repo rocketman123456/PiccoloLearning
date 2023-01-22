@@ -1,7 +1,7 @@
 #pragma once
 #include "runtime/function/render/interface/rhi.h"
 
-#include <vulkan/vulkan.h>
+#include <volk.h>
 
 #include <optional>
 #include <vector>
@@ -12,7 +12,7 @@ namespace Piccolo
     {
         VkSurfaceCapabilitiesKHR        capabilities;
         std::vector<VkSurfaceFormatKHR> formats;
-        std::vector<VkPresentModeKHR>   presentModes;
+        std::vector<VkPresentModeKHR>   present_modes;
     };
 
     struct QueueFamilyIndices

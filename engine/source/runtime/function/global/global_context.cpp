@@ -11,12 +11,12 @@
 #include "runtime/engine.h"
 #include "runtime/function/framework/world/world_manager.h"
 #include "runtime/function/input/input_system.h"
-// #include "runtime/function/particle/particle_manager.h"
 #include "runtime/function/physics/physics_manager.h"
+#include "runtime/function/render/render_system.h"
+#include "runtime/function/render/window_system.h"
+// #include "runtime/function/particle/particle_manager.h"
 // #include "runtime/function/render/debugdraw/debug_draw_manager.h"
 // #include "runtime/function/render/render_debug_config.h"
-// #include "runtime/function/render/render_system.h"
-#include "runtime/function/render/window_system.h"
 
 namespace Piccolo
 {
@@ -47,7 +47,7 @@ namespace Piccolo
         m_window_system = std::make_shared<WindowSystem>();
         WindowCreateInfo window_create_info;
         m_asset_manager->loadAsset<WindowCreateInfo>("config/config.window.json", window_create_info);
-        // m_window_system->initialize(window_create_info);
+        m_window_system->initialize(window_create_info);
 
         m_input_system = std::make_shared<InputSystem>();
         m_input_system->initialize();
@@ -55,10 +55,10 @@ namespace Piccolo
         // m_particle_manager = std::make_shared<ParticleManager>();
         // m_particle_manager->initialize();
 
-        // m_render_system = std::make_shared<RenderSystem>();
-        // RenderSystemInitInfo render_init_info;
-        // render_init_info.window_system = m_window_system;
-        // m_render_system->initialize(render_init_info);
+        m_render_system = std::make_shared<RenderSystem>();
+        RenderSystemInitInfo render_init_info;
+        render_init_info.window_system = m_window_system;
+        m_render_system->initialize(render_init_info);
 
         // m_debugdraw_manager = std::make_shared<DebugDrawManager>();
         // m_debugdraw_manager->initialize();

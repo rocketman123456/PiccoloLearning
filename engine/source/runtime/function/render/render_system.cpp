@@ -22,6 +22,8 @@
 
 namespace Piccolo
 {
+    RenderSystem::~RenderSystem() { clear(); }
+
     void RenderSystem::initialize(RenderSystemInitInfo init_info)
     {
         std::shared_ptr<ConfigManager> config_manager = g_runtime_global_context.m_config_manager;
@@ -30,11 +32,11 @@ namespace Piccolo
         ASSERT(asset_manager);
 
         // render context initialize
-        // RHIInitInfo rhi_init_info;
-        // rhi_init_info.window_system = init_info.window_system;
+        RHIInitInfo rhi_init_info;
+        rhi_init_info.window_system = init_info.window_system;
 
-        // m_rhi = std::make_shared<VulkanRHI>();
-        // m_rhi->initialize(rhi_init_info);
+        m_rhi = std::make_shared<VulkanRHI>();
+        m_rhi->initialize(rhi_init_info);
     }
 
     void RenderSystem::tick(float delta_time)
@@ -42,8 +44,8 @@ namespace Piccolo
         // // process swap data between logic and render contexts
         // processSwapData();
 
-        // // prepare render command context
-        // m_rhi->prepareContext();
+        // prepare render command context
+        m_rhi->prepareContext();
 
         // // update per-frame buffer
         // m_render_resource->updatePerFrameBuffer(m_render_scene, m_render_camera);
@@ -73,11 +75,11 @@ namespace Piccolo
 
     void RenderSystem::clear()
     {
-        // if (m_rhi)
-        // {
-        //     m_rhi->clear();
-        // }
-        // m_rhi.reset();
+        if (m_rhi)
+        {
+            m_rhi->clear();
+        }
+        m_rhi.reset();
 
         // if (m_render_scene)
         // {

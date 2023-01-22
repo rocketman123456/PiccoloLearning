@@ -3,13 +3,13 @@
 #include "runtime/core/base/macro.h"
 #include "runtime/core/meta/reflection/reflection_register.h"
 
+#include "runtime/function/framework/world/world_manager.h"
 #include "runtime/function/global/global_context.h"
-// #include "runtime/function/framework/world/world_manager.h"
 #include "runtime/function/input/input_system.h"
 // #include "runtime/function/particle/particle_manager.h"
 // #include "runtime/function/physics/physics_manager.h"
 // #include "runtime/function/render/debugdraw/debug_draw_manager.h"
-// #include "runtime/function/render/render_system.h"
+#include "runtime/function/render/render_system.h"
 #include "runtime/function/render/window_system.h"
 
 #include "runtime/function/framework/ecs/coordinator.h"
@@ -97,7 +97,7 @@ namespace Piccolo
 
     bool PiccoloEngine::rendererTick(float delta_time)
     {
-        // g_runtime_global_context.m_render_system->tick(delta_time);
+        g_runtime_global_context.m_render_system->tick(delta_time);
         return true;
     }
 
