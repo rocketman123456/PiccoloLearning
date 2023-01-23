@@ -16,8 +16,26 @@ namespace Piccolo
         void prepareContext() override;
 
         void clear() override;
+        void clearSwapchain() override;
+        void destroyDefaultSampler(RHIDefaultSamplerType type) override;
+        void destroyMipmappedSampler() override;
+        void destroyShaderModule(RHIShader* shader) override;
+        void destroySemaphore(RHISemaphore* semaphore) override;
+        void destroySampler(RHISampler* sampler) override;
+        void destroyInstance(RHIInstance* instance) override;
+        void destroyImageView(RHIImageView* imageView) override;
+        void destroyImage(RHIImage* image) override;
+        void destroyFramebuffer(RHIFramebuffer* framebuffer) override;
+        void destroyFence(RHIFence* fence) override;
+        void destroyDevice(RHIDevice* device) override;
+        void destroyCommandPool(RHICommandPool* commandPool) override;
+        void destroyBuffer(RHIBuffer*& buffer) override;
+        void freeCommandBuffers(RHICommandPool* commandPool, uint32_t commandBufferCount, RHICommandBuffer* pCommandBuffers) override;
 
-    private:
+        // ------------------------------------------------------------------
+        // ------------------------------------------------------------------
+        // ------------------------------------------------------------------
+
         void createInstance();
         void setupDebugMessenger();
         void createSurface();
@@ -25,7 +43,7 @@ namespace Piccolo
         void createLogicalDevice();
 
         void createSwapchain() override;
-        void recreateSwapchain() override {}
+        void recreateSwapchain() override;
         void createSwapchainImageViews() override;
         void createFramebufferImageAndView() override;
 
@@ -98,6 +116,7 @@ namespace Piccolo
 
         VmaAllocator m_assets_allocator;
 
+        // command pool and buffers
         std::shared_ptr<RHICommandPool>   m_rhi_command_pool;
         std::shared_ptr<RHICommandBuffer> m_command_buffers[k_max_frames_in_flight];
         std::shared_ptr<RHICommandBuffer> m_current_command_buffer = std::make_shared<VulkanCommandBuffer>();
@@ -108,7 +127,8 @@ namespace Piccolo
         VkCommandPool   m_vk_command_pools[k_max_frames_in_flight];
         VkCommandBuffer m_vk_command_buffers[k_max_frames_in_flight];
 
-        uint8_t                  m_current_frame_index = 0;
+        // sync objects
+        uint8_t                  m_current_frame_index {0};
         std::vector<VkSemaphore> m_image_available_for_render_semaphores;
         std::vector<VkSemaphore> m_image_finished_for_presentation_semaphores;
         std::vector<VkSemaphore> m_image_available_for_texturescopy_semaphores;

@@ -41,8 +41,8 @@ namespace Piccolo
 
     void RenderSystem::tick(float delta_time)
     {
-        // // process swap data between logic and render contexts
-        // processSwapData();
+        // process swap data between logic and render contexts
+        processSwapData();
 
         // prepare render command context
         m_rhi->prepareContext();
@@ -73,6 +73,14 @@ namespace Piccolo
         // }
     }
 
+    void RenderSystem::processSwapData()
+    {
+        // RenderSwapData& swap_data = m_swap_context.getRenderSwapData();
+
+        std::shared_ptr<AssetManager> asset_manager = g_runtime_global_context.m_asset_manager;
+        ASSERT(asset_manager);
+    }
+
     void RenderSystem::clear()
     {
         if (m_rhi)
@@ -99,4 +107,4 @@ namespace Piccolo
         // }
         // m_render_pipeline.reset();
     }
-}
+} // namespace Piccolo

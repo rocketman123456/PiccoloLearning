@@ -34,6 +34,8 @@ namespace Piccolo
         m_viewport = {0.0f, 0.0f, (float)window_size[0], (float)window_size[1], 0.0f, 1.0f};
         m_scissor  = {{0, 0}, {(uint32_t)window_size[0], (uint32_t)window_size[1]}};
 
+
+
         createInstance();
         setupDebugMessenger();
         createSurface();
@@ -67,6 +69,12 @@ namespace Piccolo
     {
         vkDeviceWaitIdle(m_vk_device);
 
+        clearSwapchain();
+
+        vkDestroyPipeline(m_vk_device, graphicsPipeline, nullptr);
+        vkDestroyPipelineLayout(m_vk_device, pipelineLayout, nullptr);
+        vkDestroyRenderPass(m_vk_device, renderPass, nullptr);
+
         for (size_t i = 0; i < k_max_frames_in_flight; i++)
         {
             vkDestroySemaphore(m_vk_device, m_image_finished_for_presentation_semaphores[i], nullptr);
@@ -80,21 +88,6 @@ namespace Piccolo
         }
         vkDestroyCommandPool(m_vk_device, ((VulkanCommandPool*)m_rhi_command_pool.get())->getResource(), nullptr);
 
-        for (auto framebuffer : m_swapchain_framebuffers)
-        {
-            vkDestroyFramebuffer(m_vk_device, framebuffer, nullptr);
-        }
-
-        vkDestroyPipeline(m_vk_device, graphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(m_vk_device, pipelineLayout, nullptr);
-        vkDestroyRenderPass(m_vk_device, renderPass, nullptr);
-
-        for (auto imageView : m_swapchain_imageviews)
-        {
-            vkDestroyImageView(m_vk_device, ((VulkanImageView*)imageView)->getResource(), nullptr);
-        }
-
-        vkDestroySwapchainKHR(m_vk_device, m_swapchain, nullptr);
         vkDestroyDevice(m_vk_device, nullptr);
 
         if (m_enable_validation_Layers)
@@ -104,6 +97,94 @@ namespace Piccolo
 
         vkDestroySurfaceKHR(m_vk_instance, m_vk_surface, nullptr);
         vkDestroyInstance(m_vk_instance, nullptr);
+    }
+
+    void VulkanRHI::clearSwapchain()
+    {
+        for (auto framebuffer : m_swapchain_framebuffers)
+        {
+            vkDestroyFramebuffer(m_vk_device, framebuffer, nullptr);
+        }
+
+        for (auto imageview : m_swapchain_imageviews)
+        {
+            vkDestroyImageView(m_vk_device, ((VulkanImageView*)imageview)->getResource(), NULL);
+        }
+
+        vkDestroySwapchainKHR(m_vk_device, m_swapchain, NULL); // also swapchain images
+    }
+
+    void VulkanRHI::destroyDefaultSampler(RHIDefaultSamplerType type)
+    {
+        switch (type)
+        {
+            case Piccolo::Default_Sampler_Linear:
+                // VulkanUtil::destroyLinearSampler(m_device);
+                // RHI_DELETE_PTR(m_linear_sampler);
+                break;
+            case Piccolo::Default_Sampler_Nearest:
+                // VulkanUtil::destroyNearestSampler(m_device);
+                // RHI_DELETE_PTR(m_nearest_sampler);
+                break;
+            default:
+                break;
+        }
+    }
+
+    void VulkanRHI::destroyMipmappedSampler()
+    {
+        // VulkanUtil::destroyMipmappedSampler(m_device);
+        // for (auto sampler : m_mipmap_sampler_map)
+        // {
+        //     delete sampler.second;
+        // }
+        // m_mipmap_sampler_map.clear();
+    }
+
+    void VulkanRHI::destroyShaderModule(RHIShader* shader)
+    {
+        vkDestroyShaderModule(m_vk_device, ((VulkanShader*)shader)->getResource(), nullptr);
+        RHI_DELETE_PTR(shader);
+    }
+
+    void VulkanRHI::destroySemaphore(RHISemaphore* semaphore) { vkDestroySemaphore(m_vk_device, ((VulkanSemaphore*)semaphore)->getResource(), nullptr); }
+
+    void VulkanRHI::destroySampler(RHISampler* sampler) { vkDestroySampler(m_vk_device, ((VulkanSampler*)sampler)->getResource(), nullptr); }
+
+    void VulkanRHI::destroyInstance(RHIInstance* instance) { vkDestroyInstance(((VulkanInstance*)instance)->getResource(), nullptr); }
+
+    void VulkanRHI::destroyImageView(RHIImageView* imageView) { vkDestroyImageView(m_vk_device, ((VulkanImageView*)imageView)->getResource(), nullptr); }
+
+    void VulkanRHI::destroyImage(RHIImage* image) { vkDestroyImage(m_vk_device, ((VulkanImage*)image)->getResource(), nullptr); }
+
+    void VulkanRHI::destroyFramebuffer(RHIFramebuffer* framebuffer)
+    {
+        vkDestroyFramebuffer(m_vk_device, ((VulkanFramebuffer*)framebuffer)->getResource(), nullptr);
+    }
+
+    void VulkanRHI::destroyFence(RHIFence* fence) { vkDestroyFence(m_vk_device, ((VulkanFence*)fence)->getResource(), nullptr); }
+
+    void VulkanRHI::destroyDevice(RHIDevice* device) { vkDestroyDevice(((VulkanDevice*)device)->getResource(), nullptr); }
+
+    void VulkanRHI::destroyCommandPool(RHICommandPool* commandPool)
+    {
+        vkDestroyCommandPool(m_vk_device, ((VulkanCommandPool*)commandPool)->getResource(), nullptr);
+    }
+
+    void VulkanRHI::destroyBuffer(RHIBuffer*& buffer)
+    {
+        if (buffer == nullptr)
+            return;
+        vkDestroyBuffer(m_vk_device, ((VulkanBuffer*)buffer)->getResource(), nullptr);
+        RHI_DELETE_PTR(buffer);
+    }
+
+    void VulkanRHI::freeCommandBuffers(RHICommandPool* commandPool, uint32_t commandBufferCount, RHICommandBuffer* pCommandBuffers)
+    {
+        if (commandPool == nullptr || pCommandBuffers == nullptr)
+            return;
+        VkCommandBuffer vk_command_buffer = ((VulkanCommandBuffer*)pCommandBuffers)->getResource();
+        vkFreeCommandBuffers(m_vk_device, ((VulkanCommandPool*)commandPool)->getResource(), commandBufferCount, &vk_command_buffer);
     }
 
     void VulkanRHI::createInstance()
@@ -388,6 +469,27 @@ namespace Piccolo
         m_swapchain_extent.width  = chosen_extent.width;
 
         m_scissor = {{0, 0}, {m_swapchain_extent.width, m_swapchain_extent.height}};
+    }
+
+    void VulkanRHI::recreateSwapchain()
+    {
+        LOG_INFO("vulkan rhi recreate swapchain");
+
+        int width = 0, height = 0;
+        glfwGetFramebufferSize(m_window, &width, &height);
+        while (width == 0 || height == 0) // minimized 0,0, pause for now
+        {
+            glfwGetFramebufferSize(m_window, &width, &height);
+            glfwWaitEvents();
+        }
+
+        vkDeviceWaitIdle(m_vk_device);
+
+        clearSwapchain();
+
+        createSwapchain();
+        createSwapchainImageViews();
+        createFramebufferImageAndView();
     }
 
     void VulkanRHI::createSwapchainImageViews()
@@ -778,8 +880,18 @@ namespace Piccolo
         vkResetFences(m_vk_device, 1, &m_is_frame_in_flight_fences[m_current_frame_index]);
 
         uint32_t imageIndex;
-        vkAcquireNextImageKHR(
+        VkResult result = vkAcquireNextImageKHR(
             m_vk_device, m_swapchain, UINT64_MAX, m_image_available_for_render_semaphores[m_current_frame_index], VK_NULL_HANDLE, &imageIndex);
+
+        if (result == VK_ERROR_OUT_OF_DATE_KHR)
+        {
+            recreateSwapchain();
+            return;
+        }
+        else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+        {
+            throw std::runtime_error("failed to acquire swap chain image!");
+        }
 
         vkResetCommandBuffer(m_vk_rhi_command_buffers[m_current_frame_index], /*VkCommandBufferResetFlagBits*/ 0);
         recordCommandBuffer(m_vk_rhi_command_buffers[m_current_frame_index], imageIndex);
@@ -817,7 +929,16 @@ namespace Piccolo
 
         presentInfo.pImageIndices = &imageIndex;
 
-        vkQueuePresentKHR(m_vk_present_queue, &presentInfo);
+        result = vkQueuePresentKHR(m_vk_present_queue, &presentInfo);
+
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+        {
+            recreateSwapchain();
+        }
+        else if (result != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to present swap chain image!");
+        }
 
         m_current_frame_index = (m_current_frame_index + 1) % k_max_frames_in_flight;
     }
