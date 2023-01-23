@@ -22,7 +22,7 @@ namespace Piccolo
         {
             std::size_t m_size;
         };
-        LinkedList   m_list;
+        linked_list   m_list;
         SearchMethod m_search_method;
 
     public:
@@ -41,8 +41,8 @@ namespace Piccolo
         FreeListAllocator(const SearchMethod searchMethod = BEST)
         {
             static std::string message =
-                "Total size must be atleast " + std::to_string(sizeof(LinkedList::Node) + 1) + " bytes for an allocator with atleast 1 byte of free space";
-            assert(this->m_size >= sizeof(LinkedList::Node) + 1 && message.c_str());
+                "Total size must be atleast " + std::to_string(sizeof(linked_list::Node) + 1) + " bytes for an allocator with atleast 1 byte of free space";
+            assert(this->m_size >= sizeof(linked_list::Node) + 1 && message.c_str());
             m_search_method       = searchMethod;
             this->m_start_address = ::operator new(this->m_size);
             init();
@@ -64,8 +64,8 @@ namespace Piccolo
             std::align(alignof(std::max_align_t), sizeof(std::max_align_t), nextAddress, space);
             padding = (std::size_t)nextAddress - (std::size_t)currentAddress;
 
-            LinkedList::Node* prev;
-            LinkedList::Node* best;
+            linked_list::Node* prev;
+            linked_list::Node* best;
 
             switch (m_search_method)
             {
@@ -82,9 +82,9 @@ namespace Piccolo
                 return nullptr;
             }
 
-            if (best->m_value >= size + padding + sizeof(LinkedList::Node*) + 1)
+            if (best->m_value >= size + padding + sizeof(linked_list::Node*) + 1)
             {
-                LinkedList::Node* splittedNode = reinterpret_cast<LinkedList::Node*>(reinterpret_cast<char*>(best) + sizeof(Header) + size + padding);
+                linked_list::Node* splittedNode = reinterpret_cast<linked_list::Node*>(reinterpret_cast<char*>(best) + sizeof(Header) + size + padding);
                 splittedNode->m_value          = best->m_value - (size + padding + sizeof(Header));
                 splittedNode->m_next           = best->m_next;
                 best->m_next                   = splittedNode;
@@ -113,11 +113,11 @@ namespace Piccolo
         {
             Header* header = reinterpret_cast<Header*>(reinterpret_cast<char*>(ptr) - sizeof(Header));
 
-            LinkedList::Node* node = reinterpret_cast<LinkedList::Node*>(header);
+            linked_list::Node* node = reinterpret_cast<linked_list::Node*>(header);
             node->m_value          = header->m_size;
 
-            LinkedList::Node* prevIt = nullptr;
-            LinkedList::Node* it     = m_list.m_head;
+            linked_list::Node* prevIt = nullptr;
+            linked_list::Node* it     = m_list.m_head;
             while (it != nullptr)
             {
                 if (node < it)
@@ -145,13 +145,13 @@ namespace Piccolo
     private:
         void init()
         {
-            LinkedList::Node* head = reinterpret_cast<LinkedList::Node*>(this->m_start_address);
+            linked_list::Node* head = reinterpret_cast<linked_list::Node*>(this->m_start_address);
             head->m_value          = this->m_size - sizeof(Header);
             head->m_next           = nullptr;
             m_list.m_head          = head;
         }
 
-        void coalescence(LinkedList::Node* prev, LinkedList::Node* curr)
+        void coalescence(linked_list::Node* prev, linked_list::Node* curr)
         {
             if (curr->m_next != nullptr && (std::size_t)curr + curr->m_value + sizeof(Header) == (std::size_t)curr->m_next)
             {

@@ -99,12 +99,12 @@ namespace Piccolo
 
     size_t VFS::write(FilePtr file, const std::vector<std::byte>& buffer) { return file->write(buffer); }
 
-    std::future<size_t> VFS::readAsync(std::shared_ptr<thread_pool> tp, FilePtr file, std::vector<std::byte>& buffer)
+    std::future<size_t> VFS::readAsync(std::shared_ptr<ThreadPool> tp, FilePtr file, std::vector<std::byte>& buffer)
     {
         return tp->enqueue_task(&VFS::read, this, file, buffer);
     }
 
-    std::future<size_t> VFS::writeAsync(std::shared_ptr<thread_pool> tp, FilePtr file, const std::vector<std::byte>& buffer)
+    std::future<size_t> VFS::writeAsync(std::shared_ptr<ThreadPool> tp, FilePtr file, const std::vector<std::byte>& buffer)
     {
         return tp->enqueue_task(&VFS::write, this, file, buffer);
     }

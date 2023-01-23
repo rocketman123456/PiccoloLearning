@@ -4,7 +4,7 @@
 
 namespace Piccolo
 {
-    void RBTree::init(Node* nil)
+    void rb_tree::init(Node* nil)
     {
         m_nil = nil;
         m_nil->set_color(NodeColor::BLACK);
@@ -14,7 +14,7 @@ namespace Piccolo
         m_root         = m_nil;
     }
 
-    RBTree::Node* RBTree::search(const std::size_t v)
+    rb_tree::Node* rb_tree::search(const std::size_t v)
     {
         Node* x = m_root;
         while (x != m_nil)
@@ -29,7 +29,7 @@ namespace Piccolo
         return x;
     }
 
-    RBTree::Node* RBTree::search_best(const std::size_t v)
+    rb_tree::Node* rb_tree::search_best(const std::size_t v)
     {
         Node* y = nullptr;
         Node* x = m_root;
@@ -48,7 +48,7 @@ namespace Piccolo
         return y;
     }
 
-    RBTree::Node* RBTree::search_at_least(const std::size_t v)
+    rb_tree::Node* rb_tree::search_at_least(const std::size_t v)
     {
         Node* x = m_root;
         while (x != m_nil)
@@ -61,7 +61,7 @@ namespace Piccolo
         return nullptr;
     }
 
-    void RBTree::insert(Node* z)
+    void rb_tree::insert(Node* z)
     {
         Node* y = nullptr;
         Node* x = m_root;
@@ -89,7 +89,7 @@ namespace Piccolo
         insert_fixup(z);
     }
 
-    void RBTree::insert_fixup(Node* z)
+    void rb_tree::insert_fixup(Node* z)
     {
         while (z != m_root && z->get_parent()->get_color() == NodeColor::RED)
         {
@@ -142,7 +142,7 @@ namespace Piccolo
         m_root->m_prev_size = 0;
     }
 
-    void RBTree::remove(Node* z)
+    void rb_tree::remove(Node* z)
     {
         Node*     x              = nullptr;
         Node*     y              = z;
@@ -184,7 +184,7 @@ namespace Piccolo
             remove_fixup(x);
     }
 
-    void RBTree::remove_fixup(Node* z)
+    void rb_tree::remove_fixup(Node* z)
     {
         while (z != m_root && z->get_color() == NodeColor::BLACK)
         {
@@ -255,7 +255,7 @@ namespace Piccolo
         z->set_color(NodeColor::BLACK);
     }
 
-    RBTree::Node* RBTree::successor(Node* x)
+    rb_tree::Node* rb_tree::successor(Node* x)
     {
         x = x->m_right;
         while (x->m_left != m_nil)
@@ -265,7 +265,7 @@ namespace Piccolo
         return x;
     }
 
-    void RBTree::print() const
+    void rb_tree::print() const
     {
         if (m_root->m_right != m_nil)
         {
@@ -278,7 +278,7 @@ namespace Piccolo
         }
     }
 
-    void RBTree::print(Node* x, bool isRight, std::string indent) const
+    void rb_tree::print(Node* x, bool isRight, std::string indent) const
     {
         if (x->m_right != m_nil)
         {
@@ -301,7 +301,7 @@ namespace Piccolo
         }
     }
 
-    void RBTree::transplant(Node* u, Node* v)
+    void rb_tree::transplant(Node* u, Node* v)
     {
         Node* uParent = u->get_parent();
         if (uParent == nullptr)
@@ -313,7 +313,7 @@ namespace Piccolo
         v->set_parent(uParent);
     }
 
-    void RBTree::left_rotate(Node* x)
+    void rb_tree::left_rotate(Node* x)
     {
         Node* xParent = x->get_parent();
         Node* y       = x->m_right;
@@ -331,7 +331,7 @@ namespace Piccolo
         x->set_parent(y);
     }
 
-    void RBTree::right_rotate(Node* x)
+    void rb_tree::right_rotate(Node* x)
     {
         Node* xParent = x->get_parent();
         Node* y       = x->m_left;

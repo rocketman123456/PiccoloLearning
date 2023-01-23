@@ -4,7 +4,7 @@
 
 namespace Piccolo
 {
-    class LinkedList
+    class linked_list
     {
     public:
         struct Node

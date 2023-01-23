@@ -2,7 +2,7 @@
 
 namespace Piccolo
 {
-    void LinkedList::search_first(const std::size_t v, Node*& curr, Node*& prev)
+    void linked_list::search_first(const std::size_t v, Node*& curr, Node*& prev)
     {
         Node* prevX = nullptr;
         Node* x     = m_head;
@@ -17,7 +17,7 @@ namespace Piccolo
         curr = x;
     }
 
-    void LinkedList::search_best(const std::size_t v, Node*& curr, Node*& prev)
+    void linked_list::search_best(const std::size_t v, Node*& curr, Node*& prev)
     {
         Node* prevBest = nullptr;
         Node* best     = nullptr;

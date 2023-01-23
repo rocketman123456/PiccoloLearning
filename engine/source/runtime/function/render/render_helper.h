@@ -63,13 +63,13 @@ namespace Piccolo
         Vector3 m_frustum_points;
     };
 
-    ClusterFrustum CreateClusterFrustumFromMatrix(Matrix4x4 mat, float x_left, float x_right, float y_top, float y_bottom, float z_near, float z_far);
+    ClusterFrustum create_cluster_frustum_from_matrix(Matrix4x4 mat, float x_left, float x_right, float y_top, float y_bottom, float z_near, float z_far);
 
-    bool TiledFrustumIntersectBox(ClusterFrustum const& f, BoundingBox const& b);
+    bool tiled_frustum_intersect_box(ClusterFrustum const& f, BoundingBox const& b);
 
-    BoundingBox BoundingBoxTransform(BoundingBox const& b, Matrix4x4 const& m);
+    BoundingBox bounding_box_transform(BoundingBox const& b, Matrix4x4 const& m);
 
-    bool BoxIntersectsWithSphere(BoundingBox const& b, BoundingSphere const& s);
+    bool box_intersects_with_sphere(BoundingBox const& b, BoundingSphere const& s);
 
-    // Matrix4x4 CalculateDirectionalLightCamera(RenderScene& scene, RenderCamera& camera);
+    Matrix4x4 calculate_directional_light_camera(RenderScene& scene, RenderCamera& camera);
 } // namespace Piccolo

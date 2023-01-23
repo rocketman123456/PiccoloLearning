@@ -16,10 +16,10 @@
 
 namespace Piccolo
 {
-    class thread_pool
+    class ThreadPool
     {
     public:
-        explicit thread_pool(std::size_t thread_count = std::thread::hardware_concurrency()) : m_queues(thread_count), m_count(thread_count)
+        explicit ThreadPool(std::size_t thread_count = std::thread::hardware_concurrency()) : m_queues(thread_count), m_count(thread_count)
         {
             if (!thread_count)
                 throw std::invalid_argument("bad thread count! must be non-zero!");
@@ -39,10 +39,12 @@ namespace Piccolo
 
             m_threads.reserve(thread_count);
             for (auto i = 0; i < thread_count; ++i)
+            {
                 m_threads.emplace_back(worker, i);
+            }
         }
 
-        ~thread_pool()
+        ~ThreadPool()
         {
             for (auto& queue : m_queues)
                 queue.unblock();
@@ -96,4 +98,6 @@ namespace Piccolo
 
         inline static const unsigned int K = 2;
     };
+
+    extern ThreadPool g_thread_pool;
 } // namespace Piccolo

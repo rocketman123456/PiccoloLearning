@@ -96,6 +96,7 @@ namespace Piccolo
 
         QueueFamilyIndices m_queue_indices;
 
+        // queues
         std::shared_ptr<RHIQueue> m_graphics_queue {nullptr};
         std::shared_ptr<RHIQueue> m_compute_queue {nullptr};
         std::shared_ptr<RHIQueue> m_present_queue {nullptr};
@@ -104,15 +105,18 @@ namespace Piccolo
         VkQueue m_vk_compute_queue;
         VkQueue m_vk_present_queue;
 
+        // swap chain
         VkSwapchainKHR             m_swapchain;
         std::vector<VkImage>       m_swapchain_images;
         std::vector<VkFramebuffer> m_swapchain_framebuffers;
 
-        RHIFormat                  m_swapchain_image_format {RHI_FORMAT_UNDEFINED};
-        std::vector<RHIImageView*> m_swapchain_imageviews;
-        RHIExtent2D                m_swapchain_extent;
-        RHIViewport                m_viewport;
-        RHIRect2D                  m_scissor;
+        using RHISwapchainImageView = std::vector<std::shared_ptr<RHIImageView>>;
+
+        RHIFormat             m_swapchain_image_format {RHI_FORMAT_UNDEFINED};
+        RHISwapchainImageView m_swapchain_imageviews;
+        RHIExtent2D           m_swapchain_extent;
+        RHIViewport           m_viewport;
+        RHIRect2D             m_scissor;
 
         VmaAllocator m_assets_allocator;
 

@@ -34,8 +34,6 @@ namespace Piccolo
         m_viewport = {0.0f, 0.0f, (float)window_size[0], (float)window_size[1], 0.0f, 1.0f};
         m_scissor  = {{0, 0}, {(uint32_t)window_size[0], (uint32_t)window_size[1]}};
 
-
-
         createInstance();
         setupDebugMessenger();
         createSurface();
@@ -108,7 +106,7 @@ namespace Piccolo
 
         for (auto imageview : m_swapchain_imageviews)
         {
-            vkDestroyImageView(m_vk_device, ((VulkanImageView*)imageview)->getResource(), NULL);
+            vkDestroyImageView(m_vk_device, ((VulkanImageView*)imageview.get())->getResource(), NULL);
         }
 
         vkDestroySwapchainKHR(m_vk_device, m_swapchain, NULL); // also swapchain images
@@ -193,6 +191,7 @@ namespace Piccolo
 
         if (m_enable_validation_Layers && !VulkanCreationUtils::checkValidationLayerSupport(m_validation_layers))
         {
+            LOG_ERROR("validation layers requested, but not available!");
             throw std::runtime_error("validation layers requested, but not available!");
         }
 
@@ -244,7 +243,7 @@ namespace Piccolo
 
         volkLoadInstance(m_vk_instance);
 
-        m_instance.reset(new VulkanInstance());
+        m_instance = std::make_shared<VulkanInstance>();
         ((VulkanInstance*)m_instance.get())->setResource(m_vk_instance);
     }
 
@@ -276,7 +275,7 @@ namespace Piccolo
             throw std::runtime_error("failed to create window surface!");
         }
 
-        m_surface.reset(new VulkanSurface());
+        m_surface = std::make_shared<VulkanSurface>();
         ((VulkanSurface*)m_surface.get())->setResource(m_vk_surface);
     }
 
@@ -333,7 +332,7 @@ namespace Piccolo
             }
         }
 
-        m_physical_device.reset(new VulkanPhysicalDevice());
+        m_physical_device = std::make_shared<VulkanPhysicalDevice>();
         ((VulkanPhysicalDevice*)m_physical_device.get())->setResource(m_vk_physical_device);
     }
 
@@ -389,20 +388,20 @@ namespace Piccolo
             LOG_ERROR("vk create device");
         }
 
-        m_device.reset(new VulkanDevice());
+        m_device = std::make_shared<VulkanDevice>();
         ((VulkanDevice*)m_device.get())->setResource(m_vk_device);
 
         // initialize queues of this device
         vkGetDeviceQueue(m_vk_device, m_queue_indices.graphics_family.value(), 0, &m_vk_graphics_queue);
-        m_graphics_queue.reset(new VulkanQueue());
+        m_graphics_queue = std::make_shared<VulkanQueue>();
         ((VulkanQueue*)m_graphics_queue.get())->setResource(m_vk_graphics_queue);
 
         vkGetDeviceQueue(m_vk_device, m_queue_indices.compute_family.value(), 0, &m_vk_compute_queue);
-        m_compute_queue.reset(new VulkanQueue());
+        m_compute_queue = std::make_shared<VulkanQueue>();
         ((VulkanQueue*)m_compute_queue.get())->setResource(m_vk_compute_queue);
 
         vkGetDeviceQueue(m_vk_device, m_queue_indices.compute_family.value(), 0, &m_vk_present_queue);
-        m_present_queue.reset(new VulkanQueue());
+        m_present_queue = std::make_shared<VulkanQueue>();
         ((VulkanQueue*)m_present_queue.get())->setResource(m_vk_present_queue);
     }
 
@@ -516,11 +515,12 @@ namespace Piccolo
             VkImageView vk_image_view;
             if (vkCreateImageView(m_vk_device, &createInfo, nullptr, &vk_image_view) != VK_SUCCESS)
             {
+                LOG_ERROR("failed to create image views!");
                 throw std::runtime_error("failed to create image views!");
             }
 
-            m_swapchain_imageviews[i] = new VulkanImageView();
-            ((VulkanImageView*)m_swapchain_imageviews[i])->setResource(vk_image_view);
+            m_swapchain_imageviews[i] = std::make_shared<VulkanImageView>();
+            ((VulkanImageView*)m_swapchain_imageviews[i].get())->setResource(vk_image_view);
         }
     }
 
@@ -564,6 +564,7 @@ namespace Piccolo
 
         if (vkCreateRenderPass(m_vk_device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
         {
+            LOG_ERROR("failed to create render pass!");
             throw std::runtime_error("failed to create render pass!");
         }
     }
@@ -645,6 +646,7 @@ namespace Piccolo
 
         if (vkCreatePipelineLayout(m_vk_device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
         {
+            LOG_ERROR("failed to create pipeline layout!");
             throw std::runtime_error("failed to create pipeline layout!");
         }
 
@@ -666,6 +668,7 @@ namespace Piccolo
 
         if (vkCreateGraphicsPipelines(m_vk_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
         {
+            LOG_ERROR("failed to create graphics pipeline!");
             throw std::runtime_error("failed to create graphics pipeline!");
         }
 
@@ -679,7 +682,7 @@ namespace Piccolo
 
         for (size_t i = 0; i < m_swapchain_imageviews.size(); i++)
         {
-            VkImageView attachments[] = {((VulkanImageView*)m_swapchain_imageviews[i])->getResource()};
+            VkImageView attachments[] = {((VulkanImageView*)m_swapchain_imageviews[i].get())->getResource()};
 
             VkFramebufferCreateInfo framebufferInfo {};
             framebufferInfo.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -692,6 +695,7 @@ namespace Piccolo
 
             if (vkCreateFramebuffer(m_vk_device, &framebufferInfo, nullptr, &m_swapchain_framebuffers[i]) != VK_SUCCESS)
             {
+                LOG_ERROR("failed to create framebuffer!");
                 throw std::runtime_error("failed to create framebuffer!");
             }
         }
@@ -701,7 +705,7 @@ namespace Piccolo
     {
         // default graphics command pool
         {
-            m_rhi_command_pool.reset(new VulkanCommandPool());
+            m_rhi_command_pool = std::make_shared<VulkanCommandPool>();
             VkCommandPoolCreateInfo command_pool_create_info {};
             command_pool_create_info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
             command_pool_create_info.pNext            = NULL;
@@ -759,11 +763,11 @@ namespace Piccolo
             VkCommandBuffer vk_command_buffer;
             if (vkAllocateCommandBuffers(m_vk_device, &command_buffer_allocate_info, &vk_command_buffer) != VK_SUCCESS)
             {
-                LOG_ERROR("vk allocate command buffers");
+                LOG_ERROR("failed to allocate command buffers!");
                 throw std::runtime_error("failed to allocate command buffers!");
             }
             m_vk_command_buffers[i] = vk_command_buffer;
-            m_command_buffers[i].reset(new VulkanCommandBuffer());
+            m_command_buffers[i]    = std::make_shared<VulkanCommandBuffer>();
             ((VulkanCommandBuffer*)m_command_buffers[i].get())->setResource(vk_command_buffer);
         }
     }
@@ -775,6 +779,7 @@ namespace Piccolo
 
         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
         {
+            LOG_ERROR("failed to begin recording command buffer!");
             throw std::runtime_error("failed to begin recording command buffer!");
         }
 
@@ -813,6 +818,7 @@ namespace Piccolo
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
         {
+            LOG_ERROR("failed to record command buffer!");
             throw std::runtime_error("failed to record command buffer!");
         }
     }
@@ -838,6 +844,7 @@ namespace Piccolo
                 vkCreateSemaphore(m_vk_device, &semaphoreInfo, nullptr, &m_image_available_for_texturescopy_semaphores[i]) != VK_SUCCESS ||
                 vkCreateFence(m_vk_device, &fenceInfo, nullptr, &m_is_frame_in_flight_fences[i]) != VK_SUCCESS)
             {
+                LOG_ERROR("failed to create synchronization objects for a frame!");
                 throw std::runtime_error("failed to create synchronization objects for a frame!");
             }
         }
@@ -890,6 +897,7 @@ namespace Piccolo
         }
         else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
         {
+            LOG_ERROR("failed to acquire swap chain image!");
             throw std::runtime_error("failed to acquire swap chain image!");
         }
 
@@ -914,6 +922,7 @@ namespace Piccolo
 
         if (vkQueueSubmit(m_vk_graphics_queue, 1, &submitInfo, m_is_frame_in_flight_fences[m_current_frame_index]) != VK_SUCCESS)
         {
+            LOG_ERROR("failed to submit draw command buffer!");
             throw std::runtime_error("failed to submit draw command buffer!");
         }
 
@@ -937,6 +946,7 @@ namespace Piccolo
         }
         else if (result != VK_SUCCESS)
         {
+            LOG_ERROR("failed to present swap chain image!");
             throw std::runtime_error("failed to present swap chain image!");
         }
 

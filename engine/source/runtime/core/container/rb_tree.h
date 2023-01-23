@@ -5,7 +5,7 @@
 
 namespace Piccolo
 {
-    class RBTree
+    class rb_tree
     {
     public:
         enum class NodeColor : std::size_t

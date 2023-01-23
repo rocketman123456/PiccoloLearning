@@ -3,6 +3,8 @@
 #include "runtime/core/math/vector3.h"
 #include "runtime/core/meta/reflection/reflection.h"
 
+#include <cassert>
+
 namespace Piccolo
 {
     REFLECTION_TYPE(Vector4)
@@ -167,6 +169,34 @@ namespace Piccolo
             z /= rhs.z;
             w /= rhs.w;
             return *this;
+        }
+
+        float length() const { return std::sqrtf(x * x + y * y + z * z + w * w); }
+
+        float squaredLength() const { return x * x + y * y + z * z + w * w; }
+
+        float distance(const Vector4& rhs) const { return (*this - rhs).length(); }
+
+        float squaredDistance(const Vector4& rhs) const { return (*this - rhs).squaredLength(); }
+
+        void normalise()
+        {
+            float length = this->length();
+            if (length == 0.f)
+                return;
+
+            float inv_lengh = 1.0f / length;
+            x *= inv_lengh;
+            y *= inv_lengh;
+            z *= inv_lengh;
+            w *= inv_lengh;
+        }
+
+        Vector4 normalisedCopy(void) const
+        {
+            Vector4 ret = *this;
+            ret.normalise();
+            return ret;
         }
 
         /** Calculates the dot (scalar) product of this vector with another.
