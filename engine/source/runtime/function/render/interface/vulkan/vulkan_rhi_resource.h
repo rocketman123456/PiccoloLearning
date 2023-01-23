@@ -108,6 +108,16 @@ namespace Piccolo
         VkDevice m_resource;
     };
 
+    class VulkanSurface : public RHISurface
+    {
+    public:
+        void         setResource(VkSurfaceKHR res) { m_resource = res; }
+        VkSurfaceKHR getResource() const { return m_resource; }
+
+    private:
+        VkSurfaceKHR m_resource;
+    };
+
     class VulkanDeviceMemory : public RHIDeviceMemory
     {
     public:

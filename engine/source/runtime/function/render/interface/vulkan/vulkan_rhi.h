@@ -17,26 +17,30 @@ namespace Piccolo
 
         void clear() override;
 
-        void drawFrame();
-
     private:
         void createInstance();
         void setupDebugMessenger();
         void createSurface();
         void pickPhysicalDevice();
         void createLogicalDevice();
-        void createSwapChain();
-        void createSwapChainImageViews();
-        void createFramebuffers();
+
+        void createSwapchain() override;
+        void recreateSwapchain() override {}
+        void createSwapchainImageViews() override;
+        void createFramebufferImageAndView() override;
+
+        // TODO
+        void createRenderPass();
+        void createGraphicsPipeline();
+
         void createCommandPool();
         void createCommandBuffers();
         void createSyncPrimitives();
         void createAssetAllocator();
 
-        void createRenderPass();
-        void createGraphicsPipeline();
-
         void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+        void drawFrame();
 
     public:
         const std::vector<const char*> m_validation_layers = {"VK_LAYER_KHRONOS_validation"};
@@ -58,24 +62,33 @@ namespace Piccolo
         uint32_t m_max_vertex_blending_mesh_count {256};
         uint32_t m_max_material_count {256};
 
-        GLFWwindow*      m_window {nullptr};
-        VkInstance       m_instance {nullptr};
-        VkSurfaceKHR     m_surface {nullptr};
-        VkPhysicalDevice m_physical_device {nullptr};
-        VkDevice         m_device {nullptr};
+        GLFWwindow* m_window {nullptr};
+
+        std::shared_ptr<RHIInstance>       m_instance;
+        std::shared_ptr<RHISurface>        m_surface;
+        std::shared_ptr<RHIPhysicalDevice> m_physical_device;
+        std::shared_ptr<RHIDevice>         m_device;
+
+        VkInstance       m_vk_instance {nullptr};
+        VkSurfaceKHR     m_vk_surface {nullptr};
+        VkPhysicalDevice m_vk_physical_device {nullptr};
+        VkDevice         m_vk_device {nullptr};
 
         VkDebugUtilsMessengerEXT m_debug_messenger;
 
         QueueFamilyIndices m_queue_indices;
 
-        VkQueue m_graphics_queue;
-        VkQueue m_compute_queue;
-        VkQueue m_present_queue;
+        std::shared_ptr<RHIQueue> m_graphics_queue {nullptr};
+        std::shared_ptr<RHIQueue> m_compute_queue {nullptr};
+        std::shared_ptr<RHIQueue> m_present_queue {nullptr};
 
+        VkQueue m_vk_graphics_queue;
+        VkQueue m_vk_compute_queue;
+        VkQueue m_vk_present_queue;
+
+        VkSwapchainKHR             m_swapchain;
+        std::vector<VkImage>       m_swapchain_images;
         std::vector<VkFramebuffer> m_swapchain_framebuffers;
-
-        VkSwapchainKHR       m_swapchain;
-        std::vector<VkImage> m_swapchain_images;
 
         RHIFormat                  m_swapchain_image_format {RHI_FORMAT_UNDEFINED};
         std::vector<RHIImageView*> m_swapchain_imageviews;
@@ -85,9 +98,9 @@ namespace Piccolo
 
         VmaAllocator m_assets_allocator;
 
-        RHICommandPool*   m_rhi_command_pool;
-        RHICommandBuffer* m_command_buffers[k_max_frames_in_flight];
-        RHICommandBuffer* m_current_command_buffer = new VulkanCommandBuffer();
+        std::shared_ptr<RHICommandPool>   m_rhi_command_pool;
+        std::shared_ptr<RHICommandBuffer> m_command_buffers[k_max_frames_in_flight];
+        std::shared_ptr<RHICommandBuffer> m_current_command_buffer = std::make_shared<VulkanCommandBuffer>();
 
         VkCommandPool   m_vk_rhi_command_pool;
         VkCommandBuffer m_vk_rhi_command_buffers[k_max_frames_in_flight];
@@ -98,6 +111,7 @@ namespace Piccolo
         uint8_t                  m_current_frame_index = 0;
         std::vector<VkSemaphore> m_image_available_for_render_semaphores;
         std::vector<VkSemaphore> m_image_finished_for_presentation_semaphores;
+        std::vector<VkSemaphore> m_image_available_for_texturescopy_semaphores;
         std::vector<VkFence>     m_is_frame_in_flight_fences;
 
         // TODO

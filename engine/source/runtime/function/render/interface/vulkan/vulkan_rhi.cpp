@@ -45,14 +45,14 @@ namespace Piccolo
 
         createSyncPrimitives();
 
-        createSwapChain();
-        createSwapChainImageViews();
+        createSwapchain();
+        createSwapchainImageViews();
 
         // TODO : move to other place
         createRenderPass();
         createGraphicsPipeline();
 
-        createFramebuffers();
+        createFramebufferImageAndView();
 
         createAssetAllocator();
     }
@@ -65,41 +65,45 @@ namespace Piccolo
 
     void VulkanRHI::clear()
     {
-        vkDeviceWaitIdle(m_device);
+        vkDeviceWaitIdle(m_vk_device);
 
         for (size_t i = 0; i < k_max_frames_in_flight; i++)
         {
-            vkDestroySemaphore(m_device, m_image_finished_for_presentation_semaphores[i], nullptr);
-            vkDestroySemaphore(m_device, m_image_available_for_render_semaphores[i], nullptr);
-            vkDestroyFence(m_device, m_is_frame_in_flight_fences[i], nullptr);
+            vkDestroySemaphore(m_vk_device, m_image_finished_for_presentation_semaphores[i], nullptr);
+            vkDestroySemaphore(m_vk_device, m_image_available_for_render_semaphores[i], nullptr);
+            vkDestroyFence(m_vk_device, m_is_frame_in_flight_fences[i], nullptr);
         }
 
-        vkDestroyCommandPool(m_device, ((VulkanCommandPool*)m_rhi_command_pool)->getResource(), nullptr);
+        for (int i = 0; i < k_max_frames_in_flight; ++i)
+        {
+            vkDestroyCommandPool(m_vk_device, m_vk_command_pools[i], nullptr);
+        }
+        vkDestroyCommandPool(m_vk_device, ((VulkanCommandPool*)m_rhi_command_pool.get())->getResource(), nullptr);
 
         for (auto framebuffer : m_swapchain_framebuffers)
         {
-            vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+            vkDestroyFramebuffer(m_vk_device, framebuffer, nullptr);
         }
 
-        vkDestroyPipeline(m_device, graphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(m_device, pipelineLayout, nullptr);
-        vkDestroyRenderPass(m_device, renderPass, nullptr);
+        vkDestroyPipeline(m_vk_device, graphicsPipeline, nullptr);
+        vkDestroyPipelineLayout(m_vk_device, pipelineLayout, nullptr);
+        vkDestroyRenderPass(m_vk_device, renderPass, nullptr);
 
         for (auto imageView : m_swapchain_imageviews)
         {
-            vkDestroyImageView(m_device, ((VulkanImageView*)imageView)->getResource(), nullptr);
+            vkDestroyImageView(m_vk_device, ((VulkanImageView*)imageView)->getResource(), nullptr);
         }
 
-        vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
-        vkDestroyDevice(m_device, nullptr);
+        vkDestroySwapchainKHR(m_vk_device, m_swapchain, nullptr);
+        vkDestroyDevice(m_vk_device, nullptr);
 
         if (m_enable_validation_Layers)
         {
-            VulkanCreationUtils::destroyDebugUtilsMessengerEXT(m_instance, m_debug_messenger, nullptr);
+            VulkanCreationUtils::destroyDebugUtilsMessengerEXT(m_vk_instance, m_debug_messenger, nullptr);
         }
 
-        vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
-        vkDestroyInstance(m_instance, nullptr);
+        vkDestroySurfaceKHR(m_vk_instance, m_vk_surface, nullptr);
+        vkDestroyInstance(m_vk_instance, nullptr);
     }
 
     void VulkanRHI::createInstance()
@@ -151,13 +155,16 @@ namespace Piccolo
             instance_create_info.pNext             = nullptr;
         }
 
-        if (vkCreateInstance(&instance_create_info, nullptr, &m_instance) != VK_SUCCESS)
+        if (vkCreateInstance(&instance_create_info, nullptr, &m_vk_instance) != VK_SUCCESS)
         {
             LOG_ERROR("failed to create instance!");
             throw std::runtime_error("failed to create instance!");
         }
 
-        volkLoadInstance(m_instance);
+        volkLoadInstance(m_vk_instance);
+
+        m_instance.reset(new VulkanInstance());
+        ((VulkanInstance*)m_instance.get())->setResource(m_vk_instance);
     }
 
     void VulkanRHI::setupDebugMessenger()
@@ -166,7 +173,7 @@ namespace Piccolo
         {
             VkDebugUtilsMessengerCreateInfoEXT createInfo;
             VulkanCreationUtils::populateDebugMessengerCreateInfo(createInfo);
-            if (VulkanCreationUtils::createDebugUtilsMessengerEXT(m_instance, &createInfo, nullptr, &m_debug_messenger) != VK_SUCCESS)
+            if (VulkanCreationUtils::createDebugUtilsMessengerEXT(m_vk_instance, &createInfo, nullptr, &m_debug_messenger) != VK_SUCCESS)
             {
                 LOG_ERROR("failed to set up debug messenger!");
                 throw std::runtime_error("failed to set up debug messenger!");
@@ -182,17 +189,20 @@ namespace Piccolo
 
     void VulkanRHI::createSurface()
     {
-        if (glfwCreateWindowSurface(m_instance, m_window, nullptr, &m_surface) != VK_SUCCESS)
+        if (glfwCreateWindowSurface(m_vk_instance, m_window, nullptr, &m_vk_surface) != VK_SUCCESS)
         {
             LOG_ERROR("glfwCreateWindowSurface failed!");
             throw std::runtime_error("failed to create window surface!");
         }
+
+        m_surface.reset(new VulkanSurface());
+        ((VulkanSurface*)m_surface.get())->setResource(m_vk_surface);
     }
 
     void VulkanRHI::pickPhysicalDevice()
     {
         uint32_t physical_device_count;
-        vkEnumeratePhysicalDevices(m_instance, &physical_device_count, nullptr);
+        vkEnumeratePhysicalDevices(m_vk_instance, &physical_device_count, nullptr);
         if (physical_device_count == 0)
         {
             LOG_ERROR("enumerate physical devices failed!");
@@ -202,7 +212,7 @@ namespace Piccolo
             // find one device that matches our requirement
             // or find which is the best
             std::vector<VkPhysicalDevice> physical_devices(physical_device_count);
-            vkEnumeratePhysicalDevices(m_instance, &physical_device_count, physical_devices.data());
+            vkEnumeratePhysicalDevices(m_vk_instance, &physical_device_count, physical_devices.data());
 
             std::vector<std::pair<int, VkPhysicalDevice>> ranked_physical_devices;
             for (const auto& device : physical_devices)
@@ -229,23 +239,26 @@ namespace Piccolo
 
             for (const auto& device : ranked_physical_devices)
             {
-                if (VulkanCreationUtils::isDeviceSuitable(device.second, m_surface, m_device_extensions))
+                if (VulkanCreationUtils::isDeviceSuitable(device.second, m_vk_surface, m_device_extensions))
                 {
-                    m_physical_device = device.second;
+                    m_vk_physical_device = device.second;
                     break;
                 }
             }
 
-            if (m_physical_device == VK_NULL_HANDLE)
+            if (m_vk_physical_device == VK_NULL_HANDLE)
             {
                 LOG_ERROR("failed to find suitable physical device");
             }
         }
+
+        m_physical_device.reset(new VulkanPhysicalDevice());
+        ((VulkanPhysicalDevice*)m_physical_device.get())->setResource(m_vk_physical_device);
     }
 
     void VulkanRHI::createLogicalDevice()
     {
-        m_queue_indices = VulkanCreationUtils::findQueueFamilies(m_physical_device, m_surface);
+        m_queue_indices = VulkanCreationUtils::findQueueFamilies(m_vk_physical_device, m_vk_surface);
 
         std::vector<VkDeviceQueueCreateInfo> queue_create_infos; // all queues that need to be created
         std::set<uint32_t>                   queue_families = {
@@ -290,31 +303,32 @@ namespace Piccolo
         device_create_info.ppEnabledExtensionNames = m_device_extensions.data();
         device_create_info.enabledLayerCount       = 0;
 
-        if (vkCreateDevice(m_physical_device, &device_create_info, nullptr, &m_device) != VK_SUCCESS)
+        if (vkCreateDevice(m_vk_physical_device, &device_create_info, nullptr, &m_vk_device) != VK_SUCCESS)
         {
             LOG_ERROR("vk create device");
         }
 
+        m_device.reset(new VulkanDevice());
+        ((VulkanDevice*)m_device.get())->setResource(m_vk_device);
+
         // initialize queues of this device
-        // VkQueue vk_graphics_queue;
-        // vkGetDeviceQueue(m_device, m_queue_indices.graphics_family.value(), 0, &vk_graphics_queue);
-        // m_graphics_queue = new VulkanQueue();
-        // ((VulkanQueue*)m_graphics_queue)->setResource(vk_graphics_queue);
+        vkGetDeviceQueue(m_vk_device, m_queue_indices.graphics_family.value(), 0, &m_vk_graphics_queue);
+        m_graphics_queue.reset(new VulkanQueue());
+        ((VulkanQueue*)m_graphics_queue.get())->setResource(m_vk_graphics_queue);
 
-        // VkQueue vk_compute_queue;
-        // vkGetDeviceQueue(m_device, m_queue_indices.compute_family.value(), 0, &vk_compute_queue);
-        // m_compute_queue = new VulkanQueue();
-        // ((VulkanQueue*)m_compute_queue)->setResource(vk_compute_queue);
+        vkGetDeviceQueue(m_vk_device, m_queue_indices.compute_family.value(), 0, &m_vk_compute_queue);
+        m_compute_queue.reset(new VulkanQueue());
+        ((VulkanQueue*)m_compute_queue.get())->setResource(m_vk_compute_queue);
 
-        vkGetDeviceQueue(m_device, m_queue_indices.graphics_family.value(), 0, &m_graphics_queue);
-        vkGetDeviceQueue(m_device, m_queue_indices.compute_family.value(), 0, &m_compute_queue);
-        vkGetDeviceQueue(m_device, m_queue_indices.present_family.value(), 0, &m_present_queue);
+        vkGetDeviceQueue(m_vk_device, m_queue_indices.compute_family.value(), 0, &m_vk_present_queue);
+        m_present_queue.reset(new VulkanQueue());
+        ((VulkanQueue*)m_present_queue.get())->setResource(m_vk_present_queue);
     }
 
-    void VulkanRHI::createSwapChain()
+    void VulkanRHI::createSwapchain()
     {
         // query all supports of this physical device
-        SwapChainSupportDetails swapchain_support_details = VulkanCreationUtils::querySwapChainSupport(m_physical_device, m_surface);
+        SwapChainSupportDetails swapchain_support_details = VulkanCreationUtils::querySwapChainSupport(m_vk_physical_device, m_vk_surface);
 
         // choose the best or fitting format
         VkSurfaceFormatKHR chosen_surface_format = VulkanCreationUtils::chooseSwapchainSurfaceFormatFromDetails(swapchain_support_details.formats);
@@ -331,7 +345,7 @@ namespace Piccolo
 
         VkSwapchainCreateInfoKHR createInfo {};
         createInfo.sType   = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        createInfo.surface = m_surface;
+        createInfo.surface = m_vk_surface;
 
         createInfo.minImageCount    = image_count;
         createInfo.imageFormat      = chosen_surface_format.format;
@@ -360,14 +374,14 @@ namespace Piccolo
 
         createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-        if (vkCreateSwapchainKHR(m_device, &createInfo, nullptr, &m_swapchain) != VK_SUCCESS)
+        if (vkCreateSwapchainKHR(m_vk_device, &createInfo, nullptr, &m_swapchain) != VK_SUCCESS)
         {
             LOG_ERROR("vk create swapchain khr");
         }
 
-        vkGetSwapchainImagesKHR(m_device, m_swapchain, &image_count, nullptr);
+        vkGetSwapchainImagesKHR(m_vk_device, m_swapchain, &image_count, nullptr);
         m_swapchain_images.resize(image_count);
-        vkGetSwapchainImagesKHR(m_device, m_swapchain, &image_count, m_swapchain_images.data());
+        vkGetSwapchainImagesKHR(m_vk_device, m_swapchain, &image_count, m_swapchain_images.data());
 
         m_swapchain_image_format  = (RHIFormat)chosen_surface_format.format;
         m_swapchain_extent.height = chosen_extent.height;
@@ -376,7 +390,7 @@ namespace Piccolo
         m_scissor = {{0, 0}, {m_swapchain_extent.width, m_swapchain_extent.height}};
     }
 
-    void VulkanRHI::createSwapChainImageViews()
+    void VulkanRHI::createSwapchainImageViews()
     {
         m_swapchain_imageviews.resize(m_swapchain_images.size());
 
@@ -398,7 +412,7 @@ namespace Piccolo
             createInfo.subresourceRange.layerCount     = 1;
 
             VkImageView vk_image_view;
-            if (vkCreateImageView(m_device, &createInfo, nullptr, &vk_image_view) != VK_SUCCESS)
+            if (vkCreateImageView(m_vk_device, &createInfo, nullptr, &vk_image_view) != VK_SUCCESS)
             {
                 throw std::runtime_error("failed to create image views!");
             }
@@ -446,7 +460,7 @@ namespace Piccolo
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies   = &dependency;
 
-        if (vkCreateRenderPass(m_device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+        if (vkCreateRenderPass(m_vk_device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create render pass!");
         }
@@ -454,8 +468,8 @@ namespace Piccolo
 
     void VulkanRHI::createGraphicsPipeline()
     {
-        VkShaderModule vertShaderModule = VulkanUtil::createShaderModule(m_device, "simple_triangle.vert");
-        VkShaderModule fragShaderModule = VulkanUtil::createShaderModule(m_device, "simple_triangle.frag");
+        VkShaderModule vertShaderModule = VulkanUtil::createShaderModule(m_vk_device, "simple_triangle.vert");
+        VkShaderModule fragShaderModule = VulkanUtil::createShaderModule(m_vk_device, "simple_triangle.frag");
 
         VkPipelineShaderStageCreateInfo vertShaderStageInfo {};
         vertShaderStageInfo.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -527,7 +541,7 @@ namespace Piccolo
         pipelineLayoutInfo.setLayoutCount         = 0;
         pipelineLayoutInfo.pushConstantRangeCount = 0;
 
-        if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
+        if (vkCreatePipelineLayout(m_vk_device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create pipeline layout!");
         }
@@ -548,16 +562,16 @@ namespace Piccolo
         pipelineInfo.subpass             = 0;
         pipelineInfo.basePipelineHandle  = VK_NULL_HANDLE;
 
-        if (vkCreateGraphicsPipelines(m_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
+        if (vkCreateGraphicsPipelines(m_vk_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
 
-        vkDestroyShaderModule(m_device, fragShaderModule, nullptr);
-        vkDestroyShaderModule(m_device, vertShaderModule, nullptr);
+        vkDestroyShaderModule(m_vk_device, fragShaderModule, nullptr);
+        vkDestroyShaderModule(m_vk_device, vertShaderModule, nullptr);
     }
 
-    void VulkanRHI::createFramebuffers()
+    void VulkanRHI::createFramebufferImageAndView()
     {
         m_swapchain_framebuffers.resize(m_swapchain_imageviews.size());
 
@@ -574,7 +588,7 @@ namespace Piccolo
             framebufferInfo.height          = m_swapchain_extent.height;
             framebufferInfo.layers          = 1;
 
-            if (vkCreateFramebuffer(m_device, &framebufferInfo, nullptr, &m_swapchain_framebuffers[i]) != VK_SUCCESS)
+            if (vkCreateFramebuffer(m_vk_device, &framebufferInfo, nullptr, &m_swapchain_framebuffers[i]) != VK_SUCCESS)
             {
                 throw std::runtime_error("failed to create framebuffer!");
             }
@@ -585,19 +599,19 @@ namespace Piccolo
     {
         // default graphics command pool
         {
-            m_rhi_command_pool = new VulkanCommandPool();
+            m_rhi_command_pool.reset(new VulkanCommandPool());
             VkCommandPoolCreateInfo command_pool_create_info {};
             command_pool_create_info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
             command_pool_create_info.pNext            = NULL;
             command_pool_create_info.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
             command_pool_create_info.queueFamilyIndex = m_queue_indices.graphics_family.value();
 
-            if (vkCreateCommandPool(m_device, &command_pool_create_info, nullptr, &m_vk_rhi_command_pool) != VK_SUCCESS)
+            if (vkCreateCommandPool(m_vk_device, &command_pool_create_info, nullptr, &m_vk_rhi_command_pool) != VK_SUCCESS)
             {
                 LOG_ERROR("vk create command pool");
             }
 
-            ((VulkanCommandPool*)m_rhi_command_pool)->setResource(m_vk_rhi_command_pool);
+            ((VulkanCommandPool*)m_rhi_command_pool.get())->setResource(m_vk_rhi_command_pool);
         }
 
         // other command pools
@@ -610,7 +624,7 @@ namespace Piccolo
 
             for (uint32_t i = 0; i < k_max_frames_in_flight; ++i)
             {
-                if (vkCreateCommandPool(m_device, &command_pool_create_info, NULL, &m_vk_command_pools[i]) != VK_SUCCESS)
+                if (vkCreateCommandPool(m_vk_device, &command_pool_create_info, NULL, &m_vk_command_pools[i]) != VK_SUCCESS)
                 {
                     LOG_ERROR("vk create command pool");
                 }
@@ -626,7 +640,7 @@ namespace Piccolo
         allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.commandBufferCount = (uint32_t)k_max_frames_in_flight;
 
-        if (vkAllocateCommandBuffers(m_device, &allocInfo, m_vk_rhi_command_buffers) != VK_SUCCESS)
+        if (vkAllocateCommandBuffers(m_vk_device, &allocInfo, m_vk_rhi_command_buffers) != VK_SUCCESS)
         {
             LOG_ERROR("vk allocate command buffers");
             throw std::runtime_error("failed to allocate command buffers!");
@@ -641,14 +655,14 @@ namespace Piccolo
         {
             command_buffer_allocate_info.commandPool = m_vk_command_pools[i];
             VkCommandBuffer vk_command_buffer;
-            if (vkAllocateCommandBuffers(m_device, &command_buffer_allocate_info, &vk_command_buffer) != VK_SUCCESS)
+            if (vkAllocateCommandBuffers(m_vk_device, &command_buffer_allocate_info, &vk_command_buffer) != VK_SUCCESS)
             {
                 LOG_ERROR("vk allocate command buffers");
                 throw std::runtime_error("failed to allocate command buffers!");
             }
             m_vk_command_buffers[i] = vk_command_buffer;
-            m_command_buffers[i]    = new VulkanCommandBuffer();
-            ((VulkanCommandBuffer*)m_command_buffers[i])->setResource(vk_command_buffer);
+            m_command_buffers[i].reset(new VulkanCommandBuffer());
+            ((VulkanCommandBuffer*)m_command_buffers[i].get())->setResource(vk_command_buffer);
         }
     }
 
@@ -705,6 +719,7 @@ namespace Piccolo
     {
         m_image_available_for_render_semaphores.resize(k_max_frames_in_flight);
         m_image_finished_for_presentation_semaphores.resize(k_max_frames_in_flight);
+        m_image_available_for_texturescopy_semaphores.resize(k_max_frames_in_flight);
         m_is_frame_in_flight_fences.resize(k_max_frames_in_flight);
 
         VkSemaphoreCreateInfo semaphoreInfo {};
@@ -716,9 +731,10 @@ namespace Piccolo
 
         for (size_t i = 0; i < k_max_frames_in_flight; i++)
         {
-            if (vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &m_image_available_for_render_semaphores[i]) != VK_SUCCESS ||
-                vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &m_image_finished_for_presentation_semaphores[i]) != VK_SUCCESS ||
-                vkCreateFence(m_device, &fenceInfo, nullptr, &m_is_frame_in_flight_fences[i]) != VK_SUCCESS)
+            if (vkCreateSemaphore(m_vk_device, &semaphoreInfo, nullptr, &m_image_available_for_render_semaphores[i]) != VK_SUCCESS ||
+                vkCreateSemaphore(m_vk_device, &semaphoreInfo, nullptr, &m_image_finished_for_presentation_semaphores[i]) != VK_SUCCESS ||
+                vkCreateSemaphore(m_vk_device, &semaphoreInfo, nullptr, &m_image_available_for_texturescopy_semaphores[i]) != VK_SUCCESS ||
+                vkCreateFence(m_vk_device, &fenceInfo, nullptr, &m_is_frame_in_flight_fences[i]) != VK_SUCCESS)
             {
                 throw std::runtime_error("failed to create synchronization objects for a frame!");
             }
@@ -748,9 +764,9 @@ namespace Piccolo
 
         VmaAllocatorCreateInfo allocatorCreateInfo = {};
         allocatorCreateInfo.vulkanApiVersion       = k_vulkan_api_version;
-        allocatorCreateInfo.physicalDevice         = m_physical_device;
-        allocatorCreateInfo.device                 = m_device;
-        allocatorCreateInfo.instance               = m_instance;
+        allocatorCreateInfo.physicalDevice         = m_vk_physical_device;
+        allocatorCreateInfo.device                 = m_vk_device;
+        allocatorCreateInfo.instance               = m_vk_instance;
         allocatorCreateInfo.pVulkanFunctions       = &vma_vulkan_func;
 
         vmaCreateAllocator(&allocatorCreateInfo, &m_assets_allocator);
@@ -758,11 +774,12 @@ namespace Piccolo
 
     void VulkanRHI::drawFrame()
     {
-        vkWaitForFences(m_device, 1, &m_is_frame_in_flight_fences[m_current_frame_index], VK_TRUE, UINT64_MAX);
-        vkResetFences(m_device, 1, &m_is_frame_in_flight_fences[m_current_frame_index]);
+        vkWaitForFences(m_vk_device, 1, &m_is_frame_in_flight_fences[m_current_frame_index], VK_TRUE, UINT64_MAX);
+        vkResetFences(m_vk_device, 1, &m_is_frame_in_flight_fences[m_current_frame_index]);
 
         uint32_t imageIndex;
-        vkAcquireNextImageKHR(m_device, m_swapchain, UINT64_MAX, m_image_available_for_render_semaphores[m_current_frame_index], VK_NULL_HANDLE, &imageIndex);
+        vkAcquireNextImageKHR(
+            m_vk_device, m_swapchain, UINT64_MAX, m_image_available_for_render_semaphores[m_current_frame_index], VK_NULL_HANDLE, &imageIndex);
 
         vkResetCommandBuffer(m_vk_rhi_command_buffers[m_current_frame_index], /*VkCommandBufferResetFlagBits*/ 0);
         recordCommandBuffer(m_vk_rhi_command_buffers[m_current_frame_index], imageIndex);
@@ -783,7 +800,7 @@ namespace Piccolo
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores    = signalSemaphores;
 
-        if (vkQueueSubmit(m_graphics_queue, 1, &submitInfo, m_is_frame_in_flight_fences[m_current_frame_index]) != VK_SUCCESS)
+        if (vkQueueSubmit(m_vk_graphics_queue, 1, &submitInfo, m_is_frame_in_flight_fences[m_current_frame_index]) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to submit draw command buffer!");
         }
@@ -800,7 +817,7 @@ namespace Piccolo
 
         presentInfo.pImageIndices = &imageIndex;
 
-        vkQueuePresentKHR(m_present_queue, &presentInfo);
+        vkQueuePresentKHR(m_vk_present_queue, &presentInfo);
 
         m_current_frame_index = (m_current_frame_index + 1) % k_max_frames_in_flight;
     }

@@ -33,10 +33,10 @@ namespace Piccolo
         // virtual bool allocateCommandBuffers(const RHICommandBufferAllocateInfo* pAllocateInfo, RHICommandBuffer*& pCommandBuffers) = 0;
         // virtual bool allocateDescriptorSets(const RHIDescriptorSetAllocateInfo* pAllocateInfo, RHIDescriptorSet*& pDescriptorSets) = 0;
 
-        // virtual void createSwapchain()               = 0;
-        // virtual void recreateSwapchain()             = 0;
-        // virtual void createSwapchainImageViews()     = 0;
-        // virtual void createFramebufferImageAndView() = 0;
+        virtual void createSwapchain()               = 0;
+        virtual void recreateSwapchain()             = 0;
+        virtual void createSwapchainImageViews()     = 0;
+        virtual void createFramebufferImageAndView() = 0;
 
         // virtual RHISampler* getOrCreateDefaultSampler(RHIDefaultSamplerType type)     = 0;
         // virtual RHISampler* getOrCreateMipmapSampler(uint32_t width, uint32_t height) = 0;

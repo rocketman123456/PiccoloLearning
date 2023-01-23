@@ -26,6 +26,8 @@ namespace Piccolo
     {};
     class RHIDevice
     {};
+    class RHISurface
+    {};
     class RHIDeviceMemory
     {};
     class RHIEvent
