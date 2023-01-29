@@ -14,7 +14,6 @@ namespace Piccolo
     class VulkanUtil
     {
     public:
-
         static VkShaderModule createShaderModule(VkDevice device, const std::string& shader_file);
         static VkShaderModule createShaderModule(VkDevice device, const std::vector<unsigned char>& shader_code);
 

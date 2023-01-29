@@ -156,6 +156,39 @@ namespace Piccolo
         RHIAccessFlags   dstAccessMask;
     };
 
+    struct RHIHeightMap
+    {
+        struct Vertex
+        {
+            Vector3 pos;
+            Vector3 normal;
+            Vector2 uv;
+        };
+
+        uint16_t* heightdata;
+        uint32_t  dim;
+        uint32_t  scale;
+
+        enum Topology
+        {
+            topologyTriangles,
+            topologyQuads
+        };
+
+        float heightScale = 1.0f;
+        float uvScale     = 1.0f;
+
+        size_t   vertexBufferSize = 0;
+        size_t   indexBufferSize  = 0;
+        uint32_t indexCount       = 0;
+
+        // Vertex Buffer
+        // Index Buffer
+
+        virtual float getHeight(uint32_t x, uint32_t y)                                                               = 0;
+        virtual void  loadFromFile(const std::string filename, uint32_t patchsize, Vector3& scale, Topology topology) = 0;
+    };
+
     struct RHICopyDescriptorSet
     {
         RHIStructureType  sType;
