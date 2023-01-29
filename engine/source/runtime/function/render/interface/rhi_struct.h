@@ -1,4 +1,7 @@
 #pragma once
+#include "runtime/core/math/vector2.h"
+#include "runtime/core/math/vector3.h"
+#include "runtime/core/math/vector4.h"
 #include "runtime/function/render/render_data.h"
 #include "runtime/function/render/render_type.h"
 

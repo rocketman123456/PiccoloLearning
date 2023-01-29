@@ -1,19 +1,6 @@
 #include "runtime/function/render/interface/vulkan/vulkan_device.h"
-
-#if (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK))
-// SRS - Enable beta extensions and make VK_KHR_portability_subset visible
-#define VK_ENABLE_BETA_EXTENSIONS
-#endif
-
-#define VK_CHECK_RESULT(f)																				\
-{																										\
-	VkResult res = (f);																					\
-	if (res != VK_SUCCESS)																				\
-	{	/*vks::tools::errorString(res)*/																\
-		std::cout << "Fatal : VkResult is \"" << res << "\" in " << __FILE__ << " at line " << __LINE__ << "\n"; \
-		assert(res == VK_SUCCESS);																		\
-	}																									\
-}
+#include "runtime/function/render/interface/vulkan/vulkan_initializer.h"
+#include "runtime/function/render/interface/vulkan/vulkan_tools.h"
 
 #include <algorithm>
 #include <cassert>
@@ -503,73 +490,73 @@ namespace Piccolo
         return cmdPool;
     }
 
-    // /**
-    //  * Allocate a command buffer from the command pool
-    //  *
-    //  * @param level Level of the new command buffer (primary or secondary)
-    //  * @param pool Command pool from which the command buffer will be allocated
-    //  * @param (Optional) begin If true, recording on the new command buffer will be started (vkBeginCommandBuffer) (Defaults to false)
-    //  *
-    //  * @return A handle to the allocated command buffer
-    //  */
-    // VkCommandBuffer VulkanDevice::createCommandBuffer(VkCommandBufferLevel level, VkCommandPool pool, bool begin)
-    // {
-    //     VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::commandBufferAllocateInfo(pool, level, 1);
-    //     VkCommandBuffer             cmdBuffer;
-    //     VK_CHECK_RESULT(vkAllocateCommandBuffers(m_logical_device, &cmdBufAllocateInfo, &cmdBuffer));
-    //     // If requested, also start recording for the new command buffer
-    //     if (begin)
-    //     {
-    //         VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
-    //         VK_CHECK_RESULT(vkBeginCommandBuffer(cmdBuffer, &cmdBufInfo));
-    //     }
-    //     return cmdBuffer;
-    // }
+    /**
+     * Allocate a command buffer from the command pool
+     *
+     * @param level Level of the new command buffer (primary or secondary)
+     * @param pool Command pool from which the command buffer will be allocated
+     * @param (Optional) begin If true, recording on the new command buffer will be started (vkBeginCommandBuffer) (Defaults to false)
+     *
+     * @return A handle to the allocated command buffer
+     */
+    VkCommandBuffer VulkanDevice::createCommandBuffer(VkCommandBufferLevel level, VkCommandPool pool, bool begin)
+    {
+        VkCommandBufferAllocateInfo cmdBufAllocateInfo = VulkanInitializer::commandBufferAllocateInfo(pool, level, 1);
+        VkCommandBuffer             cmdBuffer;
+        VK_CHECK_RESULT(vkAllocateCommandBuffers(m_logical_device, &cmdBufAllocateInfo, &cmdBuffer));
+        // If requested, also start recording for the new command buffer
+        if (begin)
+        {
+            VkCommandBufferBeginInfo cmdBufInfo = VulkanInitializer::commandBufferBeginInfo();
+            VK_CHECK_RESULT(vkBeginCommandBuffer(cmdBuffer, &cmdBufInfo));
+        }
+        return cmdBuffer;
+    }
 
-    // VkCommandBuffer VulkanDevice::createCommandBuffer(VkCommandBufferLevel level, bool begin) { return createCommandBuffer(level, m_command_pool, begin); }
+    VkCommandBuffer VulkanDevice::createCommandBuffer(VkCommandBufferLevel level, bool begin) { return createCommandBuffer(level, m_command_pool, begin); }
 
-    // /**
-    //  * Finish command buffer recording and submit it to a queue
-    //  *
-    //  * @param commandBuffer Command buffer to flush
-    //  * @param queue Queue to submit the command buffer to
-    //  * @param pool Command pool on which the command buffer has been created
-    //  * @param free (Optional) Free the command buffer once it has been submitted (Defaults to true)
-    //  *
-    //  * @note The queue that the command buffer is submitted to must be from the same family index as the pool it was allocated from
-    //  * @note Uses a fence to ensure command buffer has finished executing
-    //  */
-    // void VulkanDevice::flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, VkCommandPool pool, bool free)
-    // {
-    //     if (commandBuffer == VK_NULL_HANDLE)
-    //     {
-    //         return;
-    //     }
+    /**
+     * Finish command buffer recording and submit it to a queue
+     *
+     * @param commandBuffer Command buffer to flush
+     * @param queue Queue to submit the command buffer to
+     * @param pool Command pool on which the command buffer has been created
+     * @param free (Optional) Free the command buffer once it has been submitted (Defaults to true)
+     *
+     * @note The queue that the command buffer is submitted to must be from the same family index as the pool it was allocated from
+     * @note Uses a fence to ensure command buffer has finished executing
+     */
+    void VulkanDevice::flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, VkCommandPool pool, bool free)
+    {
+        if (commandBuffer == VK_NULL_HANDLE)
+        {
+            return;
+        }
 
-    //     VK_CHECK_RESULT(vkEndCommandBuffer(commandBuffer));
+        VK_CHECK_RESULT(vkEndCommandBuffer(commandBuffer));
 
-    //     VkSubmitInfo submitInfo       = vks::initializers::submitInfo();
-    //     submitInfo.commandBufferCount = 1;
-    //     submitInfo.pCommandBuffers    = &commandBuffer;
-    //     // Create fence to ensure that the command buffer has finished executing
-    //     VkFenceCreateInfo fenceInfo = vks::initializers::fenceCreateInfo(VK_FLAGS_NONE);
-    //     VkFence           fence;
-    //     VK_CHECK_RESULT(vkCreateFence(m_logical_device, &fenceInfo, nullptr, &fence));
-    //     // Submit to the queue
-    //     VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
-    //     // Wait for the fence to signal that command buffer has finished executing
-    //     VK_CHECK_RESULT(vkWaitForFences(m_logical_device, 1, &fence, VK_TRUE, DEFAULT_FENCE_TIMEOUT));
-    //     vkDestroyFence(m_logical_device, fence, nullptr);
-    //     if (free)
-    //     {
-    //         vkFreeCommandBuffers(m_logical_device, pool, 1, &commandBuffer);
-    //     }
-    // }
+        VkSubmitInfo submitInfo       = VulkanInitializer::submitInfo();
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers    = &commandBuffer;
+        // Create fence to ensure that the command buffer has finished executing
+        VkFenceCreateInfo fenceInfo = VulkanInitializer::fenceCreateInfo(VK_FLAGS_NONE);
+        VkFence           fence;
+        VK_CHECK_RESULT(vkCreateFence(m_logical_device, &fenceInfo, nullptr, &fence));
+        // Submit to the queue
+        VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
+        // Wait for the fence to signal that command buffer has finished executing
+        VK_CHECK_RESULT(vkWaitForFences(m_logical_device, 1, &fence, VK_TRUE, DEFAULT_FENCE_TIMEOUT));
+        vkDestroyFence(m_logical_device, fence, nullptr);
+        if (free)
+        {
+            vkFreeCommandBuffers(m_logical_device, pool, 1, &commandBuffer);
+        }
+    }
 
-    // void VulkanDevice::flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, bool free)
-    // {
-    //     return flushCommandBuffer(commandBuffer, queue, m_command_pool, free);
-    // }
+    void VulkanDevice::flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, bool free)
+    {
+        return flushCommandBuffer(commandBuffer, queue, m_command_pool, free);
+    }
 
     /**
      * Check if an extension is supported by the (physical device)
