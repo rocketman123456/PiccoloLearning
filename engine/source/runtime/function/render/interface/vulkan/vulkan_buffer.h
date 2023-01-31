@@ -2,5 +2,9 @@
 
 namespace Piccolo
 {
-
+    class VulkanBuffer
+    {
+    public:
+        
+    };
 }

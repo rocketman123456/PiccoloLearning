@@ -119,11 +119,11 @@ namespace Piccolo
         switch (type)
         {
             case Piccolo::Default_Sampler_Linear:
-                // VulkanUtil::destroyLinearSampler(m_device);
+                // VulkanUtils::destroyLinearSampler(m_device);
                 // RHI_DELETE_PTR(m_linear_sampler);
                 break;
             case Piccolo::Default_Sampler_Nearest:
-                // VulkanUtil::destroyNearestSampler(m_device);
+                // VulkanUtils::destroyNearestSampler(m_device);
                 // RHI_DELETE_PTR(m_nearest_sampler);
                 break;
             default:
@@ -133,7 +133,7 @@ namespace Piccolo
 
     void VulkanRHI::destroyMipmappedSampler()
     {
-        // VulkanUtil::destroyMipmappedSampler(m_device);
+        // VulkanUtils::destroyMipmappedSampler(m_device);
         // for (auto sampler : m_mipmap_sampler_map)
         // {
         //     delete sampler.second;
@@ -862,8 +862,8 @@ namespace Piccolo
 
     void VulkanRHI::createGraphicsPipeline()
     {
-        VkShaderModule vertShaderModule = VulkanUtil::createShaderModule(m_vk_device, "simple_triangle.vert");
-        VkShaderModule fragShaderModule = VulkanUtil::createShaderModule(m_vk_device, "simple_triangle.frag");
+        VkShaderModule vertShaderModule = VulkanUtils::createShaderModule(m_vk_device, "simple_triangle.vert");
+        VkShaderModule fragShaderModule = VulkanUtils::createShaderModule(m_vk_device, "simple_triangle.frag");
 
         VkPipelineShaderStageCreateInfo vertShaderStageInfo {};
         vertShaderStageInfo.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

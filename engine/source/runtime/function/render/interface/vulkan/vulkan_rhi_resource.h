@@ -28,6 +28,12 @@ namespace Piccolo
         }
     };
 
+    struct SwapChainBuffer
+    {
+        VkImage     image;
+        VkImageView view;
+    };
+
     class VulkanBuffer : public RHIBuffer
     {
     public:

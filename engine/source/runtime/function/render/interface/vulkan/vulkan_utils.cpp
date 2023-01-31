@@ -31,9 +31,9 @@
 
 namespace Piccolo
 {
-    std::unordered_map<uint32_t, VkSampler> VulkanUtil::m_mipmap_sampler_map;
-    VkSampler                               VulkanUtil::m_nearest_sampler = VK_NULL_HANDLE;
-    VkSampler                               VulkanUtil::m_linear_sampler  = VK_NULL_HANDLE;
+    std::unordered_map<uint32_t, VkSampler> VulkanUtils::m_mipmap_sampler_map;
+    VkSampler                               VulkanUtils::m_nearest_sampler = VK_NULL_HANDLE;
+    VkSampler                               VulkanUtils::m_linear_sampler  = VK_NULL_HANDLE;
 
     EShLanguage shaderLanguageStageFromFileName(const char* fileName)
     {
@@ -52,7 +52,7 @@ namespace Piccolo
         return EShLangVertex;
     }
 
-    VkShaderModule VulkanUtil::createShaderModule(VkDevice device, const std::string& shader_file)
+    VkShaderModule VulkanUtils::createShaderModule(VkDevice device, const std::string& shader_file)
     {
         std::filesystem::path asset_path       = g_runtime_global_context.m_config_manager->getRootFolder();
         std::filesystem::path shader_file_path = asset_path / "shader" / "glsl" / shader_file;
@@ -159,7 +159,7 @@ namespace Piccolo
         return createShaderModule(device, spirv_char);
     }
 
-    VkShaderModule VulkanUtil::createShaderModule(VkDevice device, const std::vector<unsigned char>& shader_code)
+    VkShaderModule VulkanUtils::createShaderModule(VkDevice device, const std::vector<unsigned char>& shader_code)
     {
         VkShaderModuleCreateInfo shader_module_create_info {};
         shader_module_create_info.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

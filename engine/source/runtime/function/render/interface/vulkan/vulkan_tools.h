@@ -1,7 +1,9 @@
 #pragma once
+#include "runtime/core/base/macro.h"
 
 #include <volk.h>
 
+#include <iostream>
 #include <string>
 
 // Custom define for better code readability
@@ -14,15 +16,15 @@
 #define VK_ENABLE_BETA_EXTENSIONS
 #endif
 
-#define VK_CHECK_RESULT(f)																				\
-{																										\
-	VkResult res = (f);																					\
-	if (res != VK_SUCCESS)																				\
-	{	                                        														\
-		std::cout << "Fatal : VkResult is \"" << VulkanTools::errorString(res) << "\" in " << __FILE__ << " at line " << __LINE__ << "\n"; \
-		assert(res == VK_SUCCESS);																		\
-	}																									\
-}
+#define VK_CHECK_RESULT(f) \
+    { \
+        VkResult res = (f); \
+        if (res != VK_SUCCESS) \
+        { \
+            LOG_ERROR("Fatal : VkResult is \"{}\" in {}  at line ", VulkanTools::errorString(res), __FILE__, __LINE__); \
+            assert(res == VK_SUCCESS); \
+        } \
+    }
 
 namespace Piccolo
 {

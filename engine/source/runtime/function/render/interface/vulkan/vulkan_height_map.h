@@ -2,5 +2,8 @@
 
 namespace Piccolo
 {
-
+    class VulkanHeightMap
+    {
+    public:
+    };
 }
