@@ -218,6 +218,10 @@ namespace Piccolo
             extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         }
 
+#if defined(__APPLE__)
+        extensions.push_back("VK_KHR_portability_enumeration");
+#endif
+
         return extensions;
     }
 

@@ -64,13 +64,13 @@ namespace Piccolo
         const std::vector<const char*> m_validation_layers = {"VK_LAYER_KHRONOS_validation"};
         const std::vector<const char*> m_device_extensions = {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-#if defined(__MACH__)
+#if defined(__APPLE__)
             "VK_KHR_portability_subset",
 #endif
         };
 
         static const uint8_t  k_max_frames_in_flight {3};
-        static const uint32_t k_vulkan_api_version {VK_API_VERSION_1_0};
+        static const uint32_t k_vulkan_api_version {VK_API_VERSION_1_3};
 
         bool m_enable_validation_Layers {true};
         bool m_enable_debug_utils_label {true};
@@ -133,10 +133,10 @@ namespace Piccolo
 
         // sync objects
         uint8_t                  m_current_frame_index {0};
-        std::vector<VkSemaphore> m_image_available_for_render_semaphores;
-        std::vector<VkSemaphore> m_image_finished_for_presentation_semaphores;
-        std::vector<VkSemaphore> m_image_available_for_texturescopy_semaphores;
-        std::vector<VkFence>     m_is_frame_in_flight_fences;
+        VkSemaphore m_image_available_for_render_semaphores[k_max_frames_in_flight];
+        VkSemaphore m_image_finished_for_presentation_semaphores[k_max_frames_in_flight];
+        VkSemaphore m_image_available_for_texturescopy_semaphores[k_max_frames_in_flight];
+        VkFence     m_is_frame_in_flight_fences[k_max_frames_in_flight];
 
         // TODO
         VkRenderPass     renderPass;

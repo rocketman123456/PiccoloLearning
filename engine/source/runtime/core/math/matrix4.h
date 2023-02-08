@@ -83,7 +83,7 @@ namespace Piccolo
             memcpy(m_rows[3].ptr(), arr[2], 4 * sizeof(float));
         }
 
-        Matrix4x4(float(&float_array)[9])
+        Matrix4x4(float(&float_array)[16])
         {
             m_rows[0][0] = float_array[0];
             m_rows[0][1] = float_array[1];

@@ -34,6 +34,12 @@ namespace Piccolo
         m_viewport = {0.0f, 0.0f, (float)window_size[0], (float)window_size[1], 0.0f, 1.0f};
         m_scissor  = {{0, 0}, {(uint32_t)window_size[0], (uint32_t)window_size[1]}};
 
+#if defined(__GNUC__) && defined(__MACH__)
+        m_enable_point_light_shadow = false;
+#else
+        m_enable_point_light_shadow = true;
+#endif
+
         createInstance();
         setupDebugMessenger();
         createSurface();
@@ -218,7 +224,7 @@ namespace Piccolo
         auto extensions                              = VulkanCreationUtils::getRequiredExtensions(m_enable_validation_Layers);
         instance_create_info.enabledExtensionCount   = static_cast<uint32_t>(extensions.size());
         instance_create_info.ppEnabledExtensionNames = extensions.data();
-#if defined(__MACH__)
+#if defined(__APPLE__)
         instance_create_info.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 
@@ -681,11 +687,6 @@ namespace Piccolo
 
     void VulkanRHI::createSyncPrimitives()
     {
-        m_image_available_for_render_semaphores.resize(k_max_frames_in_flight);
-        m_image_finished_for_presentation_semaphores.resize(k_max_frames_in_flight);
-        m_image_available_for_texturescopy_semaphores.resize(k_max_frames_in_flight);
-        m_is_frame_in_flight_fences.resize(k_max_frames_in_flight);
-
         VkSemaphoreCreateInfo semaphoreInfo {};
         semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -739,11 +740,11 @@ namespace Piccolo
 
     void VulkanRHI::drawFrame()
     {
-        vkWaitForFences(m_vk_device, 1, &m_is_frame_in_flight_fences[m_current_frame_index], VK_TRUE, UINT64_MAX);
-        vkResetFences(m_vk_device, 1, &m_is_frame_in_flight_fences[m_current_frame_index]);
+        VkResult result = vkWaitForFences(m_vk_device, 1, &m_is_frame_in_flight_fences[m_current_frame_index], VK_TRUE, UINT64_MAX);
+        result = vkResetFences(m_vk_device, 1, &m_is_frame_in_flight_fences[m_current_frame_index]);
 
         uint32_t imageIndex;
-        VkResult result = vkAcquireNextImageKHR(
+        result = vkAcquireNextImageKHR(
             m_vk_device, m_swapchain, UINT64_MAX, m_image_available_for_render_semaphores[m_current_frame_index], VK_NULL_HANDLE, &imageIndex);
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR)
@@ -862,8 +863,8 @@ namespace Piccolo
 
     void VulkanRHI::createGraphicsPipeline()
     {
-        VkShaderModule vertShaderModule = VulkanUtils::createShaderModule(m_vk_device, "simple_triangle.vert");
-        VkShaderModule fragShaderModule = VulkanUtils::createShaderModule(m_vk_device, "simple_triangle.frag");
+        VkShaderModule vertShaderModule = VulkanUtils::createShaderModule(m_vk_device, "basic/simple_triangle.vert");
+        VkShaderModule fragShaderModule = VulkanUtils::createShaderModule(m_vk_device, "basic/simple_triangle.frag");
 
         VkPipelineShaderStageCreateInfo vertShaderStageInfo {};
         vertShaderStageInfo.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

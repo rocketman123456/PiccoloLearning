@@ -2,8 +2,8 @@
 
 namespace Piccolo
 {
-    const Matrix3x3 Matrix3x3::ZERO({{0, 0, 0}, {0, 0, 0}, {0, 0, 0}});
-    const Matrix3x3 Matrix3x3::IDENTITY({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
+    const Matrix3x3 Matrix3x3::ZERO({0, 0, 0, 0, 0, 0, 0, 0, 0});
+    const Matrix3x3 Matrix3x3::IDENTITY({1, 0, 0, 0, 1, 0, 0, 0, 1});
 
     //-----------------------------------------------------------------------
     Matrix3x3 operator*(float scalar, const Matrix3x3& rhs)

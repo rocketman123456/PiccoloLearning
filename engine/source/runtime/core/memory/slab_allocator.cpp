@@ -271,7 +271,7 @@ namespace Piccolo
         cache_cache.slabs_full    = nullptr;
         cache_cache.slabs_partial = nullptr;
 
-        strcpy_s(cache_cache.name, "kmem_cache");
+        strcpy(cache_cache.name, "kmem_cache");
         cache_cache.objectSize = sizeof(kmem_cache_t);
         cache_cache.order      = CACHE_CACHE_ORDER;
 
@@ -468,7 +468,7 @@ namespace Piccolo
         }
 
         // initialise new cache
-        strcpy_s(ret->name, name);
+        strcpy(ret->name, name);
 
         ret->slabs_full    = nullptr;
         ret->slabs_partial = nullptr;
@@ -776,9 +776,9 @@ namespace Piccolo
         void* buff = nullptr;
 
         char name[20];
-        strcpy_s(name, "size-");
-        sprintf_s(num, "%d", j);
-        strcat_s(name, num);
+        strcpy(name, "size-");
+        sprintf(num, "%d", j);
+        strcat(name, num);
 
         kmem_cache_t* buffCachep = slab_cache_create(name, j, nullptr, nullptr);
 
