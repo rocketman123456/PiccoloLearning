@@ -70,7 +70,7 @@ namespace Piccolo
         };
 
         static const uint8_t  k_max_frames_in_flight {3};
-        static const uint32_t k_vulkan_api_version {VK_API_VERSION_1_3};
+        static const uint32_t k_vulkan_api_version {VK_API_VERSION_1_0};
 
         bool m_enable_validation_Layers {true};
         bool m_enable_debug_utils_label {true};
@@ -132,7 +132,7 @@ namespace Piccolo
         VkCommandBuffer m_vk_command_buffers[k_max_frames_in_flight];
 
         // sync objects
-        uint8_t                  m_current_frame_index {0};
+        uint8_t     m_current_frame_index {0};
         VkSemaphore m_image_available_for_render_semaphores[k_max_frames_in_flight];
         VkSemaphore m_image_finished_for_presentation_semaphores[k_max_frames_in_flight];
         VkSemaphore m_image_available_for_texturescopy_semaphores[k_max_frames_in_flight];

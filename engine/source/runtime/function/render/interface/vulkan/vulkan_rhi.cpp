@@ -395,7 +395,13 @@ namespace Piccolo
         device_create_info.pEnabledFeatures        = &physical_device_features;
         device_create_info.enabledExtensionCount   = static_cast<uint32_t>(m_device_extensions.size());
         device_create_info.ppEnabledExtensionNames = m_device_extensions.data();
-        device_create_info.enabledLayerCount       = 0;
+
+        if (m_enable_validation_Layers) {
+            device_create_info.enabledLayerCount = static_cast<uint32_t>(m_validation_layers.size());
+            device_create_info.ppEnabledLayerNames = m_validation_layers.data();
+        } else {
+            device_create_info.enabledLayerCount = 0;
+        }
 
         if (vkCreateDevice(m_vk_physical_device, &device_create_info, nullptr, &m_vk_device) != VK_SUCCESS)
         {
