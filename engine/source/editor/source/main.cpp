@@ -2,16 +2,17 @@
 #include "runtime/resource/asset_manager/asset_manager.h"
 #include "runtime/resource/config_manager/config_manager.h"
 
-#include "runtime/platform/file_system/vfs.h"
+// #include "runtime/platform/file_system/vfs.h"
 // #include "runtime/platform/path/path.h"
 
-#include "runtime/core/math/matrix2.h"
-#include "runtime/core/math/matrix3.h"
-#include "runtime/core/math/matrix4.h"
+// #include "runtime/core/math/matrix2.h"
+// #include "runtime/core/math/matrix3.h"
+// #include "runtime/core/math/matrix4.h"
 
 #include "runtime/engine.h"
 
 #include <iostream>
+#include <memory>
 
 using namespace Piccolo;
 using namespace std;
@@ -21,10 +22,10 @@ int main(int argc, char** argv)
     std::filesystem::path executable_path(argv[0]);
     std::filesystem::path config_file_path = executable_path.parent_path() / "PiccoloEditor.ini";
 
-    Piccolo::PiccoloEngine* engine = new Piccolo::PiccoloEngine();
+    std::shared_ptr<PiccoloEngine> engine = std::make_shared<PiccoloEngine>();
 
-    engine->startEngine(config_file_path.generic_string());
-    engine->initialize();
+    // engine->startEngine(config_file_path.generic_string());
+    // engine->initialize();
 
     // {
     //     FilePtr    file = g_runtime_global_context.m_vfs->open("asset/world/test01.world.json", File::read_text);
@@ -47,10 +48,10 @@ int main(int argc, char** argv)
     // Piccolo::Matrix4x4 mat4;
     // g_runtime_global_context.m_asset_manager->loadVFSAsset<Piccolo::Matrix4x4>("asset/test/mat4.json", mat4);
 
-    engine->run();
+    // engine->run();
 
-    engine->clear();
-    engine->shutdownEngine();
+    // engine->clear();
+    // engine->shutdownEngine();
 
     return 0;
 }
